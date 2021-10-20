@@ -38,7 +38,7 @@ def main():
     build_manifest = BuildManifest.from_file(args.manifest)
     build = build_manifest.build
     artifacts_dir = os.path.dirname(os.path.realpath(args.manifest.name))
-    output_dir = os.path.join(os.getcwd(), "bundle")
+    output_dir = os.path.join(os.getcwd(), "dist")
     os.makedirs(output_dir, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as work_dir:

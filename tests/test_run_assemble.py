@@ -49,8 +49,8 @@ class TestRunAssemble(unittest.TestCase):
         mock_bundle.install_min.assert_called()
         mock_bundle.install_plugins.assert_called()
 
-        mock_bundle.build_tar.assert_called_with("curdir/bundle")
+        mock_bundle.build_tar.assert_called_with("curdir/dist")
 
         mock_recorder.return_value.write_manifest.assert_has_calls(
-            [call("path"), call("curdir/bundle")]  # manifest included in tar
+            [call("path"), call("curdir/dist")]  # manifest included in tar
         )

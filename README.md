@@ -180,10 +180,10 @@ Each component build relies on a `build.sh` script that is used to prepare bundl
 #### Assemble the Bundle 
 
 ```bash
-./assemble.sh artifacts/manifest.yml
+./assemble.sh builds/manifest.yml
 ```
 
-The bundling step takes output from the build step, installs plugins, and assembles a full bundle into a `bundle` folder. The input requires a path to the build manifest and is expected to be inside the `artifacts` directory that contains `bundle`, `maven`, `plugins` and `core-plugins` subdirectories from the build step.
+The bundling step takes output from the build step, installs plugins, and assembles a full bundle into a `dist` folder. The input requires a path to the build manifest and is expected to be inside the `builds` directory that contains `dist`, `maven`, `plugins` and `core-plugins` subdirectories from the build step.
 
 Artifacts will be updated as follows.
 

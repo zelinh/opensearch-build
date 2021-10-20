@@ -50,14 +50,14 @@ class BundleRecorder:
     # Example: https://artifacts.opensearch.org/bundles/1.0.0/<build-id
     def __get_tar_location(self):
         return self.__get_location(
-            "bundle", self.tar_name, os.path.join(self.output_dir, self.tar_name)
+            "dist", self.tar_name, os.path.join(self.output_dir, self.tar_name)
         )
 
     # Build artifacts are expected to be served from a "builds" folder
     # Example: https://artifacts.opensearch.org/builds/1.0.0/<build-id>
     def __get_component_location(self, component_rel_path):
         abs_path = os.path.join(self.artifacts_dir, component_rel_path)
-        return self.__get_location("artifacts", component_rel_path, abs_path)
+        return self.__get_location("builds", component_rel_path, abs_path)
 
     def record_component(self, component, rel_path):
         self.bundle_manifest.append_component(
