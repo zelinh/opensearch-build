@@ -30,7 +30,7 @@ def main():
         const=logging.DEBUG,
         dest="logging_level",
     )
-    parser.add_argument("-p", "--path", help="Add the base URL location", type=str)
+    parser.add_argument("-b", "--base_url", help="(Optional) The base url to download the artifacts", type=str)
     args = parser.parse_args()
 
     console.configure(level=args.logging_level)
@@ -48,7 +48,7 @@ def main():
 
         os.chdir(work_dir)
 
-        bundle_recorder = BundleRecorder(build, output_dir, artifacts_dir, args.path)
+        bundle_recorder = BundleRecorder(build, output_dir, artifacts_dir, args.base_url)
 
         bundle = Bundles.create(build_manifest, artifacts_dir, bundle_recorder)
 
