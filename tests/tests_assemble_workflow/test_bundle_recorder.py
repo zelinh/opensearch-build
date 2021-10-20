@@ -91,7 +91,7 @@ class TestBundleRecorder(unittest.TestCase):
                 self.assertEqual(yaml.safe_load(f), data)
 
     def test_record_component_public(self):
-        self.bundle_recorder.public_url = "https://ci.opensearch.org/ci/ci-env-prod/job-name-opensearch/1.2.0/build-123/platform-mac/arch-amd64/"
+        self.bundle_recorder.base_url = "https://ci.opensearch.org/ci/ci-env-prod/job-name-opensearch/1.2.0/build-123/platform-mac/arch-amd64/"
         component = BuildManifest.Component(
             {
                 "name": "job_scheduler",
@@ -129,8 +129,8 @@ class TestBundleRecorder(unittest.TestCase):
         )
 
     def test_get_location_scenarios(self):
-        def get_location(public_url):
-            self.bundle_recorder.public_url = public_url
+        def get_location(base_url):
+            self.bundle_recorder.base_url = base_url
             return self.bundle_recorder._BundleRecorder__get_location(
                 "builds", "dir1/dir2/file", "/tmp/builds/foo/dir1/dir2/file"
             )
@@ -231,7 +231,7 @@ class TestBundleRecorderDashboards(unittest.TestCase):
                 self.assertEqual(yaml.safe_load(f), data)
 
     def test_record_component_public(self):
-        self.bundle_recorder.public_url = "https://ci.opensearch.org/ci/ci-env-prod/job-name-dashboards/1.2.0/build-123/platform-mac/arch-amd64/"
+        self.bundle_recorder.base_url = "https://ci.opensearch.org/ci/ci-env-prod/job-name-dashboards/1.2.0/build-123/platform-mac/arch-amd64/"
         component = BuildManifest.Component(
             {
                 "name": "alertingDashboards",
@@ -269,8 +269,8 @@ class TestBundleRecorderDashboards(unittest.TestCase):
         )
 
     def test_get_location_scenarios(self):
-        def get_location(public_url):
-            self.bundle_recorder.public_url = public_url
+        def get_location(base_url):
+            self.bundle_recorder.base_url = base_url
             return self.bundle_recorder._BundleRecorder__get_location(
                 "builds", "dir1/dir2/file", "/tmp/builds/foo/dir1/dir2/file"
             )
