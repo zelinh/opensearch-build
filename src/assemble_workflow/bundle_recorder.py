@@ -14,7 +14,7 @@ class BundleRecorder:
     def __init__(self, build, output_dir, artifacts_dir, base_url):
         self.output_dir = output_dir
         self.build_id = build.id
-        self.public_url = base_url
+        self.base_url = base_url
         self.version = build.version
         self.tar_name = self.__get_tar_name(build)
         self.artifacts_dir = artifacts_dir
@@ -39,10 +39,10 @@ class BundleRecorder:
 
     def __get_public_url_path(self, folder, rel_path):
         path = "/".join((folder, rel_path))
-        return urljoin(self.public_url + "/", path)
+        return urljoin(self.base_url + "/", path)
 
     def __get_location(self, folder_name, rel_path, abs_path):
-        if self.public_url:
+        if self.base_url:
             return self.__get_public_url_path(folder_name, rel_path)
         return abs_path
 
