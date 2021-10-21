@@ -30,7 +30,7 @@ def main():
         const=logging.DEBUG,
         dest="logging_level",
     )
-    parser.add_argument("-b", "--base_url", help="(Optional) The base url to download the artifacts", type=str)
+    parser.add_argument("-b", "--base-url", dest='base_url', help="The base url to download the artifacts.")
     args = parser.parse_args()
 
     console.configure(level=args.logging_level)

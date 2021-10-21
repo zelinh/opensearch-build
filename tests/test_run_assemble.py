@@ -58,7 +58,7 @@ class TestRunAssemble(unittest.TestCase):
     @patch("os.chdir")
     @patch("os.makedirs")
     @patch("os.getcwd", return_value="curdir")
-    @patch("argparse._sys.argv", ["run_assemble.py", BUILD_MANIFEST, "--base_url", "baseurl"])
+    @patch("argparse._sys.argv", ["run_assemble.py", BUILD_MANIFEST, "--base-url", "baseurl"])
     @patch("run_assemble.Bundles", return_value=MagicMock())
     @patch("run_assemble.BundleRecorder", return_value=MagicMock())
     @patch("tempfile.TemporaryDirectory")
