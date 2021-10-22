@@ -30,18 +30,15 @@ class TestBuilder(unittest.TestCase):
                 name="OpenSearch",
                 version="1.0.0",
                 platform="linux",
-                arch="x64",
+                architecture="x64",
                 snapshot=False,
             )
         )
         self.builder.git_repo.execute.assert_called_with(
             " ".join(
                 [
-                    os.path.realpath(
-                        os.path.join(
-                            ScriptFinder.default_scripts_path, "opensearch", "build.sh"
-                        )
-                    ),
+                    "bash",
+                    os.path.realpath(os.path.join(ScriptFinder.default_scripts_path, "opensearch", "build.sh")),
                     "-v 1.0.0",
                     "-p linux",
                     "-a x64",
@@ -50,9 +47,7 @@ class TestBuilder(unittest.TestCase):
                 ]
             )
         )
-        self.builder.build_recorder.record_component.assert_called_with(
-            "component", self.builder.git_repo
-        )
+        self.builder.build_recorder.record_component.assert_called_with("component", self.builder.git_repo)
 
     def test_build_snapshot(self):
         self.builder.build(
@@ -60,18 +55,15 @@ class TestBuilder(unittest.TestCase):
                 name="OpenSearch",
                 version="1.0.0",
                 platform="darwin",
-                arch="x64",
+                architecture="x64",
                 snapshot=True,
             )
         )
         self.builder.git_repo.execute.assert_called_with(
             " ".join(
                 [
-                    os.path.realpath(
-                        os.path.join(
-                            ScriptFinder.default_scripts_path, "opensearch", "build.sh"
-                        )
-                    ),
+                    "bash",
+                    os.path.realpath(os.path.join(ScriptFinder.default_scripts_path, "opensearch", "build.sh")),
                     "-v 1.0.0",
                     "-p darwin",
                     "-a x64",
@@ -80,15 +72,13 @@ class TestBuilder(unittest.TestCase):
                 ]
             )
         )
-        self.builder.build_recorder.record_component.assert_called_with(
-            "component", self.builder.git_repo
-        )
+        self.builder.build_recorder.record_component.assert_called_with("component", self.builder.git_repo)
 
     def mock_os_walk(self, artifact_path):
-        if artifact_path.endswith("/checked-out-component/artifacts/core-plugins"):
-            return [["/core-plugins", [], ["plugin1.zip"]]]
-        if artifact_path.endswith("/checked-out-component/artifacts/maven"):
-            return [("/maven", [], ["artifact1.jar"])]
+        if artifact_path.endswith(os.path.join("checked-out-component", "artifacts", "core-plugins")):
+            return [["core-plugins", [], ["plugin1.zip"]]]
+        if artifact_path.endswith(os.path.join("checked-out-component", "artifacts", "maven")):
+            return [("maven", [], ["artifact1.jar"])]
         else:
             return []
 
@@ -103,17 +93,19 @@ class TestBuilder(unittest.TestCase):
                     "component",
                     "maven",
                     os.path.relpath(
-                        "/maven/artifact1.jar", self.builder.artifacts_path
+                        os.path.join("maven", "artifact1.jar"),
+                        self.builder.artifacts_path,
                     ),
-                    "/maven/artifact1.jar",
+                    os.path.join("maven", "artifact1.jar"),
                 ),
                 call(
                     "component",
                     "core-plugins",
                     os.path.relpath(
-                        "/core-plugins/plugin1.zip", self.builder.artifacts_path
+                        os.path.join("core-plugins", "plugin1.zip"),
+                        self.builder.artifacts_path,
                     ),
-                    "/core-plugins/plugin1.zip",
+                    os.path.join("core-plugins", "plugin1.zip"),
                 ),
             ]
         )

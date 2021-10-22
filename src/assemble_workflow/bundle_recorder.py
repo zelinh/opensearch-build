@@ -18,7 +18,7 @@ class BundleRecorder:
         self.version = build.version
         self.tar_name = self.__get_tar_name(build)
         self.artifacts_dir = artifacts_dir
-        self.arch = build.architecture
+        self.architecture = build.architecture
         self.bundle_manifest = self.BundleManifestBuilder(
             build.id,
             build.name,
@@ -49,9 +49,7 @@ class BundleRecorder:
     # Assembled bundles are expected to be served from a separate "bundles" folder
     # Example: https://artifacts.opensearch.org/bundles/1.0.0/<build-id
     def __get_tar_location(self):
-        return self.__get_location(
-            "dist", self.tar_name, os.path.join(self.output_dir, self.tar_name)
-        )
+        return self.__get_location("dist", self.tar_name, os.path.join(self.output_dir, self.tar_name))
 
     # Build artifacts are expected to be served from a "builds" folder
     # Example: https://artifacts.opensearch.org/builds/1.0.0/<build-id>
@@ -76,14 +74,14 @@ class BundleRecorder:
         self.get_manifest().to_file(manifest_path)
 
     class BundleManifestBuilder:
-        def __init__(self, build_id, name, version, platform, arch, location):
+        def __init__(self, build_id, name, version, platform, architecture, location):
             self.data = {}
             self.data["build"] = {}
             self.data["build"]["id"] = build_id
             self.data["build"]["name"] = name
             self.data["build"]["version"] = str(version)
             self.data["build"]["platform"] = platform
-            self.data["build"]["architecture"] = arch
+            self.data["build"]["architecture"] = architecture
             self.data["build"]["location"] = location
             self.data["schema-version"] = "1.1"
             # We need to store components as a hash so that we can append artifacts by component name

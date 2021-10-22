@@ -6,20 +6,30 @@
 
 import argparse
 import logging
+import os
 import sys
 
 
 class BuildArgs:
+    SUPPORTED_PLATFORMS = [
+        "linux",
+        "darwin",
+    ]
+    SUPPORTED_ARCHITECTURES = [
+        "x64",
+        "arm64",
+    ]
+
     manifest: str
     snapshot: bool
     component: str
     keep: bool
+    platform: str
+    architecture: str
 
     def __init__(self):
         parser = argparse.ArgumentParser(description="Build an OpenSearch Bundle")
-        parser.add_argument(
-            "manifest", type=argparse.FileType("r"), help="Manifest file."
-        )
+        parser.add_argument("manifest", type=argparse.FileType("r"), help="Manifest file.")
         parser.add_argument(
             "-s",
             "--snapshot",
@@ -27,14 +37,26 @@ class BuildArgs:
             default=False,
             help="Build snapshot.",
         )
-        parser.add_argument(
-            "-c", "--component", type=str, help="Rebuild a single component."
-        )
+        parser.add_argument("-c", "--component", type=str, help="Rebuild a single component.")
         parser.add_argument(
             "--keep",
             dest="keep",
             action="store_true",
             help="Do not delete the working temporary directory.",
+        )
+        parser.add_argument(
+            "-p",
+            "--platform",
+            type=str,
+            choices=self.SUPPORTED_PLATFORMS,
+            help="Platform to build."
+        )
+        parser.add_argument(
+            "-a",
+            "--architecture",
+            type=str,
+            choices=self.SUPPORTED_ARCHITECTURES,
+            help="Architecture to build."
         )
         parser.add_argument(
             "-v",
@@ -52,7 +74,9 @@ class BuildArgs:
         self.snapshot = args.snapshot
         self.component = args.component
         self.keep = args.keep
-        self.script_path = sys.argv[0].replace("/src/run_build.py", "/build.sh")
+        self.platform = args.platform
+        self.architecture = args.architecture
+        self.script_path = sys.argv[0].replace(os.path.sep + os.path.join("src", "run_build.py"), f"{os.path.sep}build.sh")
 
     def component_command(self, name):
         return " ".join(

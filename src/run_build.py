@@ -28,15 +28,17 @@ def main():
     with TemporaryDirectory(keep=args.keep) as work_dir:
         output_dir = os.path.join(os.getcwd(), "builds")
 
-        logging.info(f"Building in {work_dir}")
+        logging.info(f"Building in {work_dir.name}")
 
-        os.chdir(work_dir)
+        os.chdir(work_dir.name)
 
         target = BuildTarget(
             name=manifest.build.name,
             version=manifest.build.version,
             snapshot=args.snapshot,
             output_dir=output_dir,
+            platform=args.platform,
+            architecture=args.architecture,
         )
 
         os.makedirs(target.output_dir, exist_ok=True)
@@ -44,7 +46,7 @@ def main():
         build_recorder = BuildRecorder(target)
 
         logging.info(
-            f"Building {manifest.build.name} ({target.arch}) into {target.output_dir}"
+            f"Building {manifest.build.name} ({target.architecture}) into {target.output_dir}"
         )
 
         for component in manifest.components:
@@ -54,22 +56,20 @@ def main():
                 continue
 
             logging.info(f"Building {component.name}")
-            repo = GitRepository(
+
+            with GitRepository(
                 component.repository,
                 component.ref,
-                os.path.join(work_dir, component.name),
+                os.path.join(work_dir.name, component.name),
                 component.working_directory,
-            )
-
-            try:
-                builder = Builder(component.name, repo, build_recorder)
-                builder.build(target)
-                builder.export_artifacts()
-            except:
-                logging.error(
-                    f"Error building {component.name}, retry with: {args.component_command(component.name)}"
-                )
-                raise
+            ) as repo:
+                try:
+                    builder = Builder(component.name, repo, build_recorder)
+                    builder.build(target)
+                    builder.export_artifacts()
+                except:
+                    logging.error(f"Error building {component.name}, retry with: {args.component_command(component.name)}")
+                    raise
 
         build_recorder.write_manifest()
 

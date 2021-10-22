@@ -1,3 +1,4 @@
+import os
 import unittest
 from unittest.mock import MagicMock, call, patch
 
@@ -19,17 +20,17 @@ class TestSigner(unittest.TestCase):
             "something-1.0.0.0.jar",
         ]
         expected = [
-            call("/path/the-jar.jar"),
-            call("/path/the-zip.zip"),
-            call("/path/the-war.war"),
-            call("/path/the-pom.pom"),
-            call("/path/the-module.module"),
-            call("/path/the-tar.tar.gz"),
-            call("/path/something-1.0.0.0.jar"),
+            call(os.path.join("path", "the-jar.jar")),
+            call(os.path.join("path", "the-zip.zip")),
+            call(os.path.join("path", "the-war.war")),
+            call(os.path.join("path", "the-pom.pom")),
+            call(os.path.join("path", "the-module.module")),
+            call(os.path.join("path", "the-tar.tar.gz")),
+            call(os.path.join("path", "something-1.0.0.0.jar")),
         ]
         signer = Signer()
         signer.sign = MagicMock()
-        signer.sign_artifacts(artifacts, "/path")
+        signer.sign_artifacts(artifacts, "path")
         self.assertEqual(signer.sign.call_args_list, expected)
 
     @patch(
@@ -46,18 +47,10 @@ class TestSigner(unittest.TestCase):
     def test_signer_verify(self, mock_repo):
         signer = Signer()
         signer.verify("/path/the-jar.jar.asc")
-        mock_repo.assert_has_calls(
-            [call().execute("gpg --verify-files /path/the-jar.jar.asc")]
-        )
+        mock_repo.assert_has_calls([call().execute("gpg --verify-files /path/the-jar.jar.asc")])
 
     @patch("sign_workflow.signer.GitRepository")
     def test_signer_sign(self, mock_repo):
         signer = Signer()
         signer.sign("/path/the-jar.jar")
-        mock_repo.assert_has_calls(
-            [
-                call().execute(
-                    "./opensearch-signer-client -i /path/the-jar.jar -o /path/the-jar.jar.asc -p pgp"
-                )
-            ]
-        )
+        mock_repo.assert_has_calls([call().execute("./opensearch-signer-client -i /path/the-jar.jar -o /path/the-jar.jar.asc -p pgp")])

@@ -11,7 +11,10 @@ class DependencyInstallerTests(unittest.TestCase):
         self.maxDiff = None
         self.manifest_filename = os.path.join(
             os.path.dirname(__file__),
-            "../tests_assemble_workflow/data/opensearch-build-1.1.0.yml",
+            "..",
+            "tests_assemble_workflow",
+            "data",
+            "opensearch-build-1.1.0.yml",
         )
         self.manifest = BuildManifest.from_path(self.manifest_filename)
         with patch("test_workflow.dependency_installer.S3Bucket") as mock_s3_bucket:
@@ -36,9 +39,7 @@ class DependencyInstallerTests(unittest.TestCase):
     def test_install_build_dependencies(self, mock_os_makedirs):
         s3_bucket = self.mock_s3_bucket.return_value
         dependencies = dict({"opensearch-job-scheduler": "1.1.0.0"})
-        self.dependency_installer.install_build_dependencies(
-            dependencies, os.path.dirname(__file__)
-        )
+        self.dependency_installer.install_build_dependencies(dependencies, os.path.dirname(__file__))
         self.assertEqual(s3_bucket.download_file.call_count, 1)
         s3_bucket.download_file.assert_has_calls(
             [
@@ -48,6 +49,4 @@ class DependencyInstallerTests(unittest.TestCase):
                 )
             ]
         )
-        mock_os_makedirs.assert_called_once_with(
-            os.path.dirname(__file__), exist_ok=True
-        )
+        mock_os_makedirs.assert_called_once_with(os.path.dirname(__file__), exist_ok=True)

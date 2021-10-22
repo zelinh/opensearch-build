@@ -5,7 +5,6 @@
 # compatible open source license.
 
 import os
-import tempfile
 import unittest
 
 import yaml
@@ -13,18 +12,15 @@ import yaml
 from assemble_workflow.bundle_recorder import BundleRecorder
 from manifests.build_manifest import BuildManifest
 from manifests.bundle_manifest import BundleManifest
+from system.temporary_directory import TemporaryDirectory
 
 
 class TestBundleRecorder(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
-        manifest_path = os.path.join(
-            os.path.dirname(__file__), "data/opensearch-build-1.1.0.yml"
-        )
+        manifest_path = os.path.join(os.path.dirname(__file__), "data", "opensearch-build-1.1.0.yml")
         manifest = BuildManifest.from_path(manifest_path)
-        self.bundle_recorder = BundleRecorder(
-            manifest.build, "output_dir", "artifacts_dir", None
-        )
+        self.bundle_recorder = BundleRecorder(manifest.build, "output_dir", "artifacts_dir", None)
 
     def test_record_component(self):
         component = BuildManifest.Component(
@@ -46,14 +42,14 @@ class TestBundleRecorder(unittest.TestCase):
                     "platform": "linux",
                     "architecture": "x64",
                     "id": "c3ff7a232d25403fa8cc14c97799c323",
-                    "location": "output_dir/opensearch-1.1.0-linux-x64.tar.gz",
+                    "location": os.path.join("output_dir", "opensearch-1.1.0-linux-x64.tar.gz"),
                     "name": "OpenSearch",
                     "version": "1.1.0",
                 },
                 "components": [
                     {
                         "commit_id": "3913d7097934cbfe1fdcf919347f22a597d00b76",
-                        "location": "artifacts_dir/plugins",
+                        "location": os.path.join("artifacts_dir", "plugins"),
                         "name": component.name,
                         "ref": "main",
                         "repository": "https://github.com/opensearch-project/job_scheduler",
@@ -73,7 +69,7 @@ class TestBundleRecorder(unittest.TestCase):
                     "platform": "linux",
                     "architecture": "x64",
                     "id": "c3ff7a232d25403fa8cc14c97799c323",
-                    "location": "output_dir/opensearch-1.1.0-linux-x64.tar.gz",
+                    "location": os.path.join("output_dir", "opensearch-1.1.0-linux-x64.tar.gz"),
                     "name": "OpenSearch",
                     "version": "1.1.0",
                 },
@@ -82,9 +78,9 @@ class TestBundleRecorder(unittest.TestCase):
         )
 
     def test_write_manifest(self):
-        with tempfile.TemporaryDirectory() as dest_dir:
-            self.bundle_recorder.write_manifest(dest_dir)
-            manifest_path = os.path.join(dest_dir, "manifest.yml")
+        with TemporaryDirectory() as dest_dir:
+            self.bundle_recorder.write_manifest(dest_dir.name)
+            manifest_path = os.path.join(dest_dir.name, "manifest.yml")
             self.assertTrue(os.path.isfile(manifest_path))
             data = self.bundle_recorder.get_manifest().to_dict()
             with open(manifest_path) as f:
@@ -111,7 +107,7 @@ class TestBundleRecorder(unittest.TestCase):
                     "platform": "linux",
                     "architecture": "x64",
                     "id": "c3ff7a232d25403fa8cc14c97799c323",
-                    "location": "output_dir/opensearch-1.1.0-linux-x64.tar.gz",
+                    "location": os.path.join("output_dir", "opensearch-1.1.0-linux-x64.tar.gz"),
                     "name": "OpenSearch",
                     "version": "1.1.0",
                 },
@@ -131,9 +127,7 @@ class TestBundleRecorder(unittest.TestCase):
     def test_get_location_scenarios(self):
         def get_location(base_url):
             self.bundle_recorder.base_url = base_url
-            return self.bundle_recorder._BundleRecorder__get_location(
-                "builds", "dir1/dir2/file", "/tmp/builds/foo/dir1/dir2/file"
-            )
+            return self.bundle_recorder._BundleRecorder__get_location("builds", "dir1/dir2/file", "/tmp/builds/foo/dir1/dir2/file")
 
         # No public URL - Fallback to ABS Path
         self.assertEqual(get_location(None), "/tmp/builds/foo/dir1/dir2/file")
@@ -151,20 +145,14 @@ class TestBundleRecorder(unittest.TestCase):
         )
 
     def test_tar_name(self):
-        self.assertEqual(
-            self.bundle_recorder.tar_name, "opensearch-1.1.0-linux-x64.tar.gz"
-        )
+        self.assertEqual(self.bundle_recorder.tar_name, "opensearch-1.1.0-linux-x64.tar.gz")
 
 
 class TestBundleRecorderDashboards(unittest.TestCase):
     def setUp(self):
-        manifest_path = os.path.join(
-            os.path.dirname(__file__), "data/opensearch-dashboards-build-1.1.0.yml"
-        )
+        manifest_path = os.path.join(os.path.dirname(__file__), "data", "opensearch-dashboards-build-1.1.0.yml")
         manifest = BuildManifest.from_path(manifest_path)
-        self.bundle_recorder = BundleRecorder(
-            manifest.build, "output_dir", "artifacts_dir", None
-        )
+        self.bundle_recorder = BundleRecorder(manifest.build, "output_dir", "artifacts_dir", None)
 
     def test_record_component(self):
         component = BuildManifest.Component(
@@ -186,14 +174,14 @@ class TestBundleRecorderDashboards(unittest.TestCase):
                     "platform": "linux",
                     "architecture": "x64",
                     "id": "c94ebec444a94ada86a230c9297b1d73",
-                    "location": "output_dir/opensearch-dashboards-1.1.0-linux-x64.tar.gz",
+                    "location": os.path.join("output_dir", "opensearch-dashboards-1.1.0-linux-x64.tar.gz"),
                     "name": "OpenSearch Dashboards",
                     "version": "1.1.0",
                 },
                 "components": [
                     {
                         "commit_id": "ae789280740d7000d1f13245019414abeedfc286",
-                        "location": "artifacts_dir/plugins",
+                        "location": os.path.join("artifacts_dir", "plugins"),
                         "name": component.name,
                         "ref": "main",
                         "repository": "https://github.com/opensearch-project/alerting-dashboards-plugin",
@@ -213,7 +201,7 @@ class TestBundleRecorderDashboards(unittest.TestCase):
                     "platform": "linux",
                     "architecture": "x64",
                     "id": "c94ebec444a94ada86a230c9297b1d73",
-                    "location": "output_dir/opensearch-dashboards-1.1.0-linux-x64.tar.gz",
+                    "location": os.path.join("output_dir", "opensearch-dashboards-1.1.0-linux-x64.tar.gz"),
                     "name": "OpenSearch Dashboards",
                     "version": "1.1.0",
                 },
@@ -222,9 +210,9 @@ class TestBundleRecorderDashboards(unittest.TestCase):
         )
 
     def test_write_manifest(self):
-        with tempfile.TemporaryDirectory() as dest_dir:
-            self.bundle_recorder.write_manifest(dest_dir)
-            manifest_path = os.path.join(dest_dir, "manifest.yml")
+        with TemporaryDirectory() as dest_dir:
+            self.bundle_recorder.write_manifest(dest_dir.name)
+            manifest_path = os.path.join(dest_dir.name, "manifest.yml")
             self.assertTrue(os.path.isfile(manifest_path))
             data = self.bundle_recorder.get_manifest().to_dict()
             with open(manifest_path) as f:
@@ -251,7 +239,7 @@ class TestBundleRecorderDashboards(unittest.TestCase):
                     "platform": "linux",
                     "architecture": "x64",
                     "id": "c94ebec444a94ada86a230c9297b1d73",
-                    "location": "output_dir/opensearch-dashboards-1.1.0-linux-x64.tar.gz",
+                    "location": os.path.join("output_dir", "opensearch-dashboards-1.1.0-linux-x64.tar.gz"),
                     "name": "OpenSearch Dashboards",
                     "version": "1.1.0",
                 },
@@ -271,9 +259,7 @@ class TestBundleRecorderDashboards(unittest.TestCase):
     def test_get_location_scenarios(self):
         def get_location(base_url):
             self.bundle_recorder.base_url = base_url
-            return self.bundle_recorder._BundleRecorder__get_location(
-                "builds", "dir1/dir2/file", "/tmp/builds/foo/dir1/dir2/file"
-            )
+            return self.bundle_recorder._BundleRecorder__get_location("builds", "dir1/dir2/file", "/tmp/builds/foo/dir1/dir2/file")
 
         # No public URL - Fallback to ABS Path
         self.assertEqual(get_location(None), "/tmp/builds/foo/dir1/dir2/file")

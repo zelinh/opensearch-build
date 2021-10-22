@@ -7,8 +7,9 @@
 import logging
 import os
 import subprocess
-import tempfile
 from pathlib import Path
+
+from system.temporary_directory import TemporaryDirectory
 
 
 class GitRepository:
@@ -22,15 +23,21 @@ class GitRepository:
         self.url = url
         self.ref = ref
         if directory is None:
-            self.temp_dir = tempfile.TemporaryDirectory()
+            self.temp_dir = TemporaryDirectory()
             self.dir = os.path.realpath(self.temp_dir.name)
         else:
             self.temp_dir = None
             self.dir = directory
             os.makedirs(self.dir, exist_ok=False)
-
         self.working_subdirectory = working_subdirectory
         self.__checkout__()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        if self.temp_dir:
+            self.temp_dir.__exit__(exc_type, exc_value, exc_traceback)
 
     def __checkout__(self):
         # Check out the repository
