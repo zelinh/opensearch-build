@@ -154,7 +154,7 @@ void build() {
     def BASE_URL = PUBLIC_ARTIFACT_URL + artifactPath;
 
     sh "./assemble.sh builds/manifest.yml --base-url ${BASE_URL}"
-    
+    /*
     withAWS(role: 'opensearch-bundle', roleAccount: "${AWS_ACCOUNT_PUBLIC}", duration: 900, roleSessionName: 'jenkins-session') {
         s3Upload(file: 'builds', bucket: "${ARTIFACT_BUCKET_NAME}", path: "${artifactPath}/builds")
         s3Upload(file: "dist", bucket: "${ARTIFACT_BUCKET_NAME}", path: "${artifactPath}/dist")
@@ -162,7 +162,7 @@ void build() {
 
     addJenkinsMessage("${BASE_URL}/builds/manifest.yml\n" +
                       "${BASE_URL}/dist/manifest.yml")
-
+    */
 }
 
 /** Publishes a notification to a slack instance*/
