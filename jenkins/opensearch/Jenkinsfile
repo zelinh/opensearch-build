@@ -69,11 +69,13 @@ pipeline {
                     }
                     steps {
                         script {
-                            git url: 'https://github.com/opensearch-project/opensearch-build.git', branch: 'main'
+                            git url: 'https://github.com/zelinh/opensearch-build.git', branch: 'jenkins-test'
                             sh "./build.sh manifests/$INPUT_MANIFEST --snapshot"
+                            /*
                             withCredentials([usernamePassword(credentialsId: 'Sonatype', usernameVariable: 'SONATYPE_USERNAME', passwordVariable: 'SONATYPE_PASSWORD')]) {
                                 sh('$WORKSPACE/publish/publish-snapshot.sh $WORKSPACE/builds/$ARTIFACT_PATH/maven')
                             }
+                            */
                         }
                     }
                     post() {
@@ -144,7 +146,7 @@ pipeline {
 }
 
 void build() {
-    git url: 'https://github.com/opensearch-project/opensearch-build.git', branch: 'main'
+    git url: 'https://github.com/zelinh/opensearch-build.git', branch: 'jenkins-test'
 
     sh "./build.sh manifests/$INPUT_MANIFEST"
     
