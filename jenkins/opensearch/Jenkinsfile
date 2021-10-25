@@ -168,23 +168,25 @@ void build() {
 }
 
 /** Publishes a notification to a slack instance*/
-/*
 void publishNotification(icon, msg, extra) {
+    /*
     withCredentials([string(credentialsId: 'BUILD_NOTICE_WEBHOOK', variable: 'TOKEN')]) {
         //sh("""curl -XPOST --header "Content-Type: application/json" --data '{"result_text": "$icon ${env.JOB_NAME} [${env.BUILD_NUMBER}] $msg ${env.BUILD_URL}\nManifest: ${INPUT_MANIFEST} $extra"}' """ + "$TOKEN")
     }
+    */
 }
 
 /** Add a message to the jenkins queue */
-/*
 void addJenkinsMessage(message) {
+    /*
     writeFile(file: "notifications/${STAGE_NAME}.msg", text: message)
     stash(includes: "notifications/*" , name: "notifications-${STAGE_NAME}")
+    */
 }
-*/
+
 /** Load all message in the jenkins queue and append them with a leading newline into a mutli-line string */
-/*
 String getAllJenkinsMessages() {
+    /*
     script {
         // Stages must be explicitly added to prevent overwriting
         // See https://ryan.himmelwright.net/post/jenkins-parallel-stashing/
@@ -205,5 +207,5 @@ String getAllJenkinsMessages() {
         }
         return data
     }
-}
 */
+}
