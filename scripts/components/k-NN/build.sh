@@ -60,7 +60,7 @@ if [ -z "$VERSION" ]; then
 fi
 
 [[ "$SNAPSHOT" == "true" ]] && VERSION=$VERSION-SNAPSHOT
-[ -z "$OUTPUT" ] && OUTPUT=artifacts
+[ -z "$OUTPUT" ] && OUTPUT=builds
 
 work_dir=$PWD
 mkdir -p $OUTPUT/libs
