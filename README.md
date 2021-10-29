@@ -17,6 +17,7 @@
     - [Build from Source](#build-from-source)
       - [Custom Build Scripts](#custom-build-scripts)
     - [Assemble the Bundle](#assemble-the-bundle)
+      - [Cross-Platform Builds](#cross-platform-builds)
       - [Custom Install Scripts](#custom-install-scripts)
     - [Sign Artifacts](#sign-artifacts)
     - [Test the Bundle](#test-the-bundle)
@@ -28,7 +29,9 @@
   - [Making a Release](#making-a-release)
     - [Releasing for Linux](#releasing-for-linux)
     - [Releasing for FreeBSD](#releasing-for-freebsd)
-  - [Deploying infrastructure](#deploying-infrastructure)
+    - [Releasing for Windows](#releasing-for-windows)
+    - [Releasing for MacOS](#releasing-for-macos)
+  - [Deploying Infrastructure](#deploying-infrastructure)
 - [Contributing](#contributing)
 - [Getting Help](#getting-help)
 - [Code of Conduct](#code-of-conduct)
@@ -200,6 +203,18 @@ The following options are available in `assemble.sh`.
 | -v, --verbose      | Show more verbose output.                                               |
 | -b, --base-url     | The base url to download the artifacts.                                 |
 
+##### Cross-Platform Builds
+
+You can perform cross-platform builds. For example, build and assemble a Windows distribution on MacOS.
+
+```bash
+export JAVA_HOME=$(/usr/libexec/java_home) # required by OpenSearch install-plugin during assemble
+./build.sh manifests/1.1.0/opensearch-1.1.0.yml --snapshot --platform windows
+./assemble.sh builds/manifest.yml
+```
+
+This will produce `dist/opensearch-1.1.0-SNAPSHOT-windows-x64.zip` on Linux and MacOS.
+
 ##### Custom Install Scripts
 
 You can perform additional plugin install steps by adding an `install.sh` script. By default the tool will look for a script in [scripts/bundle-build/components](scripts/bundle-build/components), then default to a noop version implemented in [scripts/default/install.sh](scripts/default/install.sh).
@@ -353,7 +368,15 @@ The Linux release is managed by a team at Amazon following [this release templat
 
 The FreeBSD ports and packages for OpenSearch are managed by a community [OpenSearch Team](https://wiki.freebsd.org/OpenSearch) at FreeBSD.  When a new release is rolled out, this team will update the port and commit it to the FreeBSD ports tree. Anybody is welcome to help the team by providing patches for [upgrading the ports](https://docs.freebsd.org/en/books/porters-handbook/book/#port-upgrading) following the [FreeBSD Porter's Handbook](https://docs.freebsd.org/en/books/porters-handbook/book/) instructions.
 
-### Deploying infrastructure
+#### Releasing for Windows
+
+At this moment there's no official Windows distribution. However, this project does support building and assembling OpenSearch for Windows, with some caveats. See [opensearch-build#33](https://github.com/opensearch-project/opensearch-build/issues/33) for details.
+
+#### Releasing for MacOS
+
+At this moment there's no official MacOS distribution. However, this project does support building and assembling OpenSearch for MacOS. See [opensearch-build#37](https://github.com/opensearch-project/opensearch-build/issues/37) and [#38](https://github.com/opensearch-project/opensearch-build/issues/38) for more details.
+
+### Deploying Infrastructure
 
 Storage and access roles for the OpenSearch release process are codified in a [CDK project](deployment/README.md).
 

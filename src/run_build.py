@@ -24,13 +24,10 @@ def main():
     args = BuildArgs()
     console.configure(level=args.logging_level)
     manifest = InputManifest.from_file(args.manifest)
+    output_dir = os.path.join(os.getcwd(), "builds")
 
-    with TemporaryDirectory(keep=args.keep) as work_dir:
-        output_dir = os.path.join(os.getcwd(), "builds")
-
+    with TemporaryDirectory(keep=args.keep, chdir=True) as work_dir:
         logging.info(f"Building in {work_dir.name}")
-
-        os.chdir(work_dir.name)
 
         target = BuildTarget(
             name=manifest.build.name,
@@ -45,16 +42,9 @@ def main():
 
         build_recorder = BuildRecorder(target)
 
-        logging.info(
-            f"Building {manifest.build.name} ({target.architecture}) into {target.output_dir}"
-        )
+        logging.info(f"Building {manifest.build.name} ({target.architecture}) into {target.output_dir}")
 
-        for component in manifest.components:
-
-            if args.component and args.component != component.name:
-                logging.info(f"Skipping {component.name}")
-                continue
-
+        for component in manifest.components.select(focus=args.component, platform=target.platform):
             logging.info(f"Building {component.name}")
 
             with GitRepository(
