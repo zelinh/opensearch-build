@@ -73,7 +73,7 @@ pipeline {
                             sh "./build.sh manifests/$INPUT_MANIFEST --snapshot"
                             /*
                             withCredentials([usernamePassword(credentialsId: 'Sonatype', usernameVariable: 'SONATYPE_USERNAME', passwordVariable: 'SONATYPE_PASSWORD')]) {
-                                sh('$WORKSPACE/publish/publish-snapshot.sh $WORKSPACE/builds/$ARTIFACT_PATH/maven')
+                                //sh('$WORKSPACE/publish/publish-snapshot.sh $WORKSPACE/builds/$ARTIFACT_PATH/maven')
                             }
                             */
                         }
@@ -156,56 +156,48 @@ void build() {
     def BASE_URL = PUBLIC_ARTIFACT_URL + artifactPath;
 
     sh "./assemble.sh builds/manifest.yml --base-url ${BASE_URL}"
-    /*
-    withAWS(role: 'opensearch-bundle', roleAccount: "${AWS_ACCOUNT_PUBLIC}", duration: 900, roleSessionName: 'jenkins-session') {
-        s3Upload(file: 'builds', bucket: "${ARTIFACT_BUCKET_NAME}", path: "${artifactPath}/builds")
-        s3Upload(file: "dist", bucket: "${ARTIFACT_BUCKET_NAME}", path: "${artifactPath}/dist")
-    }
+    // withAWS(role: 'opensearch-bundle', roleAccount: "${AWS_ACCOUNT_PUBLIC}", duration: 900, roleSessionName: 'jenkins-session') {
+    //     s3Upload(file: 'builds', bucket: "${ARTIFACT_BUCKET_NAME}", path: "${artifactPath}/builds")
+    //     s3Upload(file: "dist", bucket: "${ARTIFACT_BUCKET_NAME}", path: "${artifactPath}/dist")
+    // }
 
-    addJenkinsMessage("${BASE_URL}/builds/manifest.yml\n" +
-                      "${BASE_URL}/dist/manifest.yml")
-    */
+    // addJenkinsMessage("${BASE_URL}/builds/manifest.yml\n" +
+    //                   "${BASE_URL}/dist/manifest.yml")
 }
 
 /** Publishes a notification to a slack instance*/
 void publishNotification(icon, msg, extra) {
-    /*
-    withCredentials([string(credentialsId: 'BUILD_NOTICE_WEBHOOK', variable: 'TOKEN')]) {
-        //sh("""curl -XPOST --header "Content-Type: application/json" --data '{"result_text": "$icon ${env.JOB_NAME} [${env.BUILD_NUMBER}] $msg ${env.BUILD_URL}\nManifest: ${INPUT_MANIFEST} $extra"}' """ + "$TOKEN")
-    }
-    */
+    // withCredentials([string(credentialsId: 'BUILD_NOTICE_WEBHOOK', variable: 'TOKEN')]) {
+    //     //sh("""curl -XPOST --header "Content-Type: application/json" --data '{"result_text": "$icon ${env.JOB_NAME} [${env.BUILD_NUMBER}] $msg ${env.BUILD_URL}\nManifest: ${INPUT_MANIFEST} $extra"}' """ + "$TOKEN")
+    // }
 }
 
 /** Add a message to the jenkins queue */
 void addJenkinsMessage(message) {
-    /*
-    writeFile(file: "notifications/${STAGE_NAME}.msg", text: message)
-    stash(includes: "notifications/*" , name: "notifications-${STAGE_NAME}")
-    */
+    // writeFile(file: "notifications/${STAGE_NAME}.msg", text: message)
+    // stash(includes: "notifications/*" , name: "notifications-${STAGE_NAME}")
 }
 
 /** Load all message in the jenkins queue and append them with a leading newline into a mutli-line string */
 String getAllJenkinsMessages() {
-    /*
-    script {
-        // Stages must be explicitly added to prevent overwriting
-        // See https://ryan.himmelwright.net/post/jenkins-parallel-stashing/
-        def stages = ['build-x64', 'build-arm64']
-        for (stage in stages) {
-            unstash "notifications-${stage}"
-        }
+    // script {
+    //     // Stages must be explicitly added to prevent overwriting
+    //     // See https://ryan.himmelwright.net/post/jenkins-parallel-stashing/
+    //     def stages = ['build-x64', 'build-arm64']
+    //     for (stage in stages) {
+    //         unstash "notifications-${stage}"
+    //     }
 
-        def files = findFiles(excludes: '', glob: 'notifications/*')
-        def data = ""
-        for (file in files) {
-            data = data + "\n" + readFile (file: file.path)
-        }
+    //     def files = findFiles(excludes: '', glob: 'notifications/*')
+    //     def data = ""
+    //     for (file in files) {
+    //         data = data + "\n" + readFile (file: file.path)
+    //     }
 
-        // Delete all the notifications from the workspace
-        dir('notifications') {
-            deleteDir()
-        }
-        return data
-    }
-*/
+    //     // Delete all the notifications from the workspace
+    //     dir('notifications') {
+    //         deleteDir()
+    //     }
+    //     return data
+    // }
 }
