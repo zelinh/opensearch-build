@@ -217,4 +217,3 @@ String getAllJenkinsMessages() {
         return data
     }
 }
-
