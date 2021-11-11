@@ -178,12 +178,13 @@ void build() {
 
     addJenkinsMessage("${BASE_URL}/builds/manifest.yml\n" +
                       "${BASE_URL}/dist/manifest.yml")
+
 }
 
 /** Publishes a notification to a slack instance*/
 void publishNotification(icon, msg, extra) {
     withCredentials([string(credentialsId: 'BUILD_NOTICE_WEBHOOK', variable: 'TOKEN')]) {
-        //sh("""curl -XPOST --header "Content-Type: application/json" --data '{"result_text": "$icon ${env.JOB_NAME} [${env.BUILD_NUMBER}] $msg ${env.BUILD_URL}\nManifest: ${INPUT_MANIFEST} $extra"}' """ + "$TOKEN")
+        sh("""curl -XPOST --header "Content-Type: application/json" --data '{"result_text": "$icon ${env.JOB_NAME} [${env.BUILD_NUMBER}] $msg ${env.BUILD_URL}\nManifest: ${INPUT_MANIFEST} $extra"}' """ + "$TOKEN")
     }
 }
 
