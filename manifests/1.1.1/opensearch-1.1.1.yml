@@ -1,0 +1,73 @@
+---
+schema-version: "1.0"
+build:
+  name: OpenSearch
+  version: 1.1.1
+  patches: 
+    - 1.1.0
+components:
+  - name: OpenSearch
+    repository: https://github.com/opensearch-project/OpenSearch.git
+    ref: "1.1"
+    checks:
+      - gradle:publish
+      - gradle:properties:version
+  - name: common-utils
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component
+  - name: job-scheduler
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component
+  - name: sql
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component
+  - name: alerting
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component
+  - name: security
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component
+  - name: cross-cluster-replication
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component
+  - name: performance-analyzer-rca
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component
+  - name: performance-analyzer
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component
+  - name: index-management
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component
+  - name: k-NN
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component
+    platforms:
+      - darwin
+      - linux
+  - name: anomaly-detection
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component
+  - name: asynchronous-search
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component
+  - name: dashboards-reports
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component
+  - name: dashboards-notebooks
+    dist: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405
+    checks:
+      - manifest:component

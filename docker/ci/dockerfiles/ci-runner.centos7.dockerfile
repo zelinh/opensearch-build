@@ -13,6 +13,9 @@ FROM centos:7
 
 ARG MAVEN_DIR=/usr/local/apache-maven
 
+# Ensure localedef running correct with root permission
+USER 0
+
 # Add AdoptOpenJDK Repo
 RUN echo -e "[AdoptOpenJDK]\nname=AdoptOpenJDK\nbaseurl=http://adoptopenjdk.jfrog.io/adoptopenjdk/rpm/centos/7/\$basearch\nenabled=1\ngpgcheck=1\ngpgkey=https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public" > /etc/yum.repos.d/adoptopenjdk.repo
 
@@ -115,6 +118,7 @@ RUN ln -sfn /usr/local/bin/python3.7 /usr/bin/python3 && \
 
 # Add k-NN Library dependencies
 RUN yum install epel-release -y && yum repolist && yum install openblas-static lapack -y
+RUN pip3 install pip==21.3.1
 RUN pip3 install cmake==3.21.3
 
 # Change User

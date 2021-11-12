@@ -3,7 +3,6 @@
 /alerting/
 /anomaly-detection/
 /asynchronous-search/
-/dashboards-notebooks/
 /dashboards-reports/
 /dashboards-visualizations/
 /index-management/
@@ -19,3 +18,5 @@
 /index-management-dashboards-plugin/
 /anomaly-detection-dashboards-plugin/
 /cross-cluster-replication/
+/common-utils/
+/opensearch-build/

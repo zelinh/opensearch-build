@@ -13,7 +13,7 @@ DIR=""
 
 function usage() {
     echo ""
-    echo "This script is used to build the OpenSearch Docker image with single architecture (x64 or arm64). It prepares the files required by the Dockerfile in a temporary directory, then builds and tags the Docker image."
+    echo "This script is used to build the OpenSearch Docker image with multi architecture (x64 + arm64). It prepares the files required by the Dockerfile in a temporary directory, then builds and tags the Docker image."
     echo "--------------------------------------------------------------------------"
     echo "Usage: $0 [args]"
     echo ""
@@ -22,10 +22,11 @@ function usage() {
     echo -e "-f DOCKERFILE\tSpecify the dockerfile full path, e.g. dockerfile/opensearch.al2.dockerfile."
     echo -e "-p PRODUCT\tSpecify the product, e.g. opensearch or opensearch-dashboards, make sure this is the name of your config folder and the name of your .tgz defined in dockerfile."
     echo -e "-a ARCHITECTURE\tSpecify the multiple architecture you want to add to the multi-arch image, separate by comma, e.g. 'x64,arm64'."
-    echo -e "-r REPOSITORY\tSpecify the docker repository name in the format of '<Docker Hub RepoName>/<Docker Image Name>', due to multi-arch image either save in cache or directly upload to Docker Hub Repo, no local copies. The tag name will be pointed to `-v` value and `latest`"
+    echo -e "-r REPOSITORY\tSpecify the docker repository name in the format of '<Docker Hub RepoName>/<Docker Image Name>', due to multi-arch image either save in cache or directly upload to Docker Hub Repo, no local copies. The tag name will be pointed to '-v' value and 'latest'"
     echo ""
     echo "Optional arguments:"
     echo -e "-t TARBALL\tSpecify multiple opensearch or opensearch-dashboards tarballs, use the same order as the input for '-a' param, e.g. 'opensearch-1.0.0-linux-x64.tar.gz,opensearch-1.0.0-linux-arm64.tar.gz'. You still need to specify the version - this tool does not attempt to parse the filename."
+    echo -e "-n NOTES\tSpecify Pipeline Notes of the run, defaults to None."
     echo -e "-h\t\tPrint this message."
     echo "--------------------------------------------------------------------------"
 }
@@ -41,7 +42,7 @@ function cleanup_all() {
     cleanup_docker_buildx
     File_Delete $DIR
 }
-while getopts ":ht:v:f:p:a:r:" arg; do
+while getopts ":ht:n:v:f:p:a:r:" arg; do
     case $arg in
         h)
             usage
@@ -49,6 +50,9 @@ while getopts ":ht:v:f:p:a:r:" arg; do
             ;;
         t)
             TARBALL=`realpath $OPTARG`
+            ;;
+        n)
+            NOTES=$OPTARG
             ;;
         v)
             VERSION=$OPTARG
@@ -103,6 +107,11 @@ do
   fi
 done
 
+if [ -z "$NOTES" ]
+then
+    NOTES="None"
+fi
+
 # Warning docker desktop
 if (! docker buildx version)
 then
@@ -151,5 +160,5 @@ fi
 
 # Build multi-arch images
 PLATFORMS=`echo "${ARCHITECTURE_ARRAY[@]/#/linux/}" | sed 's/x64/amd64/g;s/ /,/g'` && echo PLATFORMS $PLATFORMS
-docker buildx build --platform $PLATFORMS --build-arg VERSION=$VERSION --build-arg BUILD_DATE=`date -u +%Y-%m-%dT%H:%M:%SZ` -t ${REPOSITORY}:${VERSION} -t ${REPOSITORY}:latest -f $DOCKERFILE --push $DIR
+docker buildx build --platform $PLATFORMS --build-arg VERSION=$VERSION --build-arg BUILD_DATE=`date -u +%Y-%m-%dT%H:%M:%SZ` --build-arg NOTES=$NOTES -t ${REPOSITORY}:${VERSION} -t ${REPOSITORY}:latest -f $DOCKERFILE --push $DIR
 
