@@ -1,4 +1,4 @@
-lib = library(identifier: "jenkins@current", retriever: legacySCM(scm)).jenkins
+lib = library(identifier: "jenkins@current", retriever: legacySCM(scm))
 
 pipeline {
     agent none
@@ -37,7 +37,7 @@ pipeline {
             steps {
                 script { 
                     git url: 'https://github.com/opensearch-project/opensearch-build.git', branch: 'main'
-                    def inputManifest = lib.InputManifest.new(readYaml(file: "manifests/$INPUT_MANIFEST"))
+                    def inputManifest = lib.jenkins.InputManifest.new(readYaml(file: "manifests/$INPUT_MANIFEST"))
                     dockerImage = inputManifest.ci.image.name
                     dockerArgs = inputManifest.ci.image.args
                     echo "Using Docker image ${dockerImage} (${dockerArgs})"
@@ -122,7 +122,8 @@ pipeline {
             steps {
                 node('Jenkins-Agent-al2-x64-c54xlarge-Docker-Host') {
                     script {
-                        def inputManifest = lib.InputManifest.new(readYaml(file: "manifests/$INPUT_MANIFEST"))
+                        git url: 'https://github.com/opensearch-project/opensearch-build.git', branch: 'main'
+                        def inputManifest = lib.jenkins.InputManifest.new(readYaml(file: "manifests/$INPUT_MANIFEST"))
                         dockerBuild: {
                             build job: 'docker-build',
                             parameters: [
@@ -148,7 +149,7 @@ pipeline {
         success {
             node('Jenkins-Agent-al2-x64-c54xlarge-Docker-Host') {
                 script {
-                    def stashed = lib.Messages.new(this).get(['build-linux-x64', 'post-build (linux-arm64)'])
+                    def stashed = lib.jenkins.Messages.new(this).get(['build-linux-x64', 'post-build (linux-arm64)'])
                     publishNotification(":white_check_mark:", "Successful Build", "\n${stashed}")
                 }
             }
@@ -162,11 +163,12 @@ pipeline {
 }
 
 void build(platform, architecture) {
+    git url: 'https://github.com/opensearch-project/opensearch-build.git', branch: 'main'
     sh "./build.sh manifests/$INPUT_MANIFEST -p $platform -a $architecture"
 }
 
 void assemble() {
-    def buildManifest = lib.BuildManifest.new(readYaml(file: 'builds/manifest.yml'))
+    def buildManifest = lib.jenkins.BuildManifest.new(readYaml(file: 'builds/manifest.yml'))
 
     def baseUrl = buildManifest.getArtifactRootUrl(env.PUBLIC_ARTIFACT_URL, env.JOB_NAME, env.BUILD_NUMBER)
     sh "./assemble.sh builds/manifest.yml --base-url ${baseUrl}"
@@ -178,7 +180,7 @@ void assemble() {
         s3Upload(file: "dist", bucket: "${ARTIFACT_BUCKET_NAME}", path: "${artifactPath}/dist")
     }
 
-    lib.Messages.new(this).add("${STAGE_NAME}", "${baseUrl}/builds/manifest.yml\n${baseUrl}/dist/manifest.yml")
+    lib.jenkins.Messages.new(this).add("${STAGE_NAME}", "${baseUrl}/builds/manifest.yml\n${baseUrl}/dist/manifest.yml")
 }
 
 /** Publishes a notification to a slack instance*/
