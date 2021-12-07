@@ -11,24 +11,18 @@ package jenkins.tests
 import org.junit.*
 import java.util.*
 
-class TestVars extends BuildPipelineTest {
-    @Test
-    public void testVars() {
-        binding.setVariable('INPUT_MANIFEST', 'manifests/2.0.0/opensearch-2.0.0.yml')
-        binding.setVariable('BUILD_URL', 'http://jenkins.us-east-1.elb.amazonaws.com/job/vars/42')
-        binding.setVariable('BUILD_NUMBER', '33')
-        binding.setVariable('PUBLIC_ARTIFACT_URL', 'https://ci.opensearch.org/dbc/')
+class TestAssembleUpload extends BuildPipelineTest {
+    @Before
+    void setUp() {
+        super.setUp()
+
+        binding.setVariable('PUBLIC_ARTIFACT_URL', 'https://ci.opensearch.org/dbc')
         binding.setVariable('JOB_NAME', 'vars-build')
         binding.setVariable('ARTIFACT_BUCKET_NAME', 'artifact-bucket')
         binding.setVariable('AWS_ACCOUNT_PUBLIC', 'account')
         binding.setVariable('STAGE_NAME', 'stage')
-
-        helper.registerAllowedMethod("withCredentials", [List, Closure], { list, closure ->
-            closure.delegate = delegate
-            return helper.callClosure(closure)
-        })
-
-        binding.setVariable('BUILD_NOTICE_WEBHOOK', 'https://web/hook/url')
+        binding.setVariable('BUILD_URL', 'http://jenkins.us-east-1.elb.amazonaws.com/job/vars/42')
+        binding.setVariable('BUILD_NUMBER', '33')
 
         helper.registerAllowedMethod("s3Upload", [Map])
         helper.registerAllowedMethod("withAWS", [Map, Closure], { args, closure ->
@@ -36,6 +30,11 @@ class TestVars extends BuildPipelineTest {
             return helper.callClosure(closure)
         })
 
-        super.testPipeline("tests/jenkins/jobs/Vars_Jenkinsfile")
+        helper.registerAllowedMethod("git", [Map])
+    }
+
+    @Test
+    public void test() {
+        super.testPipeline("tests/jenkins/jobs/AssembleUpload_Jenkinsfile")
     }
 }
