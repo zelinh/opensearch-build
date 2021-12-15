@@ -54,8 +54,9 @@ pipeline {
                         "builds"
                     ].join('/'))
                     withAWS(role: 'opensearch-bundle', roleAccount: "${AWS_ACCOUNT_PUBLIC}", duration: 900, roleSessionName: 'jenkins-session') {
-                        s3Upload(file: 'builds', bucket: "${ARTIFACT_BUCKET_NAME}", path: "${artifacts_path}")
+                        //s3Upload(file: 'builds', bucket: "${ARTIFACT_BUCKET_NAME}", path: "${artifacts_path}")
                     }
+                    echo "This is uploading step"
                     lib.jenkins.Messages.new(this).add("${STAGE_NAME}", "Built artifacts into ${PUBLIC_ARTIFACT_URL}/${artifacts_path}.")
                 }
             }
