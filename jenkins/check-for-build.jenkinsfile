@@ -58,7 +58,7 @@ pipeline {
                             echo "Skipping, ${sha.path} already exists."
                         } else {
                             try {
-                                throw err
+                                build job: "${TARGET_JOB_NAME}"
                                 /* build job: "${TARGET_JOB_NAME}", parameters: [
                                 string(name: 'INPUT_MANIFEST', value: "${INPUT_MANIFEST}")
                                 ], wait: true
