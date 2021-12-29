@@ -35,13 +35,13 @@ pipeline {
             }
             steps {
                 script {
-                    git url: "https://github.com/zelinh/${REPOSITORY_NAME}.git", branch: "$RELEASE_BRANCH"
+                    git url: "https://github.com/peternied/${REPOSITORY_NAME}.git", branch: "$RELEASE_BRANCH"
                     withCredentials([string(credentialsId: 'opensearchproject-rubygems-private-key', variable: 'RUBYGEMS_PRIVATE_KEY')]) {
                         writeFile file: 'gem-private_key.pem', text: RUBYGEMS_PRIVATE_KEY
                     }
                     sh'''
-                        [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
-                        rvm install $RUBY_INTERPRETER
+                        [[ -s "/usr/local/rvm/scripts/rvm" ]] && source "/usr/local/rvm/scripts/rvm"
+                        rvm install $RUBY_INTERPRETER   ##jruby-9.2.9.0
                         rvm --default use $RUBY_INTERPRETER
                         gem cert --add certs/opensearch-rubygems.pem
                         ./build.sh
