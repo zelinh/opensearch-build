@@ -40,6 +40,9 @@ pipeline {
                         writeFile file: 'gem-private_key.pem', text: RUBYGEMS_PRIVATE_KEY
                     }
                     sh'''
+                        ruby -v
+                        rvm get stable --auto-dotfiles
+                        ruby -v
                         [[ -s "/usr/local/rvm/scripts/rvm" ]] && source "/usr/local/rvm/scripts/rvm"
                         rvm install $RUBY_INTERPRETER
                         rvm --default use $RUBY_INTERPRETER
