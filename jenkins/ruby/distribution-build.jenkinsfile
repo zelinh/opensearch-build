@@ -41,7 +41,7 @@ pipeline {
                     }
                     sh'''
                         [[ -s "/usr/local/rvm/scripts/rvm" ]] && source "/usr/local/rvm/scripts/rvm"
-                        rvm install $RUBY_INTERPRETER   ##jruby-9.2.9.0
+                        rvm install $RUBY_INTERPRETER
                         rvm --default use $RUBY_INTERPRETER
                         gem cert --add certs/opensearch-rubygems.pem
                         ./build.sh
