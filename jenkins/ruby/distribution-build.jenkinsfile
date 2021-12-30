@@ -63,6 +63,10 @@ pipeline {
                     }
                     echo "This is uploading step"
                     lib.jenkins.Messages.new(this).add("${STAGE_NAME}", "Built artifacts into ${PUBLIC_ARTIFACT_URL}/${artifacts_path}.")
+
+                    sh """
+                        rm -rf $WORKSPACE/*
+                    """
                 }
             }
             post {
