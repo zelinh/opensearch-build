@@ -43,11 +43,9 @@ pipeline {
                         ruby -v
                         [[ -s "/usr/local/rvm/scripts/rvm" ]] && source "/usr/local/rvm/scripts/rvm"
                         rvm install $RUBY_INTERPRETER
-                        jruby -v
-                        rvm -v
                         rvm get stable --auto-dotfiles
-                        bash --login
                         . /usr/local/rvm/gems/$RUBY_INTERPRETER/environment
+                        jruby -v
                         #rvm --default use $RUBY_INTERPRETER
                         ruby -v
                         gem cert --add certs/opensearch-rubygems.pem
