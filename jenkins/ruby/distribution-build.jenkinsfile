@@ -43,6 +43,7 @@ pipeline {
                         ruby -v
                         [[ -s "/usr/local/rvm/scripts/rvm" ]] && source "/usr/local/rvm/scripts/rvm"
                         rvm install $RUBY_INTERPRETER
+                        jruby -v
                         rvm get stable --auto-dotfiles
                         bash --login
                         rvm --default use $RUBY_INTERPRETER
