@@ -47,7 +47,8 @@ pipeline {
                         rvm -v
                         rvm get stable --auto-dotfiles
                         bash --login
-                        rvm --default use $RUBY_INTERPRETER
+                        . /usr/local/rvm/gems/$RUBY_INTERPRETER/environment
+                        #rvm --default use $RUBY_INTERPRETER
                         ruby -v
                         gem cert --add certs/opensearch-rubygems.pem
                         ./build.sh
