@@ -40,14 +40,10 @@ pipeline {
                         writeFile file: 'gem-private_key.pem', text: RUBYGEMS_PRIVATE_KEY
                     }
                     sh'''
-                        ruby -v
                         [[ -s "/usr/local/rvm/scripts/rvm" ]] && source "/usr/local/rvm/scripts/rvm"
                         rvm install $RUBY_INTERPRETER
                         rvm get stable --auto-dotfiles
                         . /usr/local/rvm/gems/$RUBY_INTERPRETER/environment
-                        jruby -v
-                        #rvm --default use $RUBY_INTERPRETER
-                        ruby -v
                         gem cert --add certs/opensearch-rubygems.pem
                         ./build.sh
                     '''
