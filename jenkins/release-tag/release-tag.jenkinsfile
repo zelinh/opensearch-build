@@ -24,9 +24,9 @@ pipeline {
         stage('manifest fetch') {
             steps {
                 script {
-                    manifest_path = "distribution-build-opensearch/${VERSION}/${BUILD_ID}/linux/x64/builds/opensearch/manifest.yml"
+                    manifest_path = "distribution-build-opensearch/${VERSION}/${BUILD_ID}/linux/x64/builds/opensearch/"
                     downloadFromS3(
-                        destPath: "$WORKSPACE/builds/opensearch/",
+                        destPath: "$WORKSPACE/builds/opensearch",
                         bucket: "${ARTIFACT_BUCKET_NAME}",
                         path: "${manifest_path}",
                         force: true
