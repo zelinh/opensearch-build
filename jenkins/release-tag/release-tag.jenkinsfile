@@ -33,7 +33,7 @@ pipeline {
                     )
                     echo "I'm here just downloaded the manifest"
                     sh """
-                        cat $WORKSPACE/builds/opensearch
+                        ls $WORKSPACE/builds/opensearch
                         cat $WORKSPACE/builds/opensearch/manifest.yml
                     """
                     echo "Cat finished"
