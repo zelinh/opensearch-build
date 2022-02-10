@@ -36,8 +36,10 @@ pipeline {
                         ls $WORKSPACE/builds/opensearch
                         cat $WORKSPACE/builds/opensearch/manifest.yml
                     """
-                    echo "Cat finished"
-                    //def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: buildManifest))
+                    String buildManifest = "builds/opensearch/manifest.yml"
+                    def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: buildManifest))
+                    String buildManifestId = buildManifestObj.getArtifactBuildId()
+                    echo "$buildManifestId"
                 }
             }
         }
