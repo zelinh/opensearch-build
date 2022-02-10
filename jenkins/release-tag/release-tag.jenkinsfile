@@ -28,7 +28,7 @@ pipeline {
                     downloadFromS3(
                         destPath: "$WORKSPACE/builds/opensearch",
                         bucket: "${ARTIFACT_BUCKET_NAME}",
-                        path: "${ARTIFACT_PATH}",
+                        path: "${manifest_path}",
                         force: true
                     )
                     echo "I'm here just downloaded the manifest"
