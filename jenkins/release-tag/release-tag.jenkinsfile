@@ -40,6 +40,11 @@ pipeline {
                     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: buildManifest))
                     String buildManifestId = buildManifestObj.getArtifactBuildId()
                     echo "$buildManifestId"
+                    String opensearchCommitId = buildManifestObj.getCommitId()
+                    echo "$opensearchCommitId"
+/*                     createReleaseTag(
+                        buildManifest: buildManifest
+                    ) */
                 }
             }
         }
