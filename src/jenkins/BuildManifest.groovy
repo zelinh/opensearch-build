@@ -125,7 +125,7 @@ class BuildManifest implements Serializable {
     }
 
     public String getCommitId () {
-        return this.components["OpenSearch"].commit_id
+        return this.components.get("OpenSearch").commit_id
     }
 
     public String getMinArtifact() {
