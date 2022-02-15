@@ -13,15 +13,16 @@ def call(Map args = [:]) {
 /*    echo "The second component is called $componets1"
     def componets2 = componentsName.get(2)
     echo "The third component is called $componets2"*/
+    sh """
+        pwd
+        ls $WORKSPACE
+    """
     for (component in componentsName) {
         echo "The component name is $component"
         def commitID = buildManifestObj.getCommitId(component)
         echo "The commit ID for $component is $commitID"
         def repo = buildManifestObj.getRepo(component)
         echo "The URL for $component is $repo"
-        sh """
-            pwd
-            ls $WORKSPACE
-        """
+
     }
 }
