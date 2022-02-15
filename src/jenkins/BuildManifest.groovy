@@ -124,8 +124,8 @@ class BuildManifest implements Serializable {
         return this.build.id
     }
 
-    public String getCommitId () {
-        return this.components.get("OpenSearch").commit_id
+    public String getCommitId (String name) {
+        return this.components.get(name).commit_id
     }
 
     public ArrayList getComponets() {
@@ -133,6 +133,10 @@ class BuildManifest implements Serializable {
         this.components.each{key, value -> componentsName.add(key)}
         componentsName.eachWithIndex{ it, i -> println "$i : $it" }
         return componentsName
+    }
+
+    public String getRepo(String name) {
+        return this.components.get(name).repository
     }
 
     public String getMinArtifact() {
