@@ -131,6 +131,7 @@ class BuildManifest implements Serializable {
     public ArrayList getComponets() {
         def componentsName = []
         this.components.each{key, value -> componentsName.add(key)}
+        componentsName.eachWithIndex{ it, i -> println "$i : $it" }
         return componentsName
     }
 
