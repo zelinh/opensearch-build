@@ -42,8 +42,8 @@ pipeline {
                     echo "$buildManifestId"
                     String opensearchCommitId = buildManifestObj.getCommitId()
                     echo "$opensearchCommitId"
-                    def componentsName = buildManifestObj.getComponets()
-                    echo "$componentsName.size()"
+                    def componentsName = buildManifestObj.getComponets().size()
+                    echo "$componentsName"
 /*                     createReleaseTag(
                         buildManifest: buildManifest
                     ) */
