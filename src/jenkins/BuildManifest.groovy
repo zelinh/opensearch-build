@@ -130,7 +130,7 @@ class BuildManifest implements Serializable {
 
     public ArrayList getComponets() {
         def componentsName = []
-        this.components.each{key -> componentsName.add(key)}
+        this.components.each{key, value -> componentsName.add(key)}
         return componentsName
     }
 
