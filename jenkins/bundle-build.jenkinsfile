@@ -1,0 +1,63 @@
+lib = library(identifier: "jenkins@20211123", retriever: legacySCM(scm))
+
+pipeline {
+    agent none
+    parameters {
+        string(
+            name: 'INPUT_MANIFEST',
+            description: 'Input manifest under the manifests folder, e.g. 2.0.0/opensearch-2.0.0.yml.',
+            trim: true
+        )
+        string(
+            name: 'TARGET_JOB_NAME',
+            description: 'Job to trigger if build has changed',
+            trim: true
+        )
+    }
+    stages {
+        stage('detect docker image + args') {
+            agent {
+                docker {
+                    label 'Jenkins-Agent-al2-x64-c54xlarge-Docker-Host'
+                    image 'opensearchstaging/ci-runner:centos7-x64-arm64-jdkmulti-node10.24.1-cypress6.9.1-20211028'
+                    alwaysPull true
+                }
+            }
+            steps {
+                script { 
+                    dockerAgent = detectDockerAgent()
+                }
+            }
+        }
+        stage('trigger-build-if-needed') {
+            agent {
+                docker {
+                    label 'Jenkins-Agent-al2-arm64-c6g4xlarge-Docker-Host'
+                    image dockerAgent.image
+                    args dockerAgent.args
+                    alwaysPull true
+                }
+            }
+            steps {
+                script {
+                    error("Build failed because of this and that..")
+                }
+            }
+            post {
+                always {
+                    postCleanup()
+                }
+            }
+        }
+    }
+    post {
+        failure {
+            node('Jenkins-Agent-al2-x64-c54xlarge-Docker-Host') {
+                script {
+                    echo "Job failed"
+                    postCleanup()
+                }
+            }
+        }
+    }
+}
