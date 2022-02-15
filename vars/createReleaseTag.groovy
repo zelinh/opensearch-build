@@ -19,5 +19,9 @@ def call(Map args = [:]) {
         echo "The commit ID for $component is $commitID"
         def repo = buildManifestObj.getRepo(component)
         echo "The URL for $component is $repo"
+        sh """
+            pwd
+            ls $WORKSPACE
+        """
     }
 }
