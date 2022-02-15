@@ -39,20 +39,10 @@ pipeline {
                     String buildManifest = "builds/opensearch/manifest.yml"
                     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: buildManifest))
                     String buildManifestId = buildManifestObj.getArtifactBuildId()
-                    echo "$buildManifestId"
-                    String opensearchCommitId = buildManifestObj.getCommitId()
-                    echo "$opensearchCommitId"
-                    def componentsName = buildManifestObj.getComponets()
-                    def componetsNumber = componentsName.size()
-                    def componets1 = componentsName.get(1)
-                    echo "There are $componetsNumber components in ths manifest"
-                    echo "The second component is called $componets1"
-                    def componets2 = componentsName.get(2)
-                    echo "The third component is called $componets2"
-
-/*                     createReleaseTag(
+                    echo "Manifest Id is $buildManifestId"
+                    createReleaseTag(
                         buildManifest: buildManifest
-                    ) */
+                    )
                 }
             }
         }
