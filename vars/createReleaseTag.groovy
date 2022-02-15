@@ -15,5 +15,9 @@ def call(Map args = [:]) {
     echo "The third component is called $componets2"*/
     for (component in componentsName) {
         echo "The component name is $component"
+        def commitID = buildManifestObj.getCommitId(component)
+        echo "The commit ID for $component is $commitID"
+        def repo = buildManifestObj.getRepo(component)
+        echo "The URL for $component is $repo"
     }
 }
