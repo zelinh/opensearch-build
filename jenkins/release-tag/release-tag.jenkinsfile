@@ -25,8 +25,9 @@ pipeline {
             steps {
                 script {
                     manifest_path = "distribution-build-opensearch/${VERSION}/${BUILD_ID}/linux/x64/builds/opensearch/manifest.yml"
+                    String buildManifest = "builds/opensearch/manifest.yml"
                     downloadFromS3(
-                        destPath: "$WORKSPACE/builds/opensearch/manifest.yml",
+                        destPath: "$WORKSPACE/$buildManifest",
                         bucket: "${ARTIFACT_BUCKET_NAME}",
                         path: "${manifest_path}",
                         force: true
@@ -36,7 +37,6 @@ pipeline {
                         ls $WORKSPACE/builds/opensearch
                         cat $WORKSPACE/builds/opensearch/manifest.yml
                     """
-                    String buildManifest = "builds/opensearch/manifest.yml"
                     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: buildManifest))
                     String buildManifestId = buildManifestObj.getArtifactBuildId()
                     echo "Manifest Id is $buildManifestId"

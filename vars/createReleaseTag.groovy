@@ -15,7 +15,7 @@ def call(Map args = [:]) {
     echo "The third component is called $componets2"*/
     sh """
         pwd
-        ls $WORKSPACE
+        ls $WORKSPACE/builds/opensearch
     """
     for (component in componentsName) {
         echo "The component name is $component"
