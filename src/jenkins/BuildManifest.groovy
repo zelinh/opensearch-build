@@ -128,6 +128,12 @@ class BuildManifest implements Serializable {
         return this.components.get("OpenSearch").commit_id
     }
 
+    public ArrayList getComponets() {
+        def componentsName = []
+        this.components.each{key -> componentsName.add(key)}
+        return componentsName
+    }
+
     public String getMinArtifact() {
         components.get(build.name.replace(' ','-'))?.artifacts?.get("dist")?.first()
     }
