@@ -58,7 +58,7 @@ pipeline {
                             echo "Skipping, ${sha.path} already exists."
                         } else {
                           try {
-                            build job: "${TARGET_JOB_NAME}", wait: true, propagate: false
+                            build job: "${TARGET_JOB_NAME}", wait: true
                             postCleanup()
                           } catch(err) {
                             echo "Im here in the catch block***********************"
