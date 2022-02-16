@@ -58,6 +58,7 @@ pipeline {
                             echo "Skipping, ${sha.path} already exists."
                         } else {
                           build job: "${TARGET_JOB_NAME}", wait: true, propagate: false
+                          postCleanup()
                                 /* build job: "${TARGET_JOB_NAME}", parameters: [
                                 string(name: 'INPUT_MANIFEST', value: "${INPUT_MANIFEST}")
                                 ], wait: true
@@ -70,7 +71,7 @@ pipeline {
             }
             post {
                 always {
-                    postCleanup()
+                    cleanWs(disableDeferredWipeout: true, deleteDirs: true)
                 }
             }
         }
