@@ -29,3 +29,8 @@ out.txt
 
 /manifests/**/*.yml.lock
 
+/lib/*
+/tools/vulnerability-scan/logs/
+/tools/vulnerability-scan/repos/
+/tools/vulnerability-scan/whitesource/
+/tools/vulnerability-scan/wss-unified-agent.jar
