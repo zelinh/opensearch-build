@@ -17,7 +17,7 @@ def call(Map args = [:]) {
         pwd
         ls $WORKSPACE/builds/opensearch
     """
-    withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
+    withCredentials([usernamePassword(credentialsId: "release-tag-test-token", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
         for (component in componentsName) {
             echo "The component name is $component"
             def commitID = buildManifestObj.getCommitId(component)
@@ -26,15 +26,28 @@ def call(Map args = [:]) {
             echo "The URL for $component is $repo"
 
         }
+        echo "Now doing the tag ******************************"
         sh """
-            #!/bin/bash
-            set +x
-            export ROLE=${SIGNER_CLIENT_ROLE}
-            export EXTERNAL_ID=${SIGNER_CLIENT_EXTERNAL_ID}
-            export UNSIGNED_BUCKET=${SIGNER_CLIENT_UNSIGNED_BUCKET}
-            export SIGNED_BUCKET=${SIGNER_CLIENT_SIGNED_BUCKET}
-            $WORKSPACE/sign.sh ${arguments}
+            name = myownbuild
+            commit_id = "e19608bc0c17e249e5bab0182df6a5e2a9539f00"
+            ref = "fix-cve"
+            repo = 'https://github.com/zelinh/opensearch-build.git'
+            echo "Tagging ${name} at $commit_id ..."
+            mkdir $name
+            cd $name
+            pwd
         """
+        /*git init
+        git remote add origin $repo
+        git fetch --depth 1 origin $commit_id
+        git checkout FETCH_HEAD
+        if [ "$name" == "OpenSearch" ]; then
+        git tag $version
+        else
+        git tag $version.0
+        fi
+        git push origin --tags
+        cd ..*/
     }
 
 }

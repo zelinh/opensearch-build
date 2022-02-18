@@ -41,9 +41,9 @@ pipeline {
                     String buildManifestId = buildManifestObj.getArtifactBuildId()
                     echo "Manifest Id is $buildManifestId"
                     echo "The name is ${GITHUB_BOT_TOKEN_NAME}"
-                    /* createReleaseTag(
+                    createReleaseTag(
                         buildManifest: buildManifest
-                    ) */
+                    )
                 }
             }
         }
