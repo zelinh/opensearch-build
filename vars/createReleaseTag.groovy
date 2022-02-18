@@ -28,6 +28,8 @@ def call(Map args = [:]) {
         }
         echo "Now doing the tag ******************************"
         sh """
+            #!/bin/bash
+            set +x
             name="myownbuild"
             commit_id="e19608bc0c17e249e5bab0182df6a5e2a9539f00"
             ref="fix-cve"
