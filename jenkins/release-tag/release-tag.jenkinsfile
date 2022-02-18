@@ -40,9 +40,10 @@ pipeline {
                     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: buildManifest))
                     String buildManifestId = buildManifestObj.getArtifactBuildId()
                     echo "Manifest Id is $buildManifestId"
-                    createReleaseTag(
+                    echo "The name is ${GITHUB_BOT_TOKEN_NAME}"
+                    /* createReleaseTag(
                         buildManifest: buildManifest
-                    )
+                    ) */
                 }
             }
         }
