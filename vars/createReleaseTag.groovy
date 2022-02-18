@@ -30,10 +30,10 @@ def call(Map args = [:]) {
         sh """
             #!/bin/bash
             set +x
-            name="myownbuild"
-            commit_id="e19608bc0c17e249e5bab0182df6a5e2a9539f00"
-            ref="fix-cve"
-            repo='https://github.com/zelinh/opensearch-build.git'
+            export name="myownbuild"
+            export commit_id="e19608bc0c17e249e5bab0182df6a5e2a9539f00"
+            export ref="fix-cve"
+            export repo='https://github.com/zelinh/opensearch-build.git'
             echo "Tagging ${name} at $commit_id ..."
             mkdir $name
             cd $name
