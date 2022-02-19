@@ -27,14 +27,12 @@ def call(Map args = [:]) {
 
         }
         echo "Now doing the tag ******************************"
+        def name="myownbuild"
+        def commit_id="e19608bc0c17e249e5bab0182df6a5e2a9539f00"
+        def ref="fix-cve"
+        def repo='https://github.com/zelinh/opensearch-build.git'
         sh """
-            #!/bin/bash
-            set +x
             echo "Lets dooooo this"
-            def name="myownbuild"
-            def commit_id="e19608bc0c17e249e5bab0182df6a5e2a9539f00"
-            def ref="fix-cve"
-            def repo='https://github.com/zelinh/opensearch-build.git'
             echo "Tagging $name at $commit_id ..."
             mkdir $name
             cd $name
