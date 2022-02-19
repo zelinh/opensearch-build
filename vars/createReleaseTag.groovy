@@ -30,26 +30,15 @@ def call(Map args = [:]) {
         sh """
             #!/bin/bash
             set +x
-            export name="myownbuild"
-            export commit_id="e19608bc0c17e249e5bab0182df6a5e2a9539f00"
-            export ref="fix-cve"
-            export repo='https://github.com/zelinh/opensearch-build.git'
+            def name="myownbuild"
+            def commit_id="e19608bc0c17e249e5bab0182df6a5e2a9539f00"
+            def ref="fix-cve"
+            def repo='https://github.com/zelinh/opensearch-build.git'
             echo "Tagging ${name} at $commit_id ..."
             mkdir $name
             cd $name
             pwd
         """
-        /*git init
-        git remote add origin $repo
-        git fetch --depth 1 origin $commit_id
-        git checkout FETCH_HEAD
-        if [ "$name" == "OpenSearch" ]; then
-        git tag $version
-        else
-        git tag $version.0
-        fi
-        git push origin --tags
-        cd ..*/
     }
 
 }
