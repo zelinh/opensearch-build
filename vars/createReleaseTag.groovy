@@ -31,7 +31,7 @@ def call(Map args = [:]) {
         def commit_id="e19608bc0c17e249e5bab0182df6a5e2a9539f00"
         def ref="fix-cve"
         def repo='https://github.com/zelinh/opensearch-build.git'
-        def version = 1.2.3
+        def version = "1.2.3"
         sh """
             echo "Lets dooooo this"
             echo "Tagging $name at $commit_id ..."
