@@ -44,7 +44,7 @@ def call(Map args = [:]) {
             git fetch --depth 1 origin $commit_id
             git checkout FETCH_HEAD
             git tag $version.0
-            git push push_url --tags
+            git push $push_url --tags
             cd ..
         """
     }
