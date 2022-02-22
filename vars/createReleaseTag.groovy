@@ -25,7 +25,7 @@ def call(Map args = [:]) {
             echo "The commit ID for $component is $commitID"
             def repo = buildManifestObj.getRepo(component)
             def push_url = "https://$GITHUB_TOKEN@" + repo.minus('https://')
-            def version = args.Version
+            def version = args.tagVersion
             echo "The URL for $component is $repo"
             sh """
                 echo "Tagging $component at $commitID ..."
