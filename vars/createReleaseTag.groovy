@@ -32,8 +32,7 @@ def call(Map args = [:]) {
         def ref="fix-cve"
         def repo='https://github.com/zelinh/opensearch-build.git'
         def version = "1.2.3"
-        def domain = repo.minus('https://')
-        def push_url = "https://$GITHUB_TOKEN@" + domain
+        def push_url = "https://$GITHUB_TOKEN@" + repo.minus('https://')
         sh """
             echo "Lets dooooo this"
             echo "Tagging $name at $commit_id ..."
