@@ -25,9 +25,3 @@ components:
       plugins:
         - plugins/opensearch-performance-analyzer-1.3.0.0.zip
     version: 1.3.0.0
-  - name: opensearch-build
-    repository: https://github.com/zelinh/opensearch-build
-    ref: main
-    commit_id: bddbc06dd5ee6b67d3be3230cab922a083d4f15a
-    artifacts:
-    version: 1.3.0.0
