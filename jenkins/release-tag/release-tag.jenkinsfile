@@ -48,7 +48,7 @@ pipeline {
 //                     echo "The name is ${GITHUB_BOT_TOKEN_NAME}"
                     createReleaseTag(
                         buildManifest: buildManifest,
-                        tagVersion: ${VERSION}
+                        tagVersion: VERSION
                     )
 
                 }
