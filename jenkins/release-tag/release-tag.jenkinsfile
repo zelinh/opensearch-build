@@ -11,12 +11,12 @@ pipeline {
     parameters {
         string(
             name: 'BUILD_ID',
-            description: 'Build ID of the OpenSearch distribution artifacts to be staged.',
+            description: 'Build ID of the distribution build manifest generated.',
             trim: true
         )
         string(
             name: 'VERSION',
-            description: 'Version of the OpenSearch distribution artifacts to be staged.',
+            description: 'Version of the distribution build manifest.',
             trim: true
         )
     }
@@ -32,7 +32,7 @@ pipeline {
                         path: "${manifest_path}",
                         force: true
                     )
-                    echo "I'm here just downloaded the manifest"
+                    echo "Distribution build manifest is downloaded to $buildManifest"
                     /* sh """
                         ls $WORKSPACE/builds/opensearch
                         cat $WORKSPACE/builds/opensearch/manifest.yml
