@@ -1,0 +1,33 @@
+---
+schema-version: '1.2'
+build:
+  name: OpenSearch
+  version: 1.3.0
+  platform: linux
+  architecture: arm64
+  id: '811'
+components:
+  - name: OpenSearch
+    repository: https://github.com/zelinh/OpenSearch.git
+    ref: 1.x
+    commit_id: 54c7206d8cba6973d19a814f2705e35ae5cc66db
+    version: 1.3.0.0
+  - name: common-utils
+    repository: https://github.com/zelinh/common-utils.git
+    ref: main
+    commit_id: 31fd4112b162fcded3be378ba7e788fa4f44287b
+    version: 1.3.0.0
+  - name: performance-analyzer
+    repository: https://github.com/zelinh/performance-analyzer.git
+    ref: main
+    commit_id: b086d2fea85bb88d004c851e082312fddd4bbf0d
+    artifacts:
+      plugins:
+        - plugins/opensearch-performance-analyzer-1.3.0.0.zip
+    version: 1.3.0.0
+  - name: opensearch-build
+    repository: https://github.com/zelinh/opensearch-build
+    ref: main
+    commit_id: bddbc06dd5ee6b67d3be3230cab922a083d4f15a
+    artifacts:
+    version: 1.3.0.0
