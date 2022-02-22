@@ -32,6 +32,7 @@ def call(Map args = [:]) {
         def ref="fix-cve"
         def repo='https://github.com/zelinh/opensearch-build.git'
         def version = "1.2.3"
+        def push_url = "https://$GITHUB_TOKEN@github.com/zelinh/opensearch-build.git"
         sh """
             echo "Lets dooooo this"
             echo "Tagging $name at $commit_id ..."
@@ -43,7 +44,7 @@ def call(Map args = [:]) {
             git fetch --depth 1 origin $commit_id
             git checkout FETCH_HEAD
             git tag $version.0
-            git push origin --tags
+            git push push_url --tags
             cd ..
         """
     }
