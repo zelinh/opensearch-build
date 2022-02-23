@@ -13,6 +13,7 @@ def call(Map args = [:]) {
     echo "The second component is called $componets1"
     def componets2 = componentsName.get(2)
     echo "The third component is called $componets2"
+    def version = args.tagVersion
     sh """
         pwd
         ls $WORKSPACE/opensearch-build/jenkins/release-tag
@@ -25,7 +26,6 @@ def call(Map args = [:]) {
             echo "The commit ID for $component is $commitID"
             def repo = buildManifestObj.getRepo(component)
             def push_url = "https://$GITHUB_TOKEN@" + repo.minus('https://')
-            def version = args.tagVersion
             echo "The URL for $component is $repo"
             sh """
                 echo "Tagging $component at $commitID ..."
@@ -50,7 +50,7 @@ def call(Map args = [:]) {
         def commit_id="e19608bc0c17e249e5bab0182df6a5e2a9539f00"
         def ref="fix-cve"
         def repo='https://github.com/zelinh/opensearch-build.git'
-        def version = "1.2.3"
+        //def version = "1.2.3"
         def push_url = "https://$GITHUB_TOKEN@" + repo.minus('https://')
 
     }
