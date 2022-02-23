@@ -6,7 +6,7 @@ def call(Map args = [:]) {
     String opensearchCommitId = buildManifestObj.getCommitId("OpenSearch")
     echo "Commit ID for OpenSearch is $opensearchCommitId"
 
-    def componentsName = buildManifestObj.getComponets()
+    def componentsName = buildManifestObj.getComponents()
     def componetsNumber = componentsName.size()
     def componets1 = componentsName.get(1)
     echo "There are $componetsNumber components in ths manifest"
