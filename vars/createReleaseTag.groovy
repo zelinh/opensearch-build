@@ -1,8 +1,8 @@
 def call(Map args = [:]) {
 
     def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
-    def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: args.buildManifest))
-//    def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: "opensearch-build/jenkins/release-tag/manifest.yml"))
+    //def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: args.buildManifest))
+    def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: "opensearch-build/jenkins/release-tag/manifest.yml"))
     String opensearchCommitId = buildManifestObj.getCommitId("OpenSearch")
     echo "Commit ID for OpenSearch is $opensearchCommitId"
 
