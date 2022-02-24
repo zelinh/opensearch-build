@@ -20,19 +20,21 @@ pipeline {
             trim: true
         )
     }
+    environment {
+        BUILD_MANIFEST = "builds/opensearch/manifest.yml"
+    }
     stages {
         stage('manifest fetch') {
             steps {
                 script {
                     manifest_path = "distribution-build-opensearch/${VERSION}/${BUILD_ID}/linux/x64/builds/opensearch/manifest.yml"
-                    String buildManifest = "builds/opensearch/manifest.yml"
                     downloadFromS3(
-                        destPath: "$WORKSPACE/$buildManifest",
+                        destPath: "$WORKSPACE/$BUILD_MANIFEST",
                         bucket: "${ARTIFACT_BUCKET_NAME}",
                         path: "${manifest_path}",
                         force: true
                     )
-                    echo "Distribution build manifest is downloaded to $buildManifest"
+                    echo "Distribution build manifest is downloaded to $BUILD_MANIFEST"
                     /* sh """
                         ls $WORKSPACE/builds/opensearch
                         cat $WORKSPACE/builds/opensearch/manifest.yml
@@ -47,7 +49,7 @@ pipeline {
 //                     echo "Manifest Id is $buildManifestId"
 //                     echo "The name is ${GITHUB_BOT_TOKEN_NAME}"
                     createReleaseTag(
-                        buildManifest: buildManifest,
+                        buildManifest: "$BUILD_MANIFEST",
                         tagVersion: VERSION
                     )
 

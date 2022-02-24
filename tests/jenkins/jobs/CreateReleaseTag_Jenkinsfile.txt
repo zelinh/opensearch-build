@@ -1,0 +1,353 @@
+   CreateReleaseTag_Jenkinsfile.run()
+      CreateReleaseTag_Jenkinsfile.pipeline(groovy.lang.Closure)
+         CreateReleaseTag_Jenkinsfile.echo(Executing on agent [label:none])
+         CreateReleaseTag_Jenkinsfile.stage(createTag, groovy.lang.Closure)
+            CreateReleaseTag_Jenkinsfile.script(groovy.lang.Closure)
+               CreateReleaseTag_Jenkinsfile.createReleaseTag({buildManifest=tests/data/opensearch-build-1.1.0.yml, tagVersion=1.1.0})
+                  createReleaseTag.legacySCM(groovy.lang.Closure)
+                  createReleaseTag.library({identifier=jenkins@20211123, retriever=null})
+                  createReleaseTag.readYaml({file=tests/data/opensearch-build-1.1.0.yml})
+                  BuildManifest.asBoolean()
+                  BuildManifest.getCommitId(OpenSearch)
+                  createReleaseTag.echo(Commit ID for OpenSearch is b7334f49d530ffd1a3f7bd0e5832b9b2a9caa583)
+                  BuildManifest.getComponents()
+                  createReleaseTag.echo(There are 15 components in ths manifest)
+                  createReleaseTag.echo(The second component is called job-scheduler)
+                  createReleaseTag.echo(The third component is called anomaly-detection)
+                  createReleaseTag.sh(
+        pwd
+        ls tmp/workspace//opensearch-build/jenkins/release-tag
+    )
+                  createReleaseTag.usernamePassword({credentialsId=release-tag-test-token, usernameVariable=GITHUB_USER, passwordVariable=GITHUB_TOKEN})
+                  createReleaseTag.withCredentials([[GITHUB_USER, GITHUB_TOKEN]], groovy.lang.Closure)
+                     createReleaseTag.echo(Now doing the tag ******************************)
+                     createReleaseTag.echo(The component name is index-management)
+                     BuildManifest.getCommitId(index-management)
+                     createReleaseTag.echo(The commit ID for index-management is 7897e9ae9cd5b49535e6a8bbf4c2f73cb458af24)
+                     BuildManifest.getRepo(index-management)
+                     createReleaseTag.echo(The URL for index-management is https://github.com/opensearch-project/index-management.git)
+                     createReleaseTag.sh(
+                echo "Tagging index-management at 7897e9ae9cd5b49535e6a8bbf4c2f73cb458af24 ..."
+                mkdir index-management
+                cd index-management
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/index-management.git
+                git fetch --depth 1 origin 7897e9ae9cd5b49535e6a8bbf4c2f73cb458af24
+                git checkout FETCH_HEAD
+                if [ "index-management" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/index-management.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is job-scheduler)
+                     BuildManifest.getCommitId(job-scheduler)
+                     createReleaseTag.echo(The commit ID for job-scheduler is 4504dabfc67dd5628c1451e91e9a1c3c4ca71525)
+                     BuildManifest.getRepo(job-scheduler)
+                     createReleaseTag.echo(The URL for job-scheduler is https://github.com/opensearch-project/job-scheduler.git)
+                     createReleaseTag.sh(
+                echo "Tagging job-scheduler at 4504dabfc67dd5628c1451e91e9a1c3c4ca71525 ..."
+                mkdir job-scheduler
+                cd job-scheduler
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/job-scheduler.git
+                git fetch --depth 1 origin 4504dabfc67dd5628c1451e91e9a1c3c4ca71525
+                git checkout FETCH_HEAD
+                if [ "job-scheduler" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/job-scheduler.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is anomaly-detection)
+                     BuildManifest.getCommitId(anomaly-detection)
+                     createReleaseTag.echo(The commit ID for anomaly-detection is bedc5b620384163abe272e913705fa23cfd3b3a3)
+                     BuildManifest.getRepo(anomaly-detection)
+                     createReleaseTag.echo(The URL for anomaly-detection is https://github.com/opensearch-project/anomaly-detection.git)
+                     createReleaseTag.sh(
+                echo "Tagging anomaly-detection at bedc5b620384163abe272e913705fa23cfd3b3a3 ..."
+                mkdir anomaly-detection
+                cd anomaly-detection
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/anomaly-detection.git
+                git fetch --depth 1 origin bedc5b620384163abe272e913705fa23cfd3b3a3
+                git checkout FETCH_HEAD
+                if [ "anomaly-detection" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/anomaly-detection.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is performance-analyzer)
+                     BuildManifest.getCommitId(performance-analyzer)
+                     createReleaseTag.echo(The commit ID for performance-analyzer is f184f0bc39302ac38af2585c663d619048f6cffe)
+                     BuildManifest.getRepo(performance-analyzer)
+                     createReleaseTag.echo(The URL for performance-analyzer is https://github.com/opensearch-project/performance-analyzer.git)
+                     createReleaseTag.sh(
+                echo "Tagging performance-analyzer at f184f0bc39302ac38af2585c663d619048f6cffe ..."
+                mkdir performance-analyzer
+                cd performance-analyzer
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/performance-analyzer.git
+                git fetch --depth 1 origin f184f0bc39302ac38af2585c663d619048f6cffe
+                git checkout FETCH_HEAD
+                if [ "performance-analyzer" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/performance-analyzer.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is common-utils)
+                     BuildManifest.getCommitId(common-utils)
+                     createReleaseTag.echo(The commit ID for common-utils is 3913d7097934cbfe1fdcf919347f22a597d00b76)
+                     BuildManifest.getRepo(common-utils)
+                     createReleaseTag.echo(The URL for common-utils is https://github.com/opensearch-project/common-utils.git)
+                     createReleaseTag.sh(
+                echo "Tagging common-utils at 3913d7097934cbfe1fdcf919347f22a597d00b76 ..."
+                mkdir common-utils
+                cd common-utils
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/common-utils.git
+                git fetch --depth 1 origin 3913d7097934cbfe1fdcf919347f22a597d00b76
+                git checkout FETCH_HEAD
+                if [ "common-utils" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/common-utils.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is asynchronous-search)
+                     BuildManifest.getCommitId(asynchronous-search)
+                     createReleaseTag.echo(The commit ID for asynchronous-search is aa344cc1ecdf9ad21d6cb8d9e368361e6a0f3132)
+                     BuildManifest.getRepo(asynchronous-search)
+                     createReleaseTag.echo(The URL for asynchronous-search is https://github.com/opensearch-project/asynchronous-search.git)
+                     createReleaseTag.sh(
+                echo "Tagging asynchronous-search at aa344cc1ecdf9ad21d6cb8d9e368361e6a0f3132 ..."
+                mkdir asynchronous-search
+                cd asynchronous-search
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/asynchronous-search.git
+                git fetch --depth 1 origin aa344cc1ecdf9ad21d6cb8d9e368361e6a0f3132
+                git checkout FETCH_HEAD
+                if [ "asynchronous-search" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/asynchronous-search.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is dashboards-notebooks)
+                     BuildManifest.getCommitId(dashboards-notebooks)
+                     createReleaseTag.echo(The commit ID for dashboards-notebooks is 5a996eb8ec8c92e7469cd5e5f87b237352f60f61)
+                     BuildManifest.getRepo(dashboards-notebooks)
+                     createReleaseTag.echo(The URL for dashboards-notebooks is https://github.com/opensearch-project/dashboards-notebooks.git)
+                     createReleaseTag.sh(
+                echo "Tagging dashboards-notebooks at 5a996eb8ec8c92e7469cd5e5f87b237352f60f61 ..."
+                mkdir dashboards-notebooks
+                cd dashboards-notebooks
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/dashboards-notebooks.git
+                git fetch --depth 1 origin 5a996eb8ec8c92e7469cd5e5f87b237352f60f61
+                git checkout FETCH_HEAD
+                if [ "dashboards-notebooks" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/dashboards-notebooks.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is OpenSearch)
+                     BuildManifest.getCommitId(OpenSearch)
+                     createReleaseTag.echo(The commit ID for OpenSearch is b7334f49d530ffd1a3f7bd0e5832b9b2a9caa583)
+                     BuildManifest.getRepo(OpenSearch)
+                     createReleaseTag.echo(The URL for OpenSearch is https://github.com/opensearch-project/OpenSearch.git)
+                     createReleaseTag.sh(
+                echo "Tagging OpenSearch at b7334f49d530ffd1a3f7bd0e5832b9b2a9caa583 ..."
+                mkdir OpenSearch
+                cd OpenSearch
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/OpenSearch.git
+                git fetch --depth 1 origin b7334f49d530ffd1a3f7bd0e5832b9b2a9caa583
+                git checkout FETCH_HEAD
+                if [ "OpenSearch" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/OpenSearch.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is sql)
+                     BuildManifest.getCommitId(sql)
+                     createReleaseTag.echo(The commit ID for sql is d68547d585092af1e053d01e1b834259723cd304)
+                     BuildManifest.getRepo(sql)
+                     createReleaseTag.echo(The URL for sql is https://github.com/opensearch-project/sql.git)
+                     createReleaseTag.sh(
+                echo "Tagging sql at d68547d585092af1e053d01e1b834259723cd304 ..."
+                mkdir sql
+                cd sql
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/sql.git
+                git fetch --depth 1 origin d68547d585092af1e053d01e1b834259723cd304
+                git checkout FETCH_HEAD
+                if [ "sql" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/sql.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is alerting)
+                     BuildManifest.getCommitId(alerting)
+                     createReleaseTag.echo(The commit ID for alerting is 8024b8b9195f837e49e5bebd7f4a31dfc333eb4d)
+                     BuildManifest.getRepo(alerting)
+                     createReleaseTag.echo(The URL for alerting is https://github.com/opensearch-project/alerting.git)
+                     createReleaseTag.sh(
+                echo "Tagging alerting at 8024b8b9195f837e49e5bebd7f4a31dfc333eb4d ..."
+                mkdir alerting
+                cd alerting
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/alerting.git
+                git fetch --depth 1 origin 8024b8b9195f837e49e5bebd7f4a31dfc333eb4d
+                git checkout FETCH_HEAD
+                if [ "alerting" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/alerting.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is security)
+                     BuildManifest.getCommitId(security)
+                     createReleaseTag.echo(The commit ID for security is 534fffe0e6cf2b33b9abcbc6508e98fc2d077a3d)
+                     BuildManifest.getRepo(security)
+                     createReleaseTag.echo(The URL for security is https://github.com/opensearch-project/security.git)
+                     createReleaseTag.sh(
+                echo "Tagging security at 534fffe0e6cf2b33b9abcbc6508e98fc2d077a3d ..."
+                mkdir security
+                cd security
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/security.git
+                git fetch --depth 1 origin 534fffe0e6cf2b33b9abcbc6508e98fc2d077a3d
+                git checkout FETCH_HEAD
+                if [ "security" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/security.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is k-NN)
+                     BuildManifest.getCommitId(k-NN)
+                     createReleaseTag.echo(The commit ID for k-NN is 6a3fdcafd75e63521bcf7893ce908642e1d9fcb6)
+                     BuildManifest.getRepo(k-NN)
+                     createReleaseTag.echo(The URL for k-NN is https://github.com/opensearch-project/k-NN.git)
+                     createReleaseTag.sh(
+                echo "Tagging k-NN at 6a3fdcafd75e63521bcf7893ce908642e1d9fcb6 ..."
+                mkdir k-NN
+                cd k-NN
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/k-NN.git
+                git fetch --depth 1 origin 6a3fdcafd75e63521bcf7893ce908642e1d9fcb6
+                git checkout FETCH_HEAD
+                if [ "k-NN" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/k-NN.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is dashboards-reports)
+                     BuildManifest.getCommitId(dashboards-reports)
+                     createReleaseTag.echo(The commit ID for dashboards-reports is 622f334b0724e47f7ffd21cf7e7d521a9f6c949e)
+                     BuildManifest.getRepo(dashboards-reports)
+                     createReleaseTag.echo(The URL for dashboards-reports is https://github.com/opensearch-project/dashboards-reports.git)
+                     createReleaseTag.sh(
+                echo "Tagging dashboards-reports at 622f334b0724e47f7ffd21cf7e7d521a9f6c949e ..."
+                mkdir dashboards-reports
+                cd dashboards-reports
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/dashboards-reports.git
+                git fetch --depth 1 origin 622f334b0724e47f7ffd21cf7e7d521a9f6c949e
+                git checkout FETCH_HEAD
+                if [ "dashboards-reports" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/dashboards-reports.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is notifications)
+                     BuildManifest.getCommitId(notifications)
+                     createReleaseTag.echo(The commit ID for notifications is d0d3e485c4a850f73652a989eeec795b7347fbb6)
+                     BuildManifest.getRepo(notifications)
+                     createReleaseTag.echo(The URL for notifications is https://github.com/opensearch-project/notifications.git)
+                     createReleaseTag.sh(
+                echo "Tagging notifications at d0d3e485c4a850f73652a989eeec795b7347fbb6 ..."
+                mkdir notifications
+                cd notifications
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/notifications.git
+                git fetch --depth 1 origin d0d3e485c4a850f73652a989eeec795b7347fbb6
+                git checkout FETCH_HEAD
+                if [ "notifications" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/notifications.git --tags
+                cd ..
+            )
+                     createReleaseTag.echo(The component name is performance-analyzer-rca)
+                     BuildManifest.getCommitId(performance-analyzer-rca)
+                     createReleaseTag.echo(The commit ID for performance-analyzer-rca is 345a10fd4f4e94d6392c925ad95503ba8addd152)
+                     BuildManifest.getRepo(performance-analyzer-rca)
+                     createReleaseTag.echo(The URL for performance-analyzer-rca is https://github.com/opensearch-project/performance-analyzer-rca.git)
+                     createReleaseTag.sh(
+                echo "Tagging performance-analyzer-rca at 345a10fd4f4e94d6392c925ad95503ba8addd152 ..."
+                mkdir performance-analyzer-rca
+                cd performance-analyzer-rca
+                pwd
+                git init
+                git remote add origin https://github.com/opensearch-project/performance-analyzer-rca.git
+                git fetch --depth 1 origin 345a10fd4f4e94d6392c925ad95503ba8addd152
+                git checkout FETCH_HEAD
+                if [ "performance-analyzer-rca" == "OpenSearch" ]; then
+                    git tag 1.1.0
+                else
+                    git tag 1.1.0.0
+                fi
+                git push https://GITHUB_TOKEN@github.com/opensearch-project/performance-analyzer-rca.git --tags
+                cd ..
+            )
