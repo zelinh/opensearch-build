@@ -6,6 +6,7 @@ def call(Map args = [:]) {
     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: "opensearch-build/jenkins/release-tag/manifest.yml"))
     echo "Im in the BUILD MAINFEST GROOVY 2ND CHECK**********"
     String opensearchCommitId = buildManifestObj.getCommitId("OpenSearch")
+    echo "Im in the BUILD MAINFEST GROOVY 3rd CHECK**********"
     echo "Commit ID for OpenSearch is $opensearchCommitId"
 
     def componentsName = buildManifestObj.getComponents()
