@@ -130,11 +130,16 @@ class BuildManifest implements Serializable {
     public String getArtifactBuildId() {
         return this.build.id
     }
+
+    public String getMinArtifact() {
+        components.get(build.name.replace(' ','-'))?.artifacts?.get("dist")?.first()
+    }
+
     public String getCommitId (String name) {
         return this.components.get(name).commit_id
     }
 
-    public ArrayList getComponets() {
+    public ArrayList getComponents() {
         def componentsName = []
         this.components.each{key, value -> componentsName.add(key)}
         return componentsName
@@ -142,9 +147,5 @@ class BuildManifest implements Serializable {
 
     public String getRepo(String name) {
         return this.components.get(name).repository
-    }
-
-    public String getMinArtifact() {
-        components.get(build.name.replace(' ','-'))?.artifacts?.get("dist")?.first()
     }
 }
