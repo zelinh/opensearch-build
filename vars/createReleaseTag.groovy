@@ -40,7 +40,7 @@ def call(Map args = [:]) {
                 git fetch --depth 1 origin $commitID
                 git checkout FETCH_HEAD
                 if [ "$component" == "OpenSearch" ]; then
-                    if [ git ls-remote --tags | grep refs/tags/$version]; then
+                    if [[ $(git ls-remote --tags | grep refs/tags/$version) ]]; then
                         git push -delete $push_url $version
                     fi
                     git tag $version
