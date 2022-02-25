@@ -41,14 +41,8 @@ def call(Map args = [:]) {
                 git checkout FETCH_HEAD
                 git ls-remote --tags | grep refs/tags/$version
                 if [ "$component" == "OpenSearch" ]; then
-                    if [-z $(ls) ]; then
-                        #git push -delete $push_url $version
-                    fi
                     git tag $version
                 else
-                    if [ git ls-remote --tags | grep refs/tags/$version.0]; then
-                        git push -delete $push_url $version.0
-                    fi
                     git tag $version.0
                 fi
                 git push $push_url --tags
