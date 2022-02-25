@@ -30,7 +30,7 @@ def call(Map args = [:]) {
             def repo = buildManifestObj.getRepo(component)
             def push_url = "https://$GITHUB_TOKEN@" + repo.minus('https://')
             echo "The URL for $component is $repo"
-            sh '''
+            sh """
                 echo "Tagging $component at $commitID ..."
                 mkdir $component
                 cd $component
@@ -41,19 +41,19 @@ def call(Map args = [:]) {
                 git checkout FETCH_HEAD
                 git ls-remote --tags | grep refs/tags/$version
                 if [ "$component" == "OpenSearch" ]; then
-                    if [-n $(git ls-remote --tags | grep refs/tags/$version) ]; then
+                    if [-n (git ls-remote --tags | grep refs/tags/$version) ]; then
                         git push -delete $push_url $version
                     fi
                     git tag $version
                 else
-                    if [-n $(git ls-remote --tags | grep refs/tags/$version.0) ]; then
+                    if [-n (git ls-remote --tags | grep refs/tags/$version.0) ]; then
                         git push -delete $push_url $version.0
                     fi
                     git tag $version.0
                 fi
                 git push $push_url --tags
                 cd ..
-            '''
+            """
         }
 
         def name="myownbuild"
