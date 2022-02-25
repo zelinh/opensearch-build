@@ -90,13 +90,6 @@ class BuildManifest implements Serializable {
                 this.build.architecture
         ].join("/")
     }
-    
-    public String getIndexFileRoot(String jobName) {
-        return [
-                jobName,
-                this.build.version
-        ].join("/")
-    }
 
     public String getArtifactRootUrl(String publicArtifactUrl = 'https://ci.opensearch.org/ci/dbc', String jobName, String buildNumber) {
         return [
@@ -107,19 +100,19 @@ class BuildManifest implements Serializable {
 
     public String getUrl(String publicArtifactUrl = 'https://ci.opensearch.org/ci/dbc', String jobName, String buildNumber) {
         return [
-            this.getArtifactRootUrl(publicArtifactUrl, jobName, buildNumber),
-            'builds',
-            this.build.getFilename(),
-            'manifest.yml'
+                this.getArtifactRootUrl(publicArtifactUrl, jobName, buildNumber),
+                'builds',
+                this.build.getFilename(),
+                'manifest.yml'
         ].join("/")
     }
 
     public String getArtifactUrl(String publicArtifactUrl = 'https://ci.opensearch.org/ci/dbc', String jobName, String buildNumber) {
         return [
-            this.getArtifactRootUrl(publicArtifactUrl, jobName, buildNumber),
-            'dist',
-            this.build.getFilename(),
-            this.build.getFilenameWithExtension()
+                this.getArtifactRootUrl(publicArtifactUrl, jobName, buildNumber),
+                'dist',
+                this.build.getFilename(),
+                this.build.getFilenameWithExtension()
         ].join("/")
     }
 
@@ -131,10 +124,6 @@ class BuildManifest implements Serializable {
         return this.build.id
     }
 
-    public String getMinArtifact() {
-        components.get(build.name.replace(' ','-'))?.artifacts?.get("dist")?.first()
-    }
-
     public String getCommitId (String name) {
         return this.components.get(name).commit_id
     }
@@ -142,10 +131,16 @@ class BuildManifest implements Serializable {
     public ArrayList getComponents() {
         def componentsName = []
         this.components.each{key, value -> componentsName.add(key)}
+        //print out the name of them;
+        componentsName.eachWithIndex{ it, i -> println "$i : $it" }
         return componentsName
     }
 
     public String getRepo(String name) {
         return this.components.get(name).repository
+    }
+
+    public String getMinArtifact() {
+        components.get(build.name.replace(' ','-'))?.artifacts?.get("dist")?.first()
     }
 }
