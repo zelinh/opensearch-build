@@ -9,7 +9,7 @@ def call(Map args = [:]) {
     echo "Im in the BUILD MAINFEST GROOVY 3rd CHECK**********"
     echo "Commit ID for OpenSearch is $opensearchCommitId"
 
-    def componentsName = buildManifestObj.getComponents()
+    def componentsName = buildManifestObj.getComponets()
     def componetsNumber = componentsName.size()
     def componets1 = componentsName.get(1)
     echo "There are $componetsNumber components in ths manifest"
