@@ -20,7 +20,7 @@ components:
   - name: performance-analyzer
     repository: https://github.com/zelinh/performance-analyzer.git
     ref: main
-    commit_id: d46bd0983809f8d2c0f30821aac3ed63f8542457
+    commit_id: b086d2fea85bb88d004c851e082312fddd4bbf0d
     artifacts:
       plugins:
         - plugins/opensearch-performance-analyzer-1.3.0.0.zip
