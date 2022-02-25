@@ -30,7 +30,7 @@ def call(Map args = [:]) {
             def repo = buildManifestObj.getRepo(component)
             def push_url = "https://$GITHUB_TOKEN@" + repo.minus('https://')
             echo "The URL for $component is $repo"
-            sh """
+            sh '''
                 echo "Tagging $component at $commitID ..."
                 mkdir $component
                 cd $component
@@ -53,7 +53,7 @@ def call(Map args = [:]) {
                 fi
                 git push $push_url --tags
                 cd ..
-            """
+            '''
         }
 
         def name="myownbuild"
