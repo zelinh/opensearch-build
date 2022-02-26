@@ -43,12 +43,12 @@ def call(Map args = [:]) {
                 grep 'refs/tags/$version' taglist.txt
                 if [ "$component" == "OpenSearch" ]; then
                     if [[-n \$(grep 'refs/tags/$version' taglist.txt) ]]; then
-                        git push -delete $push_url $version
+                        git push --delete $push_url $version
                     fi
                     git tag $version
                 else
                     if [[ -n \$(git ls-remote --tags | grep refs/tags/$version.0) ]]; then
-                        git push -delete $push_url $version.0
+                        git push --delete $push_url $version.0
                     fi
                     git tag $version.0
                 fi
