@@ -47,7 +47,7 @@ def call(Map args = [:]) {
                     fi
                     git tag $version
                 else
-                    if [-n (git ls-remote --tags | grep refs/tags/$version.0) ]; then
+                    if [[ -n \$(git ls-remote --tags | grep refs/tags/$version.0) ]]; then
                         git push -delete $push_url $version.0
                     fi
                     git tag $version.0
