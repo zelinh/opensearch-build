@@ -10,12 +10,12 @@ components:
   - name: OpenSearch
     repository: https://github.com/zelinh/OpenSearch.git
     ref: 1.x
-    commit_id: 2e3f410957ce5b6948d1c1e74a4e76e95ed7dc14
+    commit_id: 54c7206d8cba6973d19a814f2705e35ae5cc66db
     version: 1.3.0.0
   - name: common-utils
     repository: https://github.com/zelinh/common-utils.git
     ref: main
-    commit_id: bccb1bb329517c3c550df9b8fd9df81bbf05e4f1
+    commit_id: 31fd4112b162fcded3be378ba7e788fa4f44287b
     version: 1.3.0.0
   - name: performance-analyzer
     repository: https://github.com/zelinh/performance-analyzer.git
