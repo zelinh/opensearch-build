@@ -42,7 +42,7 @@ def call(Map args = [:]) {
                 git ls-remote --tags > taglist.txt
                 grep 'refs/tags/$version' taglist.txt
                 if [ "$component" == "OpenSearch" ]; then
-                    if [-n $(grep 'refs/tags/$version' taglist.txt) ]; then
+                    if [[-n \$(grep 'refs/tags/$version' taglist.txt) ]]; then
                         git push -delete $push_url $version
                     fi
                     git tag $version
