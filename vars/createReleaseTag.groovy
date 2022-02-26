@@ -39,9 +39,10 @@ def call(Map args = [:]) {
                 git remote add origin $repo
                 git fetch --depth 1 origin $commitID
                 git checkout FETCH_HEAD
-                git ls-remote --tags | grep refs/tags/$version
+                git ls-remote --tags > taglist.txt
+                grep 'refs/tags/$version' taglist.txt
                 if [ "$component" == "OpenSearch" ]; then
-                    if [-n (git ls-remote --tags | grep refs/tags/$version) ]; then
+                    if [-n $(grep 'refs/tags/$version' taglist.txt) ]; then
                         git push -delete $push_url $version
                     fi
                     git tag $version
