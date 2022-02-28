@@ -49,7 +49,7 @@ def call(Map args = [:]) {
                     fi
                 else
                     if [[ -n \$(git ls-remote --tags $repo $version.0) ]]; then
-                        if [ \\\$(git ls-remote --tags $repo $version.0 | awk 'NR==1{print \\\$1}') != $commitID ]; then
+                        if [ \$(git ls-remote --tags $repo $version.0 | awk 'NR==1{print \$1}') != $commitID ]; then
                             error "Tag $version.0 already existed with a different commit ID. Please check this." 
                         fi
                     else
