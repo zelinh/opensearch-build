@@ -43,6 +43,8 @@ def call(Map args = [:]) {
                     if [[ -n \$(git ls-remote --tags $repo $version) ]]; then
                         if [ \$(git ls-remote --tags $repo $version | awk 'NR==1{print \$1}') != $commitID ]; then
                             error "Tag $version already existed with a different commit ID. Please check this." 
+                        else
+                            echo "Tag $version has been created with correct commit ID. Skipping creating for $component."
                         fi
                     else
                         git tag $version
@@ -51,6 +53,8 @@ def call(Map args = [:]) {
                     if [[ -n \$(git ls-remote --tags $repo $version.0) ]]; then
                         if [ \$(git ls-remote --tags $repo $version.0 | awk 'NR==1{print \$1}') != $commitID ]; then
                             error "Tag $version.0 already existed with a different commit ID. Please check this." 
+                        else
+                            echo "Tag $version.0 has been created with correct commit ID. Skipping creating for $component."
                         fi
                     else
                         git tag $version.0
