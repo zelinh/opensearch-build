@@ -52,7 +52,7 @@ def call(Map args = [:]) {
                 git push $push_url --tags
                 cd ..
             """
-            } catch {
+            } catch(Exception ex) {
                 echo "$tag_list"
                 echo "$tag_id"
                 echo "Tag $version already existed with a different commit ID. Please check this."
