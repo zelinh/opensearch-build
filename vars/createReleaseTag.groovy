@@ -30,7 +30,8 @@ def call(Map args = [:]) {
             def repo = buildManifestObj.getRepo(component)
             def push_url = "https://$GITHUB_TOKEN@" + repo.minus('https://')
             echo "The URL for $component is $repo"
-            sh """
+            try {
+                sh """
                 echo "Tagging $component at $commitID ..."
                 mkdir $component
                 cd $component
@@ -40,33 +41,24 @@ def call(Map args = [:]) {
                 git fetch --depth 1 origin $commitID
                 git checkout FETCH_HEAD
                 if [ "$component" == "OpenSearch" ]; then
-                    if [[ -n \$(git ls-remote --tags $repo $version) ]]; then
-                        tag_id=\$(git ls-remote --tags $repo $version | awk 'NR==1{print \$1}')
-                        if [[ \${tag_id} != $commitID ]]; then
-                            echo "Tag $version already existed with a different commit ID. Please check this." 
-                            exit 1
-                        else
-                            echo "Tag $version has been created with identical commit ID. Skipping creating new tag for $component."
-                        fi
-                    else
-                        git tag $version
-                    fi
+                    export tag_list=\$(git ls-remote --tags $repo $version)
+                    export tag_id=\$(git ls-remote --tags $repo $version | awk 'NR==1{print \$1}')
+                    git tag $version
                 else
-                    if [[ -n \$(git ls-remote --tags $repo $version.0) ]]; then
-                        tag_id=\$(git ls-remote --tags $repo $version.0 | awk 'NR==1{print \$1}')
-                        if [[ \${tag_id} != $commitID ]]; then
-                            echo "Tag $version,0 already existed with a different commit ID. Please check this." 
-                            exit 1
-                        else
-                            echo "Tag $version.0 has been created with identical commit ID. Skipping creating new tag for $component."
-                        fi
-                    else
-                        git tag $version.0
-                    fi
+                    export tag_list=\$(git ls-remote --tags $repo $version.0)
+                    export tag_id=\$(git ls-remote --tags $repo $version.0 | awk 'NR==1{print \$1}')
+                    git tag $version.0
                 fi
                 git push $push_url --tags
                 cd ..
             """
+            } catch {
+                echo "$tag_list"
+                echo "$tag_id"
+                echo "Tag $version already existed with a different commit ID. Please check this."
+
+            }
+
         }
 
         def name="myownbuild"
