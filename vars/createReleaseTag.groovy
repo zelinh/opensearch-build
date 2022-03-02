@@ -40,7 +40,7 @@ def call(Map args = [:]) {
                 git fetch --depth 1 origin $commitID
                 git checkout FETCH_HEAD
                 if [ "$component" == "OpenSearch" ]; then
-                    
+                    echo "aaa ****"
                 else
                     git ls-remote --tags $repo $version.0 > tags_list
                     cat tags_list
