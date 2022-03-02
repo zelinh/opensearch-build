@@ -42,7 +42,7 @@ def call(Map args = [:]) {
                 if [ "$component" == "OpenSearch" ]; then
                     if [[ -n \$(git ls-remote --tags $repo $version) ]]; then
                         tag_id=\$(git ls-remote --tags $repo $version | awk 'NR==1{print \$1}')
-                        if [ tag_id != $commitID ]; then
+                        if [[ tag_id != $commitID ]]; then
                             echo "Tag $version already existed with a different commit ID. Please check this." 
                             exit 1
                         else
@@ -54,7 +54,7 @@ def call(Map args = [:]) {
                 else
                     if [[ -n \$(git ls-remote --tags $repo $version.0) ]]; then
                         tag_id=\$(git ls-remote --tags $repo $version.0 | awk 'NR==1{print \$1}')
-                        if [ tag_id != $commitID ]; then
+                        if [[ tag_id != $commitID ]]; then
                             echo "Tag $version already existed with a different commit ID. Please check this." 
                             exit 1
                         else
