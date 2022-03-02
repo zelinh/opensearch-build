@@ -41,28 +41,12 @@ def call(Map args = [:]) {
                 git checkout FETCH_HEAD
                 if [ "$component" == "OpenSearch" ]; then
                     tags_list=\$(git ls-remote --tags $repo $version)
-                    if [[ -n $tags_list ]]; then
-                        if [[ $tags_list | awk 'NR==1{print \$1}' != $commitID ]]; then
-                            echo "Tag $version already existed with a different commit ID. Please check this." 
-                            exit 1
-                        else
-                            echo "Tag $version has been created with correct commit ID. Skipping creating for $component."
-                        fi
-                    else
-                        git tag $version
-                    fi
+                    echo $tags_list
+                    
                 else
                     tags_list=\$(git ls-remote --tags $repo $version.0)
-                    if [[ -n $tags_list ]]; then
-                        if [[ $tags_list | awk 'NR==1{print \$1}' != $commitID ]]; then
-                            echo "Tag $version.0 already existed with a different commit ID. Please check this." 
-                            exit 1
-                        else
-                            echo "Tag $version.0 has been created with correct commit ID. Skipping creating for $component."
-                        fi
-                    else
-                        git tag $version.0
-                    fi
+                    echo $tags_list
+                    
                 fi
                 git push $push_url --tags
                 cd ..
@@ -75,7 +59,16 @@ def call(Map args = [:]) {
         def repo='https://github.com/zelinh/opensearch-build.git'
         //def version = "1.2.3"
         def push_url = "https://$GITHUB_TOKEN@" + repo.minus('https://')
-
+//        if [[ -n $tags_list ]]; then
+//        if [[ $tags_list | awk 'NR==1{print \$1}' != $commitID ]]; then
+//        echo "Tag $version.0 already existed with a different commit ID. Please check this."
+//        exit 1
+//        else
+//        echo "Tag $version.0 has been created with correct commit ID. Skipping creating for $component."
+//        fi
+//        else
+//        git tag $version.0
+//        fi
     }
 
 }
