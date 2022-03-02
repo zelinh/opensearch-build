@@ -40,31 +40,11 @@ def call(Map args = [:]) {
                 git fetch --depth 1 origin $commitID
                 git checkout FETCH_HEAD
                 if [ "$component" == "OpenSearch" ]; then
-                    git ls-remote --tags $repo $version > tags_list
-                    cat tags_list
-                    if [[ -n tags_list ]]; then
-                        if [[ cat tags_list | awk 'NR==1{print \$1}' != $commitID ]]; then
-                            echo "Tag $version already existed with a different commit ID. Please check this." 
-                            exit 1
-                        else
-                            echo "Tag $version has been created with correct commit ID. Skipping creating for $component."
-                        fi
-                    else
-                        git tag $version
-                    fi
+                    
                 else
                     git ls-remote --tags $repo $version.0 > tags_list
                     cat tags_list
-                    if [[ -n tags_list ]]; then
-                        if [[ cat tags_list | awk 'NR==1{print \$1}' != $commitID ]]; then
-                            echo "Tag $version.0 already existed with a different commit ID. Please check this." 
-                            exit 1
-                        else
-                            echo "Tag $version.0 has been created with correct commit ID. Skipping creating for $component."
-                        fi
-                    else
-                        git tag $version.0
-                    fi
+                    
                 fi
                 git push $push_url --tags
                 cd ..
@@ -77,8 +57,21 @@ def call(Map args = [:]) {
         def repo='https://github.com/zelinh/opensearch-build.git'
         //def version = "1.2.3"
         def push_url = "https://$GITHUB_TOKEN@" + repo.minus('https://')
-//        if [[ -n $tags_list ]]; then
-//        if [[ $tags_list | awk 'NR==1{print \$1}' != $commitID ]]; then
+//        git ls-remote --tags $repo $version > tags_list
+//        cat tags_list
+//        if [[ -n tags_list ]]; then
+//        if [[ cat tags_list | awk 'NR==1{print \$1}' != $commitID ]]; then
+//        echo "Tag $version already existed with a different commit ID. Please check this."
+//        exit 1
+//        else
+//        echo "Tag $version has been created with correct commit ID. Skipping creating for $component."
+//        fi
+//        else
+//        git tag $version
+//        fi
+
+//        if [[ -n tags_list ]]; then
+//        if [[ cat tags_list | awk 'NR==1{print \$1}' != $commitID ]]; then
 //        echo "Tag $version.0 already existed with a different commit ID. Please check this."
 //        exit 1
 //        else
