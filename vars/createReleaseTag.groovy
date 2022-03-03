@@ -30,7 +30,7 @@ def call(Map args = [:]) {
             def repo = buildManifestObj.getRepo(component)
             def push_url = "https://$GITHUB_TOKEN@" + repo.minus('https://')
             echo "The URL for $component is $repo"
-            dir ('$component') {
+            dir (component) {
                 sh 'pwd && ls'
             }
             sh 'pwd && ls'
