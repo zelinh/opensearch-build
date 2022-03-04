@@ -49,7 +49,7 @@ def call(Map args = [:]) {
                         error "Tag $version already existed with a different commit ID. Please check this."
                     }
                 } else {
-                    tag_id = sh (
+                    def tag_id = sh (
                             script: "git ls-remote --tags $repo $version.0 | awk 'NR==1{print \$1}'",
                             returnStdout: true
                     ).trim()
