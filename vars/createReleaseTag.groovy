@@ -35,7 +35,6 @@ def call(Map args = [:]) {
                 checkout([$class: 'GitSCM', branches: [[name: commitID ]],
                           userRemoteConfigs: [[url: repo]]])
                 sh 'git status'
-                sh 'git log'
 
             }
             sh 'pwd'
