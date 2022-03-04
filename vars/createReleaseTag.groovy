@@ -36,11 +36,31 @@ def call(Map args = [:]) {
                           userRemoteConfigs: [[url: repo]]])
                 sh 'git status'
                 if ( component == "OpenSearch" ) {
-                    sh "git tag $version"
-                    sh "git push $push_url $version"
+                    def tag_id = sh (
+                            script: "git ls-remote --tags $repo $version.0 | awk 'NR==1{print $1}'",
+                            returnStdout: true
+                    ).trim()
+                    if (tag_id == null)  {
+                        sh "git tag $version"
+                        sh "git push $push_url $version"
+                    } else if (tag_id == commitID) {
+                        echo "Tag $version has been created with identical commit ID. Skipping creating new tag for $component."
+                    } else {
+                        error "Tag $version already existed with a different commit ID. Please check this."
+                    }
                 } else {
-                    sh "git tag $version.0"
-                    sh "git push $push_url $version.0"
+                    tag_id = sh (
+                            script: "git ls-remote --tags $repo $version.0 | awk 'NR==1{print $1}'",
+                            returnStdout: true
+                    ).trim()
+                    if (tag_id == null) {
+                        sh "git tag $version.0"
+                        sh "git push $push_url $version.0"
+                    } else if (tag_id == commitID) {
+                        echo "Tag $version.0 has been created with identical commit ID. Skipping creating new tag for $component."
+                    } else {
+                        error "Tag $version.0 already existed with a different commit ID. Please check this."
+                    }
                 }
 
             }
