@@ -33,9 +33,15 @@ def call(Map args = [:]) {
             dir (component) {
                 sh 'pwd && ls'
                 checkout([$class: 'GitSCM', branches: [[name: commitID ]],
+                          credentialsId: GITHUB_TOKEN,
                           userRemoteConfigs: [[url: repo]]])
                 sh 'git status'
-
+                if ( component == "OpenSearch" ) {
+                    sh "git tag $version"
+                } else {
+                    sh "git tag $version.0"
+                }
+                sh "git push origin --tags"
             }
             sh 'pwd'
 
