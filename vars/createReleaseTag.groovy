@@ -37,7 +37,7 @@ def call(Map args = [:]) {
                 sh 'git status'
                 if ( component == "OpenSearch" ) {
                     def tag_id = sh (
-                            script: "git ls-remote --tags $repo $version.0 | awk 'NR==1{print $1}'",
+                            script: "git ls-remote --tags $repo $version.0 | awk 'NR==1{print \$1}'",
                             returnStdout: true
                     ).trim()
                     if (tag_id == null)  {
