@@ -38,10 +38,12 @@ def call(Map args = [:]) {
                 sh 'git status'
                 if ( component == "OpenSearch" ) {
                     sh "git tag $version"
+                    sh "git push origin $version"
                 } else {
                     sh "git tag $version.0"
+                    sh "git push origin $version.0"
                 }
-                sh "git push origin --tags"
+
             }
             sh 'pwd'
 
