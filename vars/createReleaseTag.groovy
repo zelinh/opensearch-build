@@ -40,7 +40,7 @@ def call(Map args = [:]) {
                             script: "git ls-remote --tags $repo $version | awk 'NR==1{print \$1}'",
                             returnStdout: true
                     ).trim()
-                    if (tag_id == null)  {
+                    if (tag_id == "")  {
                         sh "git tag $version"
                         sh "git push $push_url $version"
                     } else if (tag_id == commitID) {
@@ -54,7 +54,7 @@ def call(Map args = [:]) {
                             returnStdout: true
                     ).trim()
                     echo "$tag_id"
-                    if (tag_id == null) {
+                    if (tag_id == "") {
                         sh "git tag $version.0"
                         sh "git push $push_url $version.0"
                     } else if (tag_id == commitID) {
