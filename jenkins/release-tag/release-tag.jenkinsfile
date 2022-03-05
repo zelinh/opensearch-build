@@ -23,10 +23,10 @@ pipeline {
             steps {
                 script {
                     release_url = "https://artifacts.opensearch.org/releases/bundle/opensearch/$VERSION/opensearch-$VERSION-linux-x64.tar.gz"
-//                     sh "curl -SLO $release_url"
-//                     sh "unzip gradle-6.6.1-bin.zip"
-                    def response = httpRequest release_url
-                    sh "ls & pwd"
+                    sh "curl -SLO $release_url"
+                    sh "ls && pwd"
+                    sh "unzip opensearch-$VERSION-linux-x64.tar.gz"
+                    sh "ls && pwd"
                     echo "Distribution build manifest is downloaded to $BUILD_MANIFEST"
                     /* sh """
                         ls $WORKSPACE/builds/opensearch
