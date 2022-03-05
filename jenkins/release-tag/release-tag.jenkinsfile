@@ -10,11 +10,6 @@ pipeline {
     }
     parameters {
         string(
-            name: 'BUILD_ID',
-            description: 'Build ID of the distribution build manifest generated.',
-            trim: true
-        )
-        string(
             name: 'VERSION',
             description: 'Version of the distribution build manifest.',
             trim: true
@@ -27,23 +22,16 @@ pipeline {
         stage('manifest fetch') {
             steps {
                 script {
-                    manifest_path = "distribution-build-opensearch/${VERSION}/${BUILD_ID}/linux/x64/builds/opensearch/manifest.yml"
-                    downloadFromS3(
-                        destPath: "$WORKSPACE/$BUILD_MANIFEST",
-                        bucket: "${ARTIFACT_BUCKET_NAME}",
-                        path: "${manifest_path}",
-                        force: true
-                    )
+                    release_url = "https://artifacts.opensearch.org/releases/bundle/opensearch/$VERSION/opensearch-$VERSION-linux-x64.tar.gz"
+//                     sh "curl -SLO $release_url"
+//                     sh "unzip gradle-6.6.1-bin.zip"
+                    def response = httpRequest release_url
+                    sh "ls & pwd"
                     echo "Distribution build manifest is downloaded to $BUILD_MANIFEST"
                     /* sh """
                         ls $WORKSPACE/builds/opensearch
                         cat $WORKSPACE/builds/opensearch/manifest.yml
                     """ */
-                    sh """
-                        git clone -b auto-create-tag https://github.com/zelinh/opensearch-build.git
-                        ls $WORKSPACE/opensearch-build/jenkins/release-tag/
-                        cat $WORKSPACE/opensearch-build/jenkins/release-tag/manifest.yml
-                    """
 //                     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: buildManifest))
 //                     String buildManifestId = buildManifestObj.getArtifactBuildId()
 //                     echo "Manifest Id is $buildManifestId"
