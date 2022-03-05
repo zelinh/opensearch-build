@@ -10,7 +10,7 @@ components:
   - name: OpenSearch
     repository: https://github.com/zelinh/OpenSearch.git
     ref: 1.x
-    commit_id: 5b2713661ea14323754f4083de23888797ab0882
+    commit_id: 54c7206d8cba6973d19a814f2705e35ae5cc66db
     version: 1.3.0.0
   - name: common-utils
     repository: https://github.com/zelinh/common-utils.git
