@@ -38,7 +38,7 @@ pipeline {
 //                     echo "The name is ${GITHUB_BOT_TOKEN_NAME}"
                     echo "Ready to create Tag here ****************"
                     echo "$BUILD_MANIFEST"
-                    cat "$BUILD_MANIFEST"
+                    sh "cat $BUILD_MANIFEST"
 //                     createReleaseTag(
 //                         buildManifest: "$BUILD_MANIFEST",
 //                         tagVersion: VERSION
