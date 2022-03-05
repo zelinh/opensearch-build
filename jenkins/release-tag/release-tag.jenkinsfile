@@ -16,7 +16,7 @@ pipeline {
         )
     }
     environment {
-        BUILD_MANIFEST = "builds/opensearch/manifest.yml"
+        BUILD_MANIFEST = "opensearch-$VERSION/manifest.yml"
     }
     stages {
         stage('manifest fetch') {
@@ -38,6 +38,7 @@ pipeline {
 //                     echo "The name is ${GITHUB_BOT_TOKEN_NAME}"
                     echo "Ready to create Tag here ****************"
                     echo "$BUILD_MANIFEST"
+                    cat "$BUILD_MANIFEST"
 //                     createReleaseTag(
 //                         buildManifest: "$BUILD_MANIFEST",
 //                         tagVersion: VERSION
