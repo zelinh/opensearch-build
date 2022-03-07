@@ -3,6 +3,7 @@ def call(Map args = [:]) {
     def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
     //def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: args.buildManifest))
     echo "Im in the BUILD MAINFEST GROOVY 1ST CHECK**********"
+    sh "pwd && ls"
     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: "opensearch-build/jenkins/release-tag/manifest.yml"))
     echo "Im in the BUILD MAINFEST GROOVY 2ND CHECK**********"
     String opensearchCommitId = buildManifestObj.getCommitId("OpenSearch")
