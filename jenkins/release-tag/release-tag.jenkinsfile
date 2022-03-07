@@ -33,6 +33,7 @@ pipeline {
 //                     String buildManifestId = buildManifestObj.getArtifactBuildId()
 //                     echo "Manifest Id is $buildManifestId"
 //                     echo "The name is ${GITHUB_BOT_TOKEN_NAME}"
+                    sh "git url: 'https://github.com/zelinh/opensearch-build.git', branch: 'auto-create-tag'"
                     echo "Ready to create Tag here ****************"
                     echo "$BUILD_MANIFEST"
                     sh "cat $BUILD_MANIFEST"
