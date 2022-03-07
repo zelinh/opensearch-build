@@ -1,27 +1,22 @@
----
-schema-version: '1.2'
 build:
+  architecture: x64
+  id: '405'
+  location: https://ci.opensearch.org/ci/dbc/bundles/1.1.0/405/opensearch-1.1.0-linux-x64.tar.gz
   name: OpenSearch
-  version: 1.3.0
-  platform: linux
-  architecture: arm64
-  id: '811'
+  version: 1.1.0
 components:
-  - name: OpenSearch
-    repository: https://github.com/zelinh/OpenSearch.git
-    ref: 1.x
-    commit_id: 54c7206d8cba6973d19a814f2705e35ae5cc66db
-    version: 1.3.0.0
-  - name: common-utils
-    repository: https://github.com/zelinh/common-utils.git
-    ref: main
-    commit_id: 31fd4112b162fcded3be378ba7e788fa4f44287b
-    version: 1.3.0.0
-  - name: performance-analyzer
-    repository: https://github.com/zelinh/performance-analyzer.git
-    ref: main
-    commit_id: b086d2fea85bb88d004c851e082312fddd4bbf0d
-    artifacts:
-      plugins:
-        - plugins/opensearch-performance-analyzer-1.3.0.0.zip
-    version: 1.3.0.0
+- commit_id: 15e9f137622d878b79103df8f82d78d782b686a1
+  location: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405/bundle/opensearch-min-1.1.0-linux-x64.tar.gz
+  name: OpenSearch
+  ref: '1.1'
+  repository: https://github.com/zelinh/OpenSearch.git
+- commit_id: 0a4ce10a812165e95801b77ede689064ffee2188
+  location: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405/plugins/opensearch-job-scheduler-1.1.0.0.zip
+  name: job-scheduler
+  ref: '1.1'
+  repository: https://github.com/zelinh/job-scheduler.git
+- commit_id: e921d570d9af4a82aafc981e6a41591ded4fa7d3
+  location: https://ci.opensearch.org/ci/dbc/builds/1.1.0/405/plugins/opensearch-performance-analyzer-1.1.0.0.zip
+  name: performance-analyzer
+  ref: '1.1'
+  repository: https://github.com/zelinh/performance-analyzer.git

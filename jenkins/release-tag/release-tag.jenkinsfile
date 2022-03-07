@@ -23,10 +23,7 @@ pipeline {
             steps {
                 script {
                     release_url = "https://artifacts.opensearch.org/releases/bundle/opensearch/$VERSION/opensearch-$VERSION-linux-x64.tar.gz"
-                    sh "curl -SLO $release_url"
-                    sh "ls && pwd"
-                    sh "tar -xf opensearch-$VERSION-linux-x64.tar.gz"
-                    sh "ls && pwd"
+                    sh "curl -SLO $release_url && tar -xf opensearch-$VERSION-linux-x64.tar.gz"
                     echo "Distribution build manifest is downloaded to $BUILD_MANIFEST"
                     /* sh """
                         ls $WORKSPACE/builds/opensearch
@@ -39,10 +36,10 @@ pipeline {
                     echo "Ready to create Tag here ****************"
                     echo "$BUILD_MANIFEST"
                     sh "cat $BUILD_MANIFEST"
-//                     createReleaseTag(
-//                         buildManifest: "$BUILD_MANIFEST",
-//                         tagVersion: VERSION
-//                     )
+                    createReleaseTag(
+                        buildManifest: "$BUILD_MANIFEST",
+                        tagVersion: VERSION
+                    )
 
                 }
             }
