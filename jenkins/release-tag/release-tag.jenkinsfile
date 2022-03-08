@@ -25,7 +25,7 @@ pipeline {
                     release_url = "https://artifacts.opensearch.org/releases/bundle/opensearch/$VERSION/opensearch-$VERSION-linux-x64.tar.gz"
                     sh "curl -SLO $release_url && tar -xf opensearch-$VERSION-linux-x64.tar.gz opensearch-$VERSION/manifest.yml"
                     echo "Distribution build manifest is downloaded to $BUILD_MANIFEST"
-                    sh "pwd & ls"
+                    sh "cd opensearch-$VERSION & pwd & ls"
                     /* sh """
                         ls $WORKSPACE/builds/opensearch
                         cat $WORKSPACE/builds/opensearch/manifest.yml
