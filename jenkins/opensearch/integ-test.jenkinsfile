@@ -3,8 +3,6 @@ lib = library(identifier: "jenkins@20211118", retriever: legacySCM(scm))
 pipeline {
     agent none
     environment {
-        AWS_ROLE_ARN = "arn:aws:iam::${AWS_ACCOUNT_PUBLIC}:role/opensearch-test"
-        AWS_ROLE_SESSION_NAME = "jenkins-test-session"
         BUILD_MANIFEST = "build-manifest.yml"
     }
     tools {
@@ -13,29 +11,36 @@ pipeline {
     }
     parameters {
         string(
-            defaultValue: '',
             name: 'TEST_MANIFEST',
-            description: 'Test manifest under the manifests folder, e.g. manifests/2.0.0/opensearch-2.0.0-test.yml.',
+            description: 'Test manifest under the manifests folder, e.g. 2.0.0/opensearch-2.0.0-test.yml.',
             trim: true
         )
         string(
-            defaultValue: '',
             name: 'BUILD_MANIFEST_URL',
             description: 'The build manifest URL, e.g. https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/1.2.2/98/linux/x64/builds/opensearch/manifest.yml.',
             trim: true
         )
         string(
-            defaultValue: '',
             name: 'AGENT_LABEL',
             description: 'The agent label where the tests should be executed, e.g. Jenkins-Agent-al2-x64-c54xlarge-Docker-Host.',
             trim: true
         )
     }
     stages {
+        stage('verify-parameters') {
+            steps {
+                script {
+                    if (AGENT_LABEL == '') {
+                        currentBuild.result = 'ABORTED'
+                        error("Integration Tests failed to start. Missing parameter: AGENT_LABEL.")
+                    }
+                }
+            }
+        }
         stage('integ-test') {
             agent {
                 node {
-                    label "${AGENT_LABEL}"
+                    label AGENT_LABEL
                 }
             }
             steps {
@@ -50,9 +55,9 @@ pipeline {
                     echo "BUILD_ID: ${BUILD_ID}"
 
                     runIntegTestScript(
-                        buildManifest: "${BUILD_MANIFEST}",
-                        testManifest: "${TEST_MANIFEST}",
-                        buildId: "${BUILD_ID}"
+                        buildManifest: BUILD_MANIFEST,
+                        testManifest: "manifests/${TEST_MANIFEST}",
+                        buildId: BUILD_ID
                     )
                 }
             }
@@ -60,12 +65,12 @@ pipeline {
                 always {
                     script {
                         uploadTestResults(
-                            buildManifestFileName: "${BUILD_MANIFEST}",
-                            jobName: 'integ-test',
-                            buildNumber: "${BUILD_ID}"
+                            buildManifestFileName: BUILD_MANIFEST,
+                            jobName: JOB_NAME,
+                            buildNumber: BUILD_ID
                         )
                     }
-                    cleanWs disableDeferredWipeout: true, deleteDirs: true
+                    postCleanup()
                 }
             }
         }
@@ -73,7 +78,7 @@ pipeline {
 
     post {
         success {
-            node('Jenkins-Agent-al2-x64-m5xlarge') {
+            node(AGENT_LABEL) {
                 script {
                     def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
                     publishNotification(
@@ -83,15 +88,12 @@ pipeline {
                         credentialsId: 'INTEG_TEST_WEBHOOK',
                     )
 
-                    cleanWs(
-                        disableDeferredWipeout: true,
-                        deleteDirs: true
-                    )
+                    postCleanup()
                 }
             }
         }
         failure {
-            node('Jenkins-Agent-al2-x64-m5xlarge') {
+            node(AGENT_LABEL) {
                 script  {
                     def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
                     publishNotification(
@@ -101,10 +103,7 @@ pipeline {
                         credentialsId: 'INTEG_TEST_WEBHOOK',
                     )
 
-                    cleanWs(
-                        disableDeferredWipeout: true,
-                        deleteDirs: true
-                    )
+                    postCleanup()
                 }
             }
         }

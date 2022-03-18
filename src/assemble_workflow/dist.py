@@ -12,12 +12,14 @@ import tarfile
 import zipfile
 from abc import ABC, abstractmethod
 
+from assemble_workflow.bundle_rpm import BundleRpm
 from system.zip_file import ZipFile
 
 
 class Dist(ABC):
     def __init__(self, name: str, path: str, min_path: str) -> None:
         self.name = name
+        self.filename = name.lower()
         self.path = path
         self.min_path = min_path
 
@@ -31,11 +33,22 @@ class Dist(ABC):
 
     def find_min_archive_path(self, dest: str) -> str:
         '''
-        Return the single folder at the top level of the tar.
+        Return the single folder that contains the main files of {name}.
+        This folder is normally in the format of {filename}-{exact or bc version}.
+
+        Ex: opensearch-1.3.0 or opensearch-dashboards-1.3.0
+
+        Adding a check of whether {filename} is in folder name is to ensure
+        that only folders in above format are returned.
+
+        In tar there is only 1 top level folders after extraction.
+        But in rpm there are multiple folders such as var / usr / opensearch-1.3.0 ......
+
+        This is to ensure corrent folder is found, instead of simply choosing the 1st in the list.
         '''
 
         for file in os.scandir(dest):
-            if file.is_dir():
+            if self.filename in file.name and file.is_dir():
                 self.archive_path = file.path
                 return self.archive_path
 
@@ -70,6 +83,16 @@ class Dist(ABC):
         logging.info(f"Published {path}.")
 
 
+class DistTar(Dist):
+    def __extract__(self, dest: str) -> None:
+        with tarfile.open(self.path, "r:gz") as tar:
+            tar.extractall(dest)
+
+    def __build__(self, name: str, dest: str) -> None:
+        with tarfile.open(name, "w:gz") as tar:
+            tar.add(self.archive_path, arcname=os.path.basename(self.archive_path))
+
+
 class DistZip(Dist):
     def __extract__(self, dest: str) -> None:
         with ZipFile(self.path, "r") as zip:
@@ -84,11 +107,10 @@ class DistZip(Dist):
                     zip.write(fn, fn[rootlen:])
 
 
-class DistTar(Dist):
+class DistRpm(Dist):
+
     def __extract__(self, dest: str) -> None:
-        with tarfile.open(self.path, "r:gz") as tar:
-            tar.extractall(dest)
+        BundleRpm(self.filename, self.path, self.min_path).extract(dest)
 
     def __build__(self, name: str, dest: str) -> None:
-        with tarfile.open(name, "w:gz") as tar:
-            tar.add(self.archive_path, arcname=os.path.basename(self.archive_path))
+        BundleRpm(self.filename, self.path, self.min_path).build(name, dest, self.archive_path)

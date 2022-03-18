@@ -1,0 +1,123 @@
+lib = library(identifier: "jenkins@20211118", retriever: legacySCM(scm))
+
+pipeline {
+    options {
+        timeout(time: 3, unit: 'HOURS')
+    }
+    agent none
+    environment {
+        BUILD_MANIFEST = "build-manifest.yml"
+        BUILD_JOB_NAME = 'distribution-build-opensearch-dashboards'
+    }
+    parameters {
+        string(
+            name: 'TEST_MANIFEST',
+            description: 'Test manifest under the manifests folder, e.g. 2.0.0/opensearch-dashboards-2.0.0-test.yml.',
+            trim: true
+        )
+        string(
+            name: 'BUILD_MANIFEST_URL',
+            description: 'The build manifest URL, e.g. https://ci.opensearch.org/ci/dbc/distribution-build-opensearch-dashboards/2.0.0/98/linux/x64/builds/opensearch-dashboards/manifest.yml.',
+            trim: true
+        )
+        string(
+            name: 'AGENT_LABEL',
+            description: 'The agent label where the tests should be executed, e.g. Jenkins-Agent-al2-x64-c54xlarge-Docker-Host.',
+            trim: true
+        )
+        string(
+            name: 'CONTAINER_IMAGE',
+            description: 'The container image running on the agent where the tests should be executed, e.g. opensearchstaging/ci-runner:centos7-x64-arm64-jdkmulti-node10.24.1-cypress6.9.1-20211028.',
+            trim: true
+        )
+    }
+    stages {
+        stage('verify-parameters') {
+            steps {
+                script {
+                    if (AGENT_LABEL == '') {
+                        currentBuild.result = 'ABORTED'
+                        error("Integration Tests failed to start. Missing parameter: AGENT_LABEL.")
+                    }
+                    if (CONTAINER_IMAGE == '') {
+                        currentBuild.result = 'ABORTED'
+                        error("Integration Tests failed to start. Missing parameter: CONTAINER_IMAGE.")
+                    }
+                }
+            }
+        }
+        stage('integ-test') {
+            agent {
+                docker {
+                    label AGENT_LABEL
+                    image CONTAINER_IMAGE
+                    alwaysPull true
+                }
+            }
+            steps {
+                script {
+                    def buildManifestObj = downloadBuildManifest(
+                        url: BUILD_MANIFEST_URL,
+                        path: BUILD_MANIFEST
+                    )
+                    String buildId = buildManifestObj.getArtifactBuildId()
+                    env.BUILD_ID = buildId
+                    echo "BUILD_MANIFEST: ${BUILD_MANIFEST}"
+                    echo "BUILD_ID: ${BUILD_ID}"
+
+                    runIntegTestScript(
+                        jobName: BUILD_JOB_NAME,
+                        buildManifest: BUILD_MANIFEST,
+                        testManifest: "manifests/${TEST_MANIFEST}",
+                        buildId: BUILD_ID
+                    )
+                }
+            }
+            post {
+                always {
+                    script {
+                        uploadTestResults(
+                            buildManifestFileName: BUILD_MANIFEST,
+                            jobName: JOB_NAME,
+                            buildNumber: BUILD_ID
+                        )
+                    }
+                    postCleanup()
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            node(AGENT_LABEL) {
+                script {
+                    def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
+                    publishNotification(
+                        icon: ':white_check_mark:',
+                        message: 'Integration Tests Successful',
+                        extra: stashed,
+                        credentialsId: 'INTEG_TEST_WEBHOOK',
+                    )
+
+                    postCleanup()
+                }
+            }
+        }
+        failure {
+            node(AGENT_LABEL) {
+                script  {
+                    def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
+                    publishNotification(
+                        icon: ':warning:',
+                        message: 'Failed Integration Tests',
+                        extra: stashed,
+                        credentialsId: 'INTEG_TEST_WEBHOOK',
+                    )
+
+                    postCleanup()
+                }
+            }
+        }
+    }
+}

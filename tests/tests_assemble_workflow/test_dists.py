@@ -16,11 +16,17 @@ class TestDists(unittest.TestCase):
         self.dists = Dists
 
     def test_distribution_map(self) -> None:
-        self.assertEqual(self.dists.DISTRIBUTIONS_MAP['tar'].__name__, 'DistTar')
-        self.assertEqual(self.dists.DISTRIBUTIONS_MAP['zip'].__name__, 'DistZip')
+        self.assertEqual(self.dists.DISTRIBUTIONS_MAP['tar'].cls.__name__, 'DistTar')
+        self.assertEqual(self.dists.DISTRIBUTIONS_MAP['tar'].extension, '.tar.gz')
+        self.assertEqual(self.dists.DISTRIBUTIONS_MAP['zip'].cls.__name__, 'DistZip')
+        self.assertEqual(self.dists.DISTRIBUTIONS_MAP['zip'].extension, '.zip')
+        self.assertEqual(self.dists.DISTRIBUTIONS_MAP['rpm'].cls.__name__, 'DistRpm')
+        self.assertEqual(self.dists.DISTRIBUTIONS_MAP['rpm'].extension, '.rpm')
 
     def test_create_dist(self) -> None:
         return_cls_tar = self.dists.create_dist("OpenSearch", "artifacts/dist", "opensearch-1.3.0", 'tar')
         self.assertEqual(return_cls_tar.__class__.__name__, 'DistTar')
         return_cls_zip = self.dists.create_dist("OpenSearch", "artifacts/dist", "opensearch-1.3.0", 'zip')
         self.assertEqual(return_cls_zip.__class__.__name__, 'DistZip')
+        return_cls_rpm = self.dists.create_dist("OpenSearch", "artifacts/dist", "opensearch-1.3.0", 'rpm')
+        self.assertEqual(return_cls_rpm.__class__.__name__, 'DistRpm')
