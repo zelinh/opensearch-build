@@ -31,10 +31,10 @@ class BundleRpm:
             subprocess.check_call(
                 [
                     'rpm2cpio',
-                    self.package_path,
+                    self.package_path
                 ],
                 stdout=fp,
-                cwd=dest,
+                cwd=dest
             )
 
         # Extract cpio archive based on the rpm package
@@ -43,12 +43,11 @@ class BundleRpm:
             subprocess.check_call(
                 [
                     'cpio',
-                    '-imdv',
+                    '-imdv'
                 ],
                 stdin=fp,
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.STDOUT,
-                cwd=dest,
+                cwd=dest
             )
 
         # Move core folder destination so plugin install can proceed
