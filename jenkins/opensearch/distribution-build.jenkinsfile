@@ -242,34 +242,34 @@ pipeline {
                        }
                    }
                }
-//                 stage('build-and-test-rpm-arm64') {
-//                     agent {
-//                         docker {
-//                             label AGENT_ARM64
-//                             image dockerAgent.image
-//                             args dockerAgent.args
-//                             alwaysPull true
-//                         }
-//                     }
-//                    steps {
-//                        script {
-//                            def buildManifestObj = buildAssembleUpload(
-//                                inputManifest: "manifests/${INPUT_MANIFEST}",
-//                                distribution: "rpm"
-//                            )
-//                            String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
-//                            String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
-//                            env.ARTIFACT_URL_ARM64 = artifactUrl
-//                            echo "buildManifestUrl (arm64): ${buildManifestUrl}"
-//                            echo "artifactUrl (arm64): ${artifactUrl}"
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            postCleanup()
-//                        }
-//                    }
-//                }
+                stage('build-and-test-rpm-arm64') {
+                    agent {
+                        docker {
+                            label AGENT_ARM64
+                            image dockerAgent.image
+                            args dockerAgent.args
+                            alwaysPull true
+                        }
+                    }
+                   steps {
+                       script {
+                           def buildManifestObj = buildAssembleUpload(
+                               inputManifest: "manifests/${INPUT_MANIFEST}",
+                               distribution: "rpm"
+                           )
+                           String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
+                           String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
+                           env.ARTIFACT_URL_ARM64 = artifactUrl
+                           echo "buildManifestUrl (arm64): ${buildManifestUrl}"
+                           echo "artifactUrl (arm64): ${artifactUrl}"
+                       }
+                   }
+                   post {
+                       always {
+                           postCleanup()
+                       }
+                   }
+               }
             }
         }
         stage('docker build') {

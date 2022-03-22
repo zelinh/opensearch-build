@@ -40,13 +40,14 @@ class BundleRpm:
         # Extract cpio archive based on the rpm package
         logging.info(f"Extract cpio {cpio_path} content to {dest}")
         with open(cpio_path, 'rb') as fp:
-            subprocess.check_call(
+            subprocess.call(
                 [
                     'cpio',
                     '-imdv'
                 ],
                 stdin=fp,
                 stdout=subprocess.DEVNULL,
+                stderr=subprocess.STDOUT,
                 cwd=dest
             )
 
