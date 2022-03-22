@@ -226,7 +226,7 @@ pipeline {
                    steps {
                        script {
                            def buildManifestObj = buildAssembleUpload(
-                               inputManifest: "manifests/${INPUT_MANIFEST}"
+                               inputManifest: "manifests/${INPUT_MANIFEST}",
                                distribution: "rpm"
                            )
                            String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
@@ -254,7 +254,7 @@ pipeline {
                    steps {
                        script {
                            def buildManifestObj = buildAssembleUpload(
-                               inputManifest: "manifests/${INPUT_MANIFEST}"
+                               inputManifest: "manifests/${INPUT_MANIFEST}",
                                distribution: "rpm"
                            )
                            String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
