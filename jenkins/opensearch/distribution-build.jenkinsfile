@@ -250,11 +250,11 @@ pipeline {
 //                                 distManifest: "$WORKSPACE/dist/opensearch/manifest.yml",
 //                                 rpmDistribution: "$WORKSPACE/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
 //                             )
-                            String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
-                            String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
-                            env.ARTIFACT_URL_X64 = artifactUrl   //need to be changed for distribution
-                            echo "buildManifestUrl (x64): ${buildManifestUrl}"
-                            echo "artifactUrl (x64): ${artifactUrl}"
+//                             String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
+//                             String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
+//                             env.ARTIFACT_URL_X64 = artifactUrl   //need to be changed for distribution
+//                             echo "buildManifestUrl (x64): ${buildManifestUrl}"
+//                             echo "artifactUrl (x64): ${artifactUrl}"
                        }
                    }
                    post {
