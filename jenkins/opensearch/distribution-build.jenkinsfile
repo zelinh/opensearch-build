@@ -232,17 +232,16 @@ pipeline {
                             downloadFromS3(
                                 destPath: "$WORKSPACE/builds",
                                 bucket: "${ARTIFACT_BUCKET_NAME}",
-                                path: "Playground/zelin-distribution-build/1.3.0/9/linux/x64/builds",
+                                path: "Playground/zelin-distribution-build/1.3.0/9/linux/x64/builds/",
                                 force: true
                             )
                             downloadFromS3(
                                 destPath: "$WORKSPACE/dist",
                                 bucket: "${ARTIFACT_BUCKET_NAME}",
-                                path: "Playground/zelin-distribution-build/1.3.0/9/linux/x64/dist",
+                                path: "Playground/zelin-distribution-build/1.3.0/9/linux/x64/dist/",
                                 force: true
                             )
                             sh 'ls dist/opensearch'
-                            String rpmDistribution =
                             validateMetaRPM(
                                 distManifest: "$WORKSPACE/dist/opensearch/manifest.yml",
                                 rpmDistribution: "$WORKSPACE/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
