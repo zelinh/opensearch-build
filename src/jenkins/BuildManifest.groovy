@@ -38,12 +38,6 @@ class BuildManifest implements Serializable {
         }
 
         String getPackageName() {
-//            if (this.distribution == 'rpm') {
-//                return [
-//                        this.getFilename(),
-//
-//                ]
-//            }
             String extension = this.distribution == 'rpm' ?'.rpm':'.tar.gz'
             return [
                     this.getFilename(),
