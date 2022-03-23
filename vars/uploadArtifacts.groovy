@@ -2,9 +2,9 @@ void call(Map args = [:]) {
     def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
 
     def buildManifest = lib.jenkins.BuildManifest.new(readYaml(file: args.buildManifest))
-    def minArtifactPath = buildManifest.getMinArtifact()
-    def productFilename = buildManifest.build.getFilename()
-    def packageName = buildManifest.build.getPackageName()
+    def minArtifactPath = buildManifest.getMinArtifact()   // dist/opensearch-min-1.3.0.x86_64.rpm
+    def productFilename = buildManifest.build.getFilename()   //opensearch
+    def packageName = buildManifest.build.getPackageName()    //opensearch-1.3.0-linux-x64.tar.gz
 
     def artifactPath = buildManifest.getArtifactRoot("${JOB_NAME}", "${BUILD_NUMBER}")
     echo "Uploading to s3://${ARTIFACT_BUCKET_NAME}/${artifactPath}"

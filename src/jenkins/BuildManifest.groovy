@@ -15,6 +15,7 @@ class BuildManifest implements Serializable {
         String version
         String platform
         String architecture
+        String distribution
 
         Build(Map data) {
             this.id = data.id
@@ -22,6 +23,7 @@ class BuildManifest implements Serializable {
             this.version = data.version
             this.platform = data.platform
             this.architecture = data.architecture
+            this.distribution = data.distribution
         }
 
         String getFilename() {
@@ -35,12 +37,19 @@ class BuildManifest implements Serializable {
         }
 
         String getPackageName() {
+//            if (this.distribution == 'rpm') {
+//                return [
+//                        this.getFilename(),
+//
+//                ]
+//            }
+            String extension = this.distribution == 'rpm' ?'.rpm':'.tar.gz'
             return [
                     this.getFilename(),
                     this.version,
                     this.platform,
                     this.architecture,
-            ].join('-') + '.tar.gz'
+            ].join('-') + extension
         }
     }
 
