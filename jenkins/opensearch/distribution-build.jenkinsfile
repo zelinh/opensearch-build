@@ -245,7 +245,7 @@ pipeline {
                             sh "ls $WORKSPACE/builds/$ARTIFACT_PATH/builds/opensearch/"
                             sh "ls $WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch"
                             validateMetaRPM(
-                                distManifest: "$WORKSPACE/dist/opensearch/manifest.yml",
+                                distManifest: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/manifest.yml",
                                 rpmDistribution: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
                             )
 //                             String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
