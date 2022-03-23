@@ -244,8 +244,8 @@ pipeline {
                             )
                             sh "pwd"
                             sh "ls $WORKSPACE"
-                            sh "ls $WORKSPACE/builds"
-                            sh "ls $WORKSPACE/dist"
+                            sh "ls $WORKSPACE/builds/$ARTIFACT_PATH/builds"
+                            sh "ls $WORKSPACE/dist/$ARTIFACT_PATH/dist"
 //                             validateMetaRPM(
 //                                 distManifest: "$WORKSPACE/dist/opensearch/manifest.yml",
 //                                 rpmDistribution: "$WORKSPACE/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
