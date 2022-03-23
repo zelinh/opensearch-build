@@ -33,7 +33,8 @@ class BuildManifest implements Serializable {
         String getFilenameWithExtension(String platform = null, String architecture = null) {
             String resolvedPlatform = platform ?: this.platform
             String resolvedArchitecture = architecture ?: this.architecture
-            return "${this.getFilename()}-${this.version}-${resolvedPlatform}-${resolvedArchitecture}.${resolvedPlatform == 'windows' ? 'zip' : 'tar.gz'}"
+            String extension = this.distribution == 'rpm' ? 'rpm' : {resolvedPlatform == 'windows' ? 'zip' : 'tar.gz'}
+            return "${this.getFilename()}-${this.version}-${resolvedPlatform}-${resolvedArchitecture}.${extension}"
         }
 
         String getPackageName() {
