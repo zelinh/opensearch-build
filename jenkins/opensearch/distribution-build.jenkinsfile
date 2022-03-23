@@ -229,23 +229,24 @@ pipeline {
 //                                inputManifest: "manifests/${INPUT_MANIFEST}",
 //                                distribution: "rpm"
 //                            )
+                            def ARTIFACT_PATH = "Playground/zelin-distribution-build/1.3.0/9/linux/x64"
                             downloadFromS3(
                                 destPath: "$WORKSPACE/builds",
                                 bucket: "${ARTIFACT_BUCKET_NAME}",
-                                path: "Playground/zelin-distribution-build/1.3.0/9/linux/x64/builds/",
+                                path: "$ARTIFACT_PATH/builds/",
                                 force: true
                             )
                             downloadFromS3(
                                 destPath: "$WORKSPACE/dist",
                                 bucket: "${ARTIFACT_BUCKET_NAME}",
-                                path: "Playground/zelin-distribution-build/1.3.0/9/linux/x64/dist/",
+                                path: "$ARTIFACT_PATH/dist/",
                                 force: true
                             )
-                            sh 'ls dist/opensearch'
-                            validateMetaRPM(
-                                distManifest: "$WORKSPACE/dist/opensearch/manifest.yml",
-                                rpmDistribution: "$WORKSPACE/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
-                            )
+                            sh "ls $ARTIFACT_PATH/dist/opensearch"
+//                             validateMetaRPM(
+//                                 distManifest: "$WORKSPACE/dist/opensearch/manifest.yml",
+//                                 rpmDistribution: "$WORKSPACE/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
+//                             )
                             String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
                             String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
                             env.ARTIFACT_URL_X64 = artifactUrl   //need to be changed for distribution
