@@ -31,11 +31,11 @@ def call(Map args = [:]) {
             metaMap[key] = line.split(':')[1].trim()
         } else {
             println 'description*********'
-            println line.split(':')[1].trim() + "************************"
-            //println metadata.split(':\n')[0]
+            println metadata.split('Description :')[1]
             //metaMap[key] = lines.split(':\n')[1].trim()
         }
     }
+    println metaMap
 
 
 //    withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
