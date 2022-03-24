@@ -25,10 +25,12 @@ def call(Map args = [:]) {
     def lines = metadata.split('\n')
     for (line in lines) {
         def key = line.split(':')[0].trim()
+        println(key)
         if (key != 'Description') {
             metaMap[key] = line.split(':')[1].trim()
         } else {
-            metaMap[key] = lines.split(':\n')[1]
+            println 'description'
+            metaMap[key] = lines.split(':\n')[1].trim()
         }
     }
     println(metaMap)
