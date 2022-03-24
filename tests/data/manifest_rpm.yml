@@ -1,0 +1,85 @@
+---
+schema-version: '1.1'
+build:
+  name: OpenSearch
+  version: 1.3.0
+  platform: linux
+  architecture: x64
+  distribution: rpm
+  location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/dist/opensearch/opensearch-1.3.0-linux-x64.rpm
+  id: 3dab05429b35415bb2eacf0fa75cb6c8
+components:
+  - name: OpenSearch
+    repository: https://github.com/opensearch-project/OpenSearch.git
+    ref: a4515b9c71d2ddbb5e508ad3ed765426f882ff68
+    commit_id: a4515b9c71d2ddbb5e508ad3ed765426f882ff68
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/dist/opensearch-min-1.3.0.x86_64.rpm
+  - name: common-utils
+    repository: https://github.com/opensearch-project/common-utils.git
+    ref: tags/1.3.0.0
+    commit_id: 5d84619b74f717edf870ae2898eb83bf067b0dfa
+  - name: job-scheduler
+    repository: https://github.com/opensearch-project/job-scheduler.git
+    ref: tags/1.3.0.0
+    commit_id: 182fcd2853e89535554f6515c4024be02ca446e6
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/plugins/opensearch-job-scheduler-1.3.0.0.zip
+  - name: ml-commons
+    repository: https://github.com/opensearch-project/ml-commons.git
+    ref: tags/1.3.0.0
+    commit_id: a2c1bca3600df0edf9ae2a0f3e447abec7c29aa1
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/plugins/opensearch-ml-1.3.0.0.zip
+  - name: alerting
+    repository: https://github.com/opensearch-project/alerting.git
+    ref: tags/1.3.0.0
+    commit_id: 9aa3d2cc65dd949d7f4a1632ffa274528d007b23
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/plugins/opensearch-alerting-1.3.0.0.zip
+  - name: asynchronous-search
+    repository: https://github.com/opensearch-project/asynchronous-search.git
+    ref: tags/1.3.0.0
+    commit_id: 3ae9db7187835226ed789e41431115b1d176ea6f
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/plugins/opensearch-asynchronous-search-1.3.0.0.zip
+  - name: index-management
+    repository: https://github.com/opensearch-project/index-management.git
+    ref: tags/1.3.0.0
+    commit_id: c5d4ffc671ee5090c7aa26683393f53683d39c2c
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/plugins/opensearch-index-management-1.3.0.0.zip
+  - name: k-NN
+    repository: https://github.com/opensearch-project/k-NN.git
+    ref: tags/1.3.0.0
+    commit_id: 20352a3b0950b703f0b9f57636af9c0bf4f64bec
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/plugins/opensearch-knn-1.3.0.0.zip
+  - name: security
+    repository: https://github.com/opensearch-project/security.git
+    ref: tags/1.3.0.0
+    commit_id: 9bf0ab861eae018352427e44b434aa12c1577fa5
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/plugins/opensearch-security-1.3.0.0.zip
+  - name: performance-analyzer
+    repository: https://github.com/opensearch-project/performance-analyzer.git
+    ref: tags/1.3.0.0
+    commit_id: 4e97584f43c03f452df7d1467ac79fd242ded01e
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/plugins/opensearch-performance-analyzer-1.3.0.0.zip
+  - name: anomaly-detection
+    repository: https://github.com/opensearch-project/anomaly-detection.git
+    ref: tags/1.3.0.0
+    commit_id: bf8f2dade87fde23bec6b284d9bc400a5737dd69
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/plugins/opensearch-anomaly-detection-1.3.0.0.zip
+  - name: cross-cluster-replication
+    repository: https://github.com/opensearch-project/cross-cluster-replication.git
+    ref: tags/1.3.0.0
+    commit_id: f2d99b162a452ea0dcb4124a8ed5d1020d26871c
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/plugins/opensearch-cross-cluster-replication-1.3.0.0.zip
+  - name: sql
+    repository: https://github.com/opensearch-project/sql.git
+    ref: tags/1.3.0.0
+    commit_id: 31ee54b441954f7ab671ef1d923975cd0cedc945
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/plugins/opensearch-sql-1.3.0.0.zip
+  - name: dashboards-reports
+    repository: https://github.com/opensearch-project/dashboards-reports.git
+    ref: tags/1.3.0.0
+    commit_id: fec1eaf578f2b4ebbe95a972378b685eaf692def
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/plugins/opensearch-reports-scheduler-1.3.0.0.zip
+  - name: opensearch-observability
+    repository: https://github.com/opensearch-project/observability
+    ref: tags/1.3.0.0
+    commit_id: c85b9ef2359b3a6e0d8bf02dfbd792dd271de2f2
+    location: https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/3/linux/x64/builds/opensearch/plugins/opensearch-observability-1.3.0.0.zip

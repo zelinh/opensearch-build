@@ -1,0 +1,15 @@
+pipeline {
+    agent none
+    stages {
+        stage('validate RPM meta') {
+            steps {
+                script {
+                    validateMetaRPM(
+                        distManifest: "tests/data/manifest_rpm.yml",
+                        rpmDistribution: "/Users/zelinhao/workplace/RPM dist/opensearch-1.3.0-linux-x64.rpm"
+                    )
+                }
+            }
+        }
+    }
+}
