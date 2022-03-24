@@ -4,14 +4,24 @@ def call(Map args = [:]) {
     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: args.distManifest))
     def distFile = args.rpmDistribution
 
+    // the context the meta data should be
     def name = buildManifestObj.build.name
     def version = buildManifestObj.build.version
     def architecture = buildManifestObj.build.architecture
     def distribution = buildManifestObj.build.distribution
+    def Release = 1
+    def group = "Application/Internet"
+    def license = "Apache-2.0"
+    def relocation = "(not relocatable)"
 
-    sh ('pwd')
-    sh ("ls ")
-    sh ("rpm -qip $distFile")
+    sh ("rpm -qip $distFile >> metadata")
+    def metadata =[:]
+    new File("metadata").eachLine{line->
+        if(line.contains(':')){
+            metadata[line.split(':')[0]]=line.split(':')[1]
+        }
+    }
+    println metadata
 
 
 //    withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
