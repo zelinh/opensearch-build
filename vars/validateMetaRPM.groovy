@@ -32,7 +32,7 @@ def call(Map args = [:]) {
         println line
         def key = line.split(':')[0].trim()
         if (key != 'Description') {
-            metaMap[key] = line.split(':')[1].trim()
+            metaMap[key] = line.split(':', 2)[1].trim()
         } else {
             println 'description*********'
             metaMap[key] = metadata.split(line)[1].trim()
