@@ -5,6 +5,7 @@ def call(Map args = [:]) {
     def distFile = args.rpmDistribution
 
     // the context the meta data should be
+    def refMap = [:]
     def name = buildManifestObj.build.getFilename()
     def version = buildManifestObj.build.version
     def architecture = buildManifestObj.build.architecture
@@ -13,6 +14,8 @@ def call(Map args = [:]) {
     def group = "Application/Internet"
     def license = "Apache-2.0"
     def relocation = "(not relocatable)"
+    def summary = "An open source distributed and RESTful search engine"
+    def url = "https://opensearch.org/"
     def description = "OpenSearch makes it easy to ingest, search, visualize, and analyze your data.\n" +
             "For more information, see: https://opensearch.org/"
 
@@ -37,6 +40,21 @@ def call(Map args = [:]) {
         }
     }
     println metaMap
+    assert name == metaMap['Name']
+    assert version == metaMap['Version']
+    if (architecture == 'x64') {        //up to change if naming confirmed
+        assert metaMap['Architecture'] == 'x86_64'
+    } else {
+        assert metaMap['Architecture'] == 'aarch64'
+    }
+    assert group == metaMap['Group']
+    assert license == metaMap['License']
+    assert relocation == metaMap['Relocation']
+    assert summary == metaMap['Summary']
+    assert url == metaMap['URL']
+    assert description == metaMap['Description']
+    println 'everything is goodooooooood ********************'
+
 
 
 //    withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
