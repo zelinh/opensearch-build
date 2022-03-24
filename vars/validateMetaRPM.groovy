@@ -13,6 +13,8 @@ def call(Map args = [:]) {
     def group = "Application/Internet"
     def license = "Apache-2.0"
     def relocation = "(not relocatable)"
+    def description = "OpenSearch makes it easy to ingest, search, visualize, and analyze your data.\n" +
+            "For more information, see: https://opensearch.org/"
 
     def metadata = sh (
             script: "rpm -qip $distFile",
@@ -25,14 +27,14 @@ def call(Map args = [:]) {
     def lines = metadata.split('\n')
     for (line in lines) {
         println line
-        if (line.split(':')[0].trim() != 'Description') {
-            metaMap[line.split(':')[0].trim()] = line.split(':')[1].trim()
+        def key = line.split(':')[0].trim()
+        if (key != 'Description') {
+            metaMap[key] = line.split(':')[1].trim()
         } else {
             println 'description*********'
-            metaMap[line.split(':')[0].trim()] = metadata.split('Description :')[1].trim()
+            metaMap[key] = metadata.split('Description :')[1].trim()
             break
         }
-        println 'im here +++++'
     }
     println metaMap
 
