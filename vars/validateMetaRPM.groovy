@@ -13,7 +13,7 @@ def call(Map args = [:]) {
     def Release = 1
     def group = "Application/Internet"
     def license = "Apache-2.0"
-    def relocation = "(not relocatable)"
+    def relocations = "(not relocatable)"
     def summary = "An open source distributed and RESTful search engine"
     def url = "https://opensearch.org/"
     def description = "OpenSearch makes it easy to ingest, search, visualize, and analyze your data.\n" +
@@ -49,7 +49,7 @@ def call(Map args = [:]) {
     }
     assert group == metaMap['Group']
     assert license == metaMap['License']
-    assert relocation == metaMap['Relocation']
+    assert relocations == metaMap['Relocations']
     assert summary == metaMap['Summary']
     assert url == metaMap['URL']
     assert description == metaMap['Description']
