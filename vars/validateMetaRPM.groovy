@@ -20,7 +20,9 @@ def call(Map args = [:]) {
     ).trim()
     echo "Print meta data ***************"
     println(metadata)
-
+    echo "split to map"
+    def metaMap = [:]
+    println(metadata.split(/(?m)^\/$/))
 
 
 //    withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
