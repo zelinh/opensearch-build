@@ -5,7 +5,7 @@ def call(Map args = [:]) {
     def distFile = args.rpmDistribution
 
     // the context the meta data should be
-    def name = buildManifestObj.build.name
+    def name = buildManifestObj.build.getFilename()
     def version = buildManifestObj.build.version
     def architecture = buildManifestObj.build.architecture
     def distribution = buildManifestObj.build.distribution
@@ -22,7 +22,15 @@ def call(Map args = [:]) {
     println(metadata)
     echo "split to map"
     def metaMap = [:]
-    println(metadata.split('\n')[0])
+    def lines = metadata.split('\n')
+    for (line in lines) {
+        if (line.split(':').trim() != 'Description') {
+            metaMap[line.split(':')[0].trim()] = line.split(':')[1].trim()
+        } else {
+            break
+        }
+    }
+    println(metaMap)
 
 
 //    withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
