@@ -24,8 +24,9 @@ def call(Map args = [:]) {
     def metaMap = [:]
     def lines = metadata.split('\n')
     for (line in lines) {
+        println line
         if (line.split(':').trim() != 'Description') {
-            metaMap[line.split(':')[0].trim()] = line.split(':')[1].trim()
+            //metaMap[line.split(':')[0].trim()] = line.split(':')[1].trim()
         } else {
             break
         }
