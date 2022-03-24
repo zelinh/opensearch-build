@@ -6,17 +6,17 @@ def call(Map args = [:]) {
 
     // the context the meta data should be
     def refMap = [:]
-    def name = buildManifestObj.build.getFilename()
-    def version = buildManifestObj.build.version
-    def architecture = buildManifestObj.build.architecture
-    def distribution = buildManifestObj.build.distribution
-    def Release = 1
-    def group = "Application/Internet"
-    def license = "Apache-2.0"
-    def relocations = "(not relocatable)"
-    def summary = "An open source distributed and RESTful search engine"
-    def url = "https://opensearch.org/"
-    def description = "OpenSearch makes it easy to ingest, search, visualize, and analyze your data.\n" +
+    refMap['Name'] = buildManifestObj.build.getFilename()
+    refMap['Version'] = buildManifestObj.build.version
+    refMap['Architecture'] = buildManifestObj.build.architecture
+    //refMap['Distribution'] = buildManifestObj.build.distribution
+    refMap['Release'] = 1
+    refMap['Group'] = "Application/Internet"
+    refMap['License'] = "Apache-2.0"
+    refMap['Relocations'] = "(not relocatable)"
+    refMap['Summary'] = "An open source distributed and RESTful search engine"
+    refMap['URL'] = "https://opensearch.org/"
+    refMap['Description'] = "OpenSearch makes it easy to ingest, search, visualize, and analyze your data.\n" +
             "For more information, see: https://opensearch.org/"
 
     def metadata = sh (
@@ -40,19 +40,31 @@ def call(Map args = [:]) {
         }
     }
     println metaMap
-    assert name == metaMap['Name']
-    assert version == metaMap['Version']
-    if (architecture == 'x64') {        //up to change if naming confirmed
-        assert metaMap['Architecture'] == 'x86_64'
-    } else {
-        assert metaMap['Architecture'] == 'aarch64'
+    refMap.each{ key, value ->
+        if (key == "Architecture") {
+            if (value == 'x64') {        //up to change if naming confirmed
+                assert metaMap[key] == 'x86_64'
+            } else {
+                assert metaMap[key] == 'aarch64'
+            }
+        } else {
+            assert metaMap[key] == value
+        }
+        println ("Meta data $key is validated")
     }
-    assert group == metaMap['Group']
-    assert license == metaMap['License']
-    assert relocations == metaMap['Relocations']
-    assert summary == metaMap['Summary']
-    assert url == metaMap['URL']
-    assert description == metaMap['Description']
+//    assert name == metaMap['Name']
+//    assert version == metaMap['Version']
+//    if (architecture == 'x64') {        //up to change if naming confirmed
+//        assert metaMap['Architecture'] == 'x86_64'
+//    } else {
+//        assert metaMap['Architecture'] == 'aarch64'
+//    }
+//    assert group == metaMap['Group']
+//    assert license == metaMap['License']
+//    assert relocations == metaMap['Relocations']
+//    assert summary == metaMap['Summary']
+//    assert url == metaMap['URL']
+//    assert description == metaMap['Description']
     println 'everything is goodooooooood ********************'
 
 
