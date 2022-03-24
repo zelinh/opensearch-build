@@ -17,12 +17,12 @@ def call(Map args = [:]) {
     sh ("rpm -qip $distFile >> metadata.txt")
     sh ("cat metadata.txt")
     def metadata =[:]
-    new File("metadata.txt").eachLine{line->
-        if(line.contains(':')){
-            metadata[line.split(':')[0]]=line.split(':')[1]
-        }
+    def file = new File("metadata.txt")
+    def props = new Properties()
+    file.withInputStream { stream ->
+        props.load(stream)
     }
-    println metadata
+    println(props)
 
 
 //    withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
