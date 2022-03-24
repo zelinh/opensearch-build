@@ -14,15 +14,12 @@ def call(Map args = [:]) {
     def license = "Apache-2.0"
     def relocation = "(not relocatable)"
 
-    sh ("rpm -qip $distFile >> metadata.txt")
-    sh ("cat metadata.txt")
-    def metadata =[:]
-    def file = new File("metadata.txt")
-    def props = new Properties()
-    file.withInputStream { stream ->
-        props.load(stream)
-    }
-    println(props)
+    def metadata = sh (
+            script: "rpm -qip $distFile",
+            returnStdout: true
+    ).trim()
+    println(metadata)
+
 
 
 //    withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
