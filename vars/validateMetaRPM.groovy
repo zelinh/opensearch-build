@@ -24,17 +24,18 @@ def call(Map args = [:]) {
     def metaMap = [:]
     def lines = metadata.split('\n')
     for (line in lines) {
+        println line
         def key = line.split(':')[0].trim()
         println(key)
         if (key != 'Description') {
             metaMap[key] = line.split(':')[1].trim()
         } else {
             println 'description*********'
-            println metadata.split(':\n')[0]
+            println line.split(':')[1].trim() + "************************"
+            //println metadata.split(':\n')[0]
             //metaMap[key] = lines.split(':\n')[1].trim()
         }
     }
-    println(metaMap)
 
 
 //    withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
