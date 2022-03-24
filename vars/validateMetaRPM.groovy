@@ -18,6 +18,7 @@ def call(Map args = [:]) {
             script: "rpm -qip $distFile",
             returnStdout: true
     ).trim()
+    echo "Print meta data ***************"
     println(metadata)
 
 
