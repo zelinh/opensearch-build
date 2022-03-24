@@ -14,9 +14,10 @@ def call(Map args = [:]) {
     def license = "Apache-2.0"
     def relocation = "(not relocatable)"
 
-    sh ("rpm -qip $distFile >> metadata")
+    sh ("rpm -qip $distFile >> metadata.txt")
+    sh ("cat metadata.txt")
     def metadata =[:]
-    new File("metadata").eachLine{line->
+    new File("metadata.txt").eachLine{line->
         if(line.contains(':')){
             metadata[line.split(':')[0]]=line.split(':')[1]
         }
