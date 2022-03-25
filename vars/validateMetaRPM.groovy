@@ -5,7 +5,7 @@ def call(Map args = [:]) {
     def distFile = args.rpmDistribution
 
     println("Name convention for distribution file starts:")
-    def distFileName = new File(distFile).getName()
+    def distFileName = distFile.split('/').last()
     println("the File name is : $distFileName")
 
     println("*******************************")
