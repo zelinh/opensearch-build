@@ -4,12 +4,6 @@ def call(Map args = [:]) {
     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: args.distManifest))
     def distFile = args.rpmDistribution
 
-    println("Name convention for distribution file starts:")
-    def distFileName = distFile.split('/').last()
-    println("the File name is : $distFileName")
-
-    println("*******************************")
-    println("Meta data validations start:")
     // the context the meta data should be
     def refMap = [:]
     refMap['Name'] = buildManifestObj.build.getFilename()
@@ -17,6 +11,7 @@ def call(Map args = [:]) {
     refMap['Architecture'] = buildManifestObj.build.architecture
     //refMap['Distribution'] = buildManifestObj.build.distribution
     //refMap['Release'] = 1
+    refMap['Platform'] = "linux" //Hard code the platform since it's assumed always linux for rpm
     refMap['Group'] = "Application/Internet"
     refMap['License'] = "Apache-2.0"
     refMap['Relocations'] = "(not relocatable)"
@@ -24,6 +19,25 @@ def call(Map args = [:]) {
     refMap['URL'] = "https://opensearch.org/"
     refMap['Description'] = "OpenSearch makes it easy to ingest, search, visualize, and analyze your data.\n" +
             "For more information, see: https://opensearch.org/"
+
+    println("Name convention for distribution file starts:")
+    def distFileNameWithExtension = distFile.split('/').last()
+    println("the File name is : $distFileNameWithExtension")
+    def distFileName = distFileNameWithExtension.split('.', 2)[0].trim()
+    def fileExtension = distFileNameWithExtension.split('.', 2)[1].trim()
+    def fileNameMap = [:]
+    fileNameMap['Name'] = distFileName.split('-')[0].trim()
+    fileNameMap['Version'] = distFileName.split('-')[1].trim()
+    fileNameMap['Platform'] = distFileName.split('-')[2].trim()
+    fileNameMap['Architecture'] = distFileName.split('-')[3].trim()
+    fileNameMap.each{ key, value ->
+        assert refMap[key] == value
+        println("File name for $key is validated.")
+    }
+    println("File name for the RPM distribution has been validated.")
+
+    println("*******************************")
+    println("Meta data validations start:")
 
     def metadata = sh (
             script: "rpm -qip $distFile",
