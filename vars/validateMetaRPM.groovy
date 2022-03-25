@@ -4,6 +4,12 @@ def call(Map args = [:]) {
     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: args.distManifest))
     def distFile = args.rpmDistribution
 
+    println("Name convention for distribution file starts:")
+    def distFileName = new File(distFile).getName()
+    println("the File name is : $distFileName")
+
+    println("*******************************")
+    println("Meta data validations start:")
     // the context the meta data should be
     def refMap = [:]
     refMap['Name'] = buildManifestObj.build.getFilename()
@@ -51,7 +57,6 @@ def call(Map args = [:]) {
         }
         println("Meta data for $key is validated")
     }
-
     println("Validation for meta data of RPM distribution completed.")
 
 }
