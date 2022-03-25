@@ -1,19 +1,9 @@
-def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
 def call(Map args = [:]) {
 
     def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: args.distManifest))
     def distFile = args.rpmDistribution
 
-    metaValidate(buildManifestObj, distFile)
-
-}
-
-void fileNameValidate(lib.jenkins.BuildManifest buildManifestObj, String distFilePath) {
-
-}
-
-void metaValidate(lib.jenkins.BuildManifest buildManifestObj, String distFile) {
     // the context the meta data should be
     def refMap = [:]
     refMap['Name'] = buildManifestObj.build.getFilename()
@@ -63,4 +53,5 @@ void metaValidate(lib.jenkins.BuildManifest buildManifestObj, String distFile) {
     }
 
     println("Validation for meta data of RPM distribution completed.")
+
 }
