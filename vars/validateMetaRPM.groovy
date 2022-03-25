@@ -9,11 +9,11 @@ def call(Map args = [:]) {
 
 }
 
-void fileNameValidate(BuildManifest buildManifestObj, String distFilePath) {
+void fileNameValidate(lib.jenkins.BuildManifest buildManifestObj, String distFilePath) {
 
 }
 
-void metaValidate(BuildManifest buildManifestObj, String distFile) {
+void metaValidate(lib.jenkins.BuildManifest buildManifestObj, String distFile) {
     // the context the meta data should be
     def refMap = [:]
     refMap['Name'] = buildManifestObj.build.getFilename()
