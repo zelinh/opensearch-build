@@ -4,6 +4,11 @@ def call(Map args = [:]) {
     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: args.distManifest))
     def distFile = args.rpmDistribution
 
+    metaValidate(buildManifestObj, distFile)
+
+}
+
+void metaValidate(BuildManifest buildManifestObj, String distFile) {
     // the context the meta data should be
     def refMap = [:]
     refMap['Name'] = buildManifestObj.build.getFilename()
@@ -23,26 +28,25 @@ def call(Map args = [:]) {
             script: "rpm -qip $distFile",
             returnStdout: true
     ).trim()
-    echo "Print meta data ***************"
+    println("Meta data for the RPM distribution is: ")
     println(metadata)
-    echo "split to map"
+    // Extract the meta data from the distribution to Map
     def metaMap = [:]
     def lines = metadata.split('\n')
     for (line in lines) {
-        println line
         def key = line.split(':')[0].trim()
         if (key != 'Description') {
             metaMap[key] = line.split(':', 2)[1].trim()
         } else {
-            println 'description*********'
             metaMap[key] = metadata.split(line)[1].trim()
             break
         }
     }
-    println metaMap
+
+    // Start validating
     refMap.each{ key, value ->
         if (key == "Architecture") {
-            if (value == 'x64') {        //up to change if naming confirmed
+            if (value == 'x64') {        //up to change if naming confirmed in the distribution manifest
                 assert metaMap[key] == 'x86_64'
             } else {
                 assert metaMap[key] == 'aarch64'
@@ -50,53 +54,8 @@ def call(Map args = [:]) {
         } else {
             assert metaMap[key] == value
         }
-        println ("Meta data $key is validated")
+        println("Meta data for $key is validated")
     }
-//    assert name == metaMap['Name']
-//    assert version == metaMap['Version']
-//    if (architecture == 'x64') {        //up to change if naming confirmed
-//        assert metaMap['Architecture'] == 'x86_64'
-//    } else {
-//        assert metaMap['Architecture'] == 'aarch64'
-//    }
-//    assert group == metaMap['Group']
-//    assert license == metaMap['License']
-//    assert relocations == metaMap['Relocations']
-//    assert summary == metaMap['Summary']
-//    assert url == metaMap['URL']
-//    assert description == metaMap['Description']
-    println 'everything is goodooooooood ********************'
 
-
-
-//    withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
-//        for (component in componentsName) {
-//            def commitID = buildManifestObj.getCommitId(component)
-//            def repo = buildManifestObj.getRepo(component)
-//            def push_url = "https://$GITHUB_TOKEN@" + repo.minus('https://')
-//            echo "Tagging $component at $commitID ..."
-//
-//            dir (component) {
-//                checkout([$class: 'GitSCM', branches: [[name: commitID]],
-//                          userRemoteConfigs: [[url: repo]]])
-//                def tagVersion = "$version.0"
-//                if (component == "OpenSearch" || component == "OpenSearch-Dashboards" || component == "functionalTestDashboards") {
-//                    tagVersion = version
-//                }
-//                def tag_id = sh (
-//                        script: "git ls-remote --tags $repo $tagVersion | awk 'NR==1{print \$1}'",
-//                        returnStdout: true
-//                ).trim()
-//                if (tag_id == "") {
-//                    echo "Creating $tagVersion tag for $component"
-//                    sh "git tag $tagVersion"
-//                    sh "git push $push_url $tagVersion"
-//                } else if (tag_id == commitID) {
-//                    echo "Tag $tagVersion has been created with identical commit ID. Skipping creating new tag for $component."
-//                } else {
-//                    error "Tag $tagVersion already existed in $component with a different commit ID. Please check this."
-//                }
-//            }
-//        }
-//    }
+    println("Validation for meta data of RPM distribution completed.")
 }
