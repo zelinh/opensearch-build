@@ -1,3 +1,4 @@
+def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
 def call(Map args = [:]) {
 
     def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
@@ -5,6 +6,10 @@ def call(Map args = [:]) {
     def distFile = args.rpmDistribution
 
     metaValidate(buildManifestObj, distFile)
+
+}
+
+void fileNameValidate(BuildManifest buildManifestObj, String distFilePath) {
 
 }
 
