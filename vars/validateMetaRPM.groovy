@@ -23,10 +23,10 @@ def call(Map args = [:]) {
     println("Name convention for distribution file starts:")
     def distFileNameWithExtension = distFile.split('/').last()
     println("the File name is : $distFileNameWithExtension")        //opensearch-1.3.0-linux-x64.rpm
-    if (!distFileNameWithExtension.endWith('.rpm')) {
+    if (!distFileNameWithExtension.endsWith(".rpm")) {
         error("This isn't a valid rpm distribution.")
     }
-    def distFileName = distFileNameWithExtension.remove('.rpm')
+    def distFileName = distFileNameWithExtension.remove(".rpm")
     def fileNameMap = [:]
     fileNameMap['Name'] = distFileName.split('-')[0].trim()
     fileNameMap['Version'] = distFileName.split('-')[1].trim()
