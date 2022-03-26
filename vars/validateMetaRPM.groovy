@@ -26,7 +26,7 @@ def call(Map args = [:]) {
     if (!distFileNameWithExtension.endsWith(".rpm")) {
         error("This isn't a valid rpm distribution.")
     }
-    def distFileName = distFileNameWithExtension.remove(".rpm")
+    def distFileName = distFileNameWithExtension.replace(".rpm", "")
     def fileNameMap = [:]
     fileNameMap['Name'] = distFileName.split('-')[0].trim()
     fileNameMap['Version'] = distFileName.split('-')[1].trim()
