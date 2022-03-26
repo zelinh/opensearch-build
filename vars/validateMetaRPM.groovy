@@ -11,7 +11,7 @@ def call(Map args = [:]) {
     refMap['Architecture'] = buildManifestObj.build.architecture
     //refMap['Distribution'] = buildManifestObj.build.distribution
     //refMap['Release'] = 1
-    refMap['Platform'] = "linux" //Hard code the platform since it's assumed always linux for rpm
+    //refMap['Platform'] = "linux" //Hard code the platform since it's assumed always linux for rpm
     refMap['Group'] = "Application/Internet"
     refMap['License'] = "Apache-2.0"
     refMap['Relocations'] = "(not relocatable)"
@@ -27,15 +27,8 @@ def call(Map args = [:]) {
         error("This isn't a valid rpm distribution.")
     }
     def distFileName = distFileNameWithExtension.replace(".rpm", "")
-    def fileNameMap = [:]
-    fileNameMap['Name'] = distFileName.split('-')[0].trim()
-    fileNameMap['Version'] = distFileName.split('-')[1].trim()
-    fileNameMap['Platform'] = distFileName.split('-')[2].trim()
-    fileNameMap['Architecture'] = distFileName.split('-')[3].trim()
-    fileNameMap.each{ key, value ->
-        assert refMap[key] == value
-        println("File name for $key is validated.")
-    }
+    def refFileName = [refMap["Name"], refMap["Version"], "linux", refMap["Architecture"]].join("-")
+    assert distFileName == refFileName
     println("File name for the RPM distribution has been validated.")
 
     println("*******************************")
