@@ -4,6 +4,9 @@ def call(Map args = [:]) {
     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: args.distManifest))
     def distFile = args.rpmDistribution
 
+    if (buildManifestObj.build.distribution != 'rpm') {
+        error("Invalid distribution manifest. Please input the correct one.")
+    }
     // the context the meta data should be
     def refMap = [:]
     refMap['Name'] = buildManifestObj.build.getFilename()
