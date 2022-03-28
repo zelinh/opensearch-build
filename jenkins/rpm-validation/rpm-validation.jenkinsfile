@@ -42,6 +42,7 @@ pipeline {
                         path: "$ARTIFACT_PATH/dist/",
                         force: true
                     )
+                    println("download completed************")
                     sh "ls $WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch"
 
                     validateMetaRPM(
