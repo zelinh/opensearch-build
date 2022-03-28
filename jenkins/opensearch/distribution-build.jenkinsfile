@@ -243,15 +243,14 @@ pipeline {
                                 force: true
                             )
                             sh "ls $WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch"
-                            validateMetaRPM(
-                                distManifest: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/manifest.yml",
-                                rpmDistribution: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
-                            )
-//                             String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
-//                             String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
-//                             env.ARTIFACT_URL_X64 = artifactUrl   //need to be changed for distribution
-//                             echo "buildManifestUrl (x64): ${buildManifestUrl}"
-//                             echo "artifactUrl (x64): ${artifactUrl}"
+                            build job: "Playground/zelin-rpm-validation", parameters: [
+                                string(name: 'INPUT_MANIFEST', value: "${INPUT_MANIFEST}"),
+                                string(name: 'TEST_MANIFEST', value: "${TEST_MANIFEST}")
+                            ], wait: true
+//                             validateMetaRPM(
+//                                 distManifest: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/manifest.yml",
+//                                 rpmDistribution: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
+//                             )
                        }
                    }
                    post {
