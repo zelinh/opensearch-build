@@ -74,8 +74,8 @@ def call(Map args = [:]) {
     //Validation for the installation
     //install the rpm distribution via yum
     println("Start installation**************************************")
-    sh "yum install $distFile"
-
+    sh "yum install -y $distFile"
+    println("yum rpm installation completed")
 
 
 
