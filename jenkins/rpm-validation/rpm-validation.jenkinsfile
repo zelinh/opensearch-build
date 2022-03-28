@@ -4,11 +4,10 @@ pipeline {
         timeout(time: 1, unit: 'HOURS')
     }
     parameters {
-            string(
+            choice(
                 name: 'Architecture',
                 choices: ['x64', 'arm64'],
-                description: 'The architecture would be used for RPM validation.',
-                trim: true
+                description: 'The architecture would be used for RPM validation.'
             )
             string(
                 name: 'RPM distribution URL',
