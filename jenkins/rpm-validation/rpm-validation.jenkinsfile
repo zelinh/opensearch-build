@@ -60,23 +60,10 @@ pipeline {
     }
     post() {
         success {
-            echo "WhiteSource scan has been completed."
+            echo "Validation has been completed."
         }
         failure {
-            echo "WhiteSource scan failed."
+            echo "validation failed."
         }
     }
-}
-
-void scan() {
-    git url: 'https://github.com/opensearch-project/opensearch-build.git', branch: 'main'
-    sh """
-        curl -SLO https://services.gradle.org/distributions/gradle-6.6.1-bin.zip
-        unzip gradle-6.6.1-bin.zip
-        GRADLE_HOME=`realpath gradle-6.6.1`
-        export PATH=\${GRADLE_HOME}/bin:\$PATH
-        gradle --version
-        cd ./tools/vulnerability-scan/
-        ./wss-scan.sh
-    """
 }
