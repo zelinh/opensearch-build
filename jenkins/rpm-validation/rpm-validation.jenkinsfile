@@ -6,7 +6,7 @@ pipeline {
     parameters {
             string(
                 name: 'Architecture',
-                choices: ['x64', 'arm64']
+                choices: ['x64', 'arm64'],
                 description: 'The architecture would be used for RPM validation.',
                 trim: true
             )
