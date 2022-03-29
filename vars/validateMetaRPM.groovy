@@ -9,8 +9,8 @@ def call(Map args = [:]) {
 //    }
 //    // the context the meta data should be
 //    def refMap = [:]
-//    refMap['Name'] = buildManifestObj.build.getFilename()
-//    refMap['Version'] = buildManifestObj.build.version
+//    refMap['Name'] = buildManifestObj.build.getFilename()   //opensearch; opensearch-dashboards
+//    refMap['Version'] = buildManifestObj.build.version        //1.3.0
 //    refMap['Architecture'] = buildManifestObj.build.architecture
 //    //refMap['Distribution'] = buildManifestObj.build.distribution
 //    //refMap['Release'] = 1
@@ -95,8 +95,8 @@ def call(Map args = [:]) {
     }
 
     //Check the install_demo_configuration.log
-    sh ("cat /var/log/opensearch/install_demo_configuration.log")
-    sh ("cd /var/log/opensearch/ && ls")
+//    sh ("cat /var/log/opensearch/install_demo_configuration.log")
+//    sh ("cd /var/log/opensearch/ && ls")
     //def install_demo_configuration_log = readFile("/var/log/opensearch/install_demo_configuration.log")
     println("Checking the demo log**************")
 //    println(fileExists('/var/log/opensearch/install_demo_configuration.log'))
@@ -130,7 +130,7 @@ def call(Map args = [:]) {
     def cluster_info = sh (
             script:  "curl https://localhost:9200 -u admin:admin --insecure",
             returnStdout: true
-    )
+    ).trim().replaceAll("{", "").replaceAll("}", "").replaceAll("\"", "")
     println("Cluster info is: " + cluster_info)
 
 
