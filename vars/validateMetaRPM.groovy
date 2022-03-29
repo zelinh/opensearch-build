@@ -112,6 +112,8 @@ def call(Map args = [:]) {
         println("install_demo_configuration.log failed.")
     }
 
+    //Start the installed OpenSearch
+    sh ("sudo systemctl restart opensearch")
 
 
 
