@@ -1,7 +1,11 @@
 lib = library(identifier: "jenkins@20211123", retriever: legacySCM(scm))
 
 pipeline {
-    agent none
+    agent {
+        node {
+            label 'Jenkins-Agent-al2-x64-m5xlarge'
+        }
+    }
     options {
         timeout(time: 1, unit: 'HOURS')
     }
@@ -27,14 +31,6 @@ pipeline {
 
     stages {
         stage('RPM validation') {
-            agent {
-                docker {
-                    label 'Jenkins-Agent-al2-x64-c54xlarge-Docker-Host'
-                    image 'opensearchstaging/ci-runner:ci-runner-centos7-v1'
-                    args '-u root' // need root access to install
-                    alwaysPull true
-                }
-            }
             steps {
                 script {
                     def ARTIFACT_PATH = "Playground/zelin-distribution-build/1.3.0/9/linux/x64"
@@ -51,15 +47,15 @@ pipeline {
                         distManifest: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/manifest.yml",
                         rpmDistribution: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
                     )
-                    println("Head back to jenkinsn")
-                    println(fileExists('/var/log/opensearch/install_demo_configuration.log'))
+//                     println("Head back to jenkinsn")
+//                     println(fileExists('/var/log/opensearch/install_demo_configuration.log'))
 
                     sh ("yum remove -y opensearch")
                 }
             }
             post {
                 always {
-                    sh "rm -rf $WORKSPACE/*"
+//                     sh "rm -rf $WORKSPACE/*"
                     postCleanup()
                 }
             }
