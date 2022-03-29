@@ -114,7 +114,8 @@ def call(Map args = [:]) {
 
     //Start the installed OpenSearch
     sh ("sudo systemctl restart opensearch")
-
+    sleep 30s
+    sh ("sudo systemctl status opensearch")
 
 
 
