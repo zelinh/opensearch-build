@@ -1,15 +1,20 @@
-pipeline {
-    agent none
-    stages {
-        stage('validate RPM meta') {
-            steps {
-                script {
-                    validateMetaRPM(
-                        distManifest: "tests/data/manifest_rpm.yml",
-                        rpmDistribution: "/Users/zelinhao/workplace/RPM dist/opensearch-1.3.0-linux-x64.rpm"
-                    )
-                }
-            }
-        }
-    }
-}
+   ValidateMetaRPM_Jenkinsfile.run()
+      ValidateMetaRPM_Jenkinsfile.pipeline(groovy.lang.Closure)
+         ValidateMetaRPM_Jenkinsfile.echo(Executing on agent [label:none])
+         ValidateMetaRPM_Jenkinsfile.stage(validate RPM meta, groovy.lang.Closure)
+            ValidateMetaRPM_Jenkinsfile.script(groovy.lang.Closure)
+               ValidateMetaRPM_Jenkinsfile.validateMetaRPM({distManifest=tests/data/opensearch-1.3.0-linux-x64-rpm.yml, rpmDistribution=/Users/zelinhao/workplace/RPM dist/opensearch-1.3.0-linux-x64.rpm})
+                  validateMetaRPM.legacySCM(groovy.lang.Closure)
+                  validateMetaRPM.library({identifier=jenkins@20211123, retriever=null})
+                  validateMetaRPM.readYaml({file=tests/data/opensearch-1.3.0-linux-x64-rpm.yml})
+                  BuildManifest.asBoolean()
+                  validateMetaRPM.sh({script=rpm -qip /Users/zelinhao/workplace/RPM dist/opensearch-1.3.0-linux-x64.rpm, returnStdout=true})
+                  validateMetaRPM.println(Meta data for Name is validated)
+                  validateMetaRPM.println(Meta data for Version is validated)
+                  validateMetaRPM.println(Meta data for Architecture is validated)
+                  validateMetaRPM.println(Meta data for Group is validated)
+                  validateMetaRPM.println(Meta data for License is validated)
+                  validateMetaRPM.println(Meta data for Relocations is validated)
+                  validateMetaRPM.println(Meta data for Summary is validated)
+                  validateMetaRPM.println(Meta data for URL is validated)
+                  validateMetaRPM.println(Meta data for Description is validated)
