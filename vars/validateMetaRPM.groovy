@@ -79,6 +79,8 @@ def call(Map args = [:]) {
 
     //Check certs in /etc/opensearch/
     println("Check if the certs are existed.")
+    sh ('[[ -d /etc/opensearch ]] && echo "/etc/opensearch directory exists"' +
+            '|| (echo "/etc/opensearch does not exist" && exit 1)')
     def certs = sh (
             script: "ls /etc/opensearch",
             returnStdout: true
@@ -98,12 +100,17 @@ def call(Map args = [:]) {
     //def install_demo_configuration_log = readFile("/var/log/opensearch/install_demo_configuration.log")
     println("Checking the demo log**************")
 //    println(fileExists('/var/log/opensearch/install_demo_configuration.log'))
-    sh ('[[ -f /var/log/opensearch/install_demo_configuration111.log ]] && echo "install_demo_configuration.log exists" ' +
+    sh ('[[ -f /var/log/opensearch/install_demo_configuration.log ]] && echo "install_demo_configuration.log exists" ' +
             '|| (echo "install_demo_configuration.log does not exist" && exit 1)')
-//    def install_demo_configuration_log = sh (
-//            script: "cat /var/log/opensearch/install_demo_configuration.log",
-//            returnStdout: true
-//    ).trim()
+    def install_demo_configuration_log = sh (
+            script: "cat /var/log/opensearch/install_demo_configuration.log",
+            returnStdout: true
+    ).trim()
+    if (install_demo_configuration_log.contains("Success")) {
+        println("install_demo_configuration.log validation succeed.!!!!!!")
+    } else {
+        println("install_demo_configuration.log failed.")
+    }
 
 
 
