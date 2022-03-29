@@ -94,11 +94,10 @@ def call(Map args = [:]) {
 
     //Check the install_demo_configuration.log
     sh ("cd /var/log/opensearch/ && ls")
-//    def install_demo_configuration_log = readFile(file: "/var/log/opensearch/install_demo_configuration.log")
-//    println("Checking the demo log**************")
-//    if (install_demo_configuration_log.existed()) {
-//        println("File existed")
-//    }
+    def install_demo_configuration_log = readFile(file: "/var/log/opensearch/install_demo_configuration.log")
+    println("Checking the demo log**************")
+    println(install_demo_configuration_log)
+
 
 
 }
