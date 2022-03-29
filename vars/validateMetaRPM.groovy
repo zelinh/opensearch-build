@@ -84,11 +84,13 @@ def call(Map args = [:]) {
             script: "ls /etc/opensearch",
             returnStdout: true
     ).trim()
-    println("certs are $certs")
-    if (certs.contains(cert1)) {
-        println("it contains $cert1!!!!!!!!!!!")
-    } else {
-        println("it doesn't contain $cert1")
+    def requiredCerts = ["esnode-key.pem", "kirk.pem", "esnode.pem", "kirk-key.pem", "root-ca.pem"]
+    requiredCerts.each {
+        if (certs.contains(it)){
+            println("$it is found existed")
+        } else {
+            error("Error finding $it certificate.")
+        }
     }
 
 }
