@@ -79,6 +79,7 @@ def call(Map args = [:]) {
 
     //Check certs in /etc/opensearch/
     println("Check if the certs are existed.")
+    def cert1 = "esnode-key.pem"
     def certs = sh (
             script: "ls /etc/opensearch",
             returnStdout: true
