@@ -115,8 +115,19 @@ def call(Map args = [:]) {
     //Start the installed OpenSearch
     sh ("sudo systemctl restart opensearch")
     sleep 30    //wait for 30 secs for opensearch to start
-    sh ("sudo systemctl status opensearch")
+    def running_status = sh (
+            script: "sudo systemctl status opensearch",
+            returnStdout: true
+    ).trim()
+    def active_status_message = "Active: active (running)"
+    if (running_status.contains(active_status_message)) {
+        println("Installed OpenSearch is actively running!")
+    } else {
+        error("Something went run! Installed OpenSearch is not actively running.")
+    }
 
+    //Check the starting cluster
+    sh ("curl https://localhost:9200 -u admin:admin --insecure")
 
 
 }
