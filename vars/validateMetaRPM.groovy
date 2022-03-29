@@ -98,7 +98,7 @@ def call(Map args = [:]) {
     //def install_demo_configuration_log = readFile("/var/log/opensearch/install_demo_configuration.log")
     println("Checking the demo log**************")
 //    println(fileExists('/var/log/opensearch/install_demo_configuration.log'))
-    sh ('[[ -f /var/log/opensearch/install_demo_configuration.log ]] && echo "install_demo_configuration.log exists" ' +
+    sh ('[[ -f /var/log/opensearch/install_demo_configuration111.log ]] && echo "install_demo_configuration.log exists" ' +
             '|| (echo "install_demo_configuration.log does not exist" && exit 1)')
 //    def install_demo_configuration_log = sh (
 //            script: "cat /var/log/opensearch/install_demo_configuration.log",
