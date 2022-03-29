@@ -75,8 +75,19 @@ def call(Map args = [:]) {
     //install the rpm distribution via yum
     println("Start installation**************************************")
     sh "yum install -y $distFile"
-    println("yum rpm installation completed")
+    println("RPM distribution is installed with yum.")
 
-
+    //Check certs in /etc/opensearch/
+    println("Check if the certs are existed.")
+    def cert1 = "esnode-key.pem"
+    def certs = sh (
+            script: "ll /etc/opensearch",
+            returnStdout: true
+    ).trim()
+    if (certs.contains(cert1)) {
+        println("it contains $cert1!!!!!!!!!!!")
+    } else {
+        println("it doesn't contain $cert1")
+    }
 
 }
