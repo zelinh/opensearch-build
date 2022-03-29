@@ -127,7 +127,11 @@ def call(Map args = [:]) {
     }
 
     //Check the starting cluster
-    sh ("curl https://localhost:9200 -u admin:admin --insecure")
+    def cluster_info = sh (
+            script:  "curl https://localhost:9200 -u admin:admin --insecure",
+            returnStdout: true
+    )
+    println("Cluster info is: " + cluster_info)
 
 
 }
