@@ -9,7 +9,7 @@ pipeline {
             choice(
                 name: 'Architecture',
                 choices: ['x64', 'arm64'],
-                description: 'The architecture would be used for RPM validation.'
+                description: 'The architecture would be used for RPM validation. Selected choices: x64, arm64.'
             )
             string(
                 name: 'RPM distribution URL',
