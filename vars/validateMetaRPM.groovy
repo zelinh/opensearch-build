@@ -79,7 +79,6 @@ def call(Map args = [:]) {
 
     //Check certs in /etc/opensearch/
     println("Check if the certs are existed.")
-    def cert1 = "esnode-key.pem"
     def certs = sh (
             script: "ls /etc/opensearch",
             returnStdout: true
@@ -92,5 +91,13 @@ def call(Map args = [:]) {
             error("Error finding $it certificate.")
         }
     }
+
+    //Check the install_demo_configuration.log
+    def install_demo_configuration_log = readFile(file: "/var/log/opensearch/install_demo_configuration.log")
+    println("Checking the demo log**************")
+    if (install_demo_configuration_log.existed()) {
+        println("File existed")
+    }
+
 
 }
