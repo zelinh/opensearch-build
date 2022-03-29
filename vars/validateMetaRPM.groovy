@@ -74,7 +74,7 @@ def call(Map args = [:]) {
     //Validation for the installation
     //install the rpm distribution via yum
     println("Start installation**************************************")
-    sh "yum install -y $distFile"
+    sh "sudo yum install -y $distFile"
     println("RPM distribution is installed with yum.")
 
     //Check certs in /etc/opensearch/
