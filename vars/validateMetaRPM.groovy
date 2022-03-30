@@ -130,7 +130,7 @@ def call(Map args = [:]) {
     def cluster_info = sh (
             script:  "curl https://localhost:9200 -u admin:admin --insecure",
             returnStdout: true
-    ).trim().replaceAll("{", "")
+    ).trim().replaceAll("\"", "")
             //.replaceAll("}", "").replaceAll("\"", "")
     println("Cluster info is: " + cluster_info)
 
