@@ -124,9 +124,9 @@ def call(Map args = [:]) {
     ).trim()
     def active_status_message = "Active: active (running)"
     if (running_status.contains(active_status_message)) {
-        println("Installed OpenSearch is actively running!")
+        println("After checking the status, the installed $name is actively running!")
     } else {
-        error("Something went run! Installed OpenSearch is not actively running.")
+        error("Something went run! Installed $name is not actively running.")
     }
 
     //Check the starting cluster
@@ -152,7 +152,7 @@ def call(Map args = [:]) {
 
     //Cluster status validation
     def cluster_status = sh (
-            script:  "curl https://localhost:9200 -u admin:admin --insecure",
+            script:  "curl https://localhost:9200/_cluster/health?pretty -u admin:admin --insecure",
             returnStdout: true
     ).trim().replaceAll("\"", "").replaceAll(",", "")
     println("Cluster status is: " + cluster_status)
