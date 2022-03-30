@@ -156,4 +156,14 @@ def call(Map args = [:]) {
             returnStdout: true
     ).trim().replaceAll("\"", "").replaceAll(",", "")
     println("Cluster status is: " + cluster_status)
+    for (line in cluster_status.split("\n")) {
+        def key = line.split(":")[0].trim()
+        if (key == "cluster_name") {
+            assert line.split(":")[1].trim() == name
+            println("Cluster name is validated.")
+        } else if (key == "status") {
+            assert line.split(":")[1].trim() == "green"
+            println("Cluster status is green!")
+        }
+    }
 }
