@@ -55,6 +55,7 @@ pipeline {
             }
             post {
                 always {
+                    sh ("sudo systemctl stop opensearch")
                     sh ("sudo yum remove -y opensearch")
                     sh "rm -rf $WORKSPACE/*"
                     postCleanup()

@@ -3,15 +3,18 @@ def call(Map args = [:]) {
     def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: args.distManifest))
     def distFile = args.rpmDistribution
+    def name = buildManifestObj.build.getFilename()   //opensearch; opensearch-dashboards
+    def version = buildManifestObj.build.version        //1.3.0
+    def architecture = buildManifestObj.build.architecture
 
     if (buildManifestObj.build.distribution != 'rpm') {
         error("Invalid distribution manifest. Please input the correct one.")
     }
     // the context the meta data should be
     def refMap = [:]
-    refMap['Name'] = buildManifestObj.build.getFilename()   //opensearch; opensearch-dashboards
-    refMap['Version'] = buildManifestObj.build.version        //1.3.0
-    refMap['Architecture'] = buildManifestObj.build.architecture
+    refMap['Name'] = name
+    refMap['Version'] = version
+    refMap['Architecture'] = architecture
     //refMap['Distribution'] = buildManifestObj.build.distribution
     //refMap['Release'] = 1
     //refMap['Platform'] = "linux" //Hard code the platform since it's assumed always linux for rpm
@@ -116,7 +119,7 @@ def call(Map args = [:]) {
     sh ("sudo systemctl restart opensearch")
     sleep 30    //wait for 30 secs for opensearch to start
     def running_status = sh (
-            script: "sudo systemctl status $refMap['Name']",
+            script: "sudo systemctl status $name",
             returnStdout: true
     ).trim()
     def active_status_message = "Active: active (running)"
@@ -135,10 +138,10 @@ def call(Map args = [:]) {
     for (line in cluster_info.split("\n")) {
         def key = line.split(":")[0].trim()
         if (key == "cluster_name") {
-            assert line.split(":")[1].trim() == refMap['Name']
+            assert line.split(":")[1].trim() == name
             println("Cluster name is validated.")
         } else if (key == "number") {
-            assert line.split(":")[1].trim() == refMap['Version']
+            assert line.split(":")[1].trim() == version
             println("Cluster version is validated.")
         } else if (key == "build_type") {
             assert line.split(":")[1].trim() == 'rpm'
