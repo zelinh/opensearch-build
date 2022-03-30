@@ -116,7 +116,7 @@ def call(Map args = [:]) {
     sh ("sudo systemctl restart opensearch")
     sleep 30    //wait for 30 secs for opensearch to start
     def running_status = sh (
-            script: "sudo systemctl status opensearch",
+            script: "sudo systemctl status ($refMap['Name'])",
             returnStdout: true
     ).trim()
     def active_status_message = "Active: active (running)"
@@ -147,4 +147,10 @@ def call(Map args = [:]) {
     }
     println("Cluster information is validated.")
 
+    //Cluster status validation
+    def cluster_status = sh (
+            script:  "curl https://localhost:9200 -u admin:admin --insecure",
+            returnStdout: true
+    ).trim().replaceAll("\"", "").replaceAll(",", "")
+    println("Cluster status is: " + cluster_status)
 }
