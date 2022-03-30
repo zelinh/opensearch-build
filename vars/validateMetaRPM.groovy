@@ -166,4 +166,11 @@ def call(Map args = [:]) {
             println("Cluster status is green!")
         }
     }
+
+    //Check the cluster
+    def cluster_plugin = sh (
+            script: "curl https://localhost:9200/_cat/plugins?v -u admin:admin --insecure",
+            returnStdout: true
+    ).trim().replaceAll("\"", "").replaceAll(",", "")
+    println("Cluster plugins are: " + cluster_plugin)
 }
