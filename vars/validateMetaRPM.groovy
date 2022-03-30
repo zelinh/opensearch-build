@@ -116,7 +116,7 @@ def call(Map args = [:]) {
     sh ("sudo systemctl restart opensearch")
     sleep 30    //wait for 30 secs for opensearch to start
     def running_status = sh (
-            script: "sudo systemctl status ($refMap['Name'])",
+            script: "sudo systemctl status $refMap['Name']",
             returnStdout: true
     ).trim()
     def active_status_message = "Active: active (running)"
