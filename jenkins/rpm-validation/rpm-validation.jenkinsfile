@@ -50,11 +50,12 @@ pipeline {
 //                     println("Head back to jenkinsn")
 //                     println(fileExists('/var/log/opensearch/install_demo_configuration.log'))
 
-                    sh ("sudo yum remove -y opensearch")
+
                 }
             }
             post {
                 always {
+                    sh ("sudo yum remove -y opensearch")
                     sh "rm -rf $WORKSPACE/*"
                     postCleanup()
                 }
