@@ -6,6 +6,7 @@ def call(Map args = [:]) {
     def name = buildManifestObj.build.getFilename()   //opensearch; opensearch-dashboards
     def version = buildManifestObj.build.version        //1.3.0
     def architecture = buildManifestObj.build.architecture
+    def plugin_names = buildManifestObj.getNames();
 
     if (buildManifestObj.build.distribution != 'rpm') {
         error("Invalid distribution manifest. Please input the correct one.")
@@ -152,7 +153,7 @@ def call(Map args = [:]) {
 
     //Cluster status validation
     def cluster_status = sh (
-            script:  "curl https://localhost:9200/_cluster/health?pretty -u admin:admin --insecure",
+            script:  "curl \"https://localhost:9200/_cluster/health?pretty\" -u admin:admin --insecure",
             returnStdout: true
     ).trim().replaceAll("\"", "").replaceAll(",", "")
     println("Cluster status is: " + cluster_status)
@@ -168,10 +169,52 @@ def call(Map args = [:]) {
     }
 
     //Check the cluster
-    sh ("curl https://localhost:9200/_cat/plugins?v -u admin:admin --insecure")
-    def cluster_plugin = sh (
-            script: "curl https://localhost:9200/_cat/plugins?v -u admin:admin --insecure",
-            returnStdout: true
-    ).trim().replaceAll("\"", "").replaceAll(",", "")
-    //println("Cluster plugins are: " + cluster_plugin)
+    sh ("curl \"https://localhost:9200/_cat/plugins?v\" -u admin:admin --insecure")
+//    name                                              component                            version
+//    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-alerting                  1.3.0.0
+//    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-anomaly-detection         1.3.0.0
+//    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-asynchronous-search       1.3.0.0
+//    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-cross-cluster-replication 1.3.0.0
+//    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-index-management          1.3.0.0
+//    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-job-scheduler             1.3.0.0
+//    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-knn                       1.3.0.0
+//    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-ml                        1.3.0.0
+//    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-observability             1.3.0.0
+//    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-performance-analyzer      1.3.0.0
+//    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-reports-scheduler         1.3.0.0
+//    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-security                  1.3.0.0
+//    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-sql                       1.3.0.0
+//    def cluster_plugins = sh (
+//            script: "curl \"https://localhost:9200/_cat/plugins?v\" -u admin:admin --insecure",
+//            returnStdout: true
+//    ).trim().replaceAll("\"", "").replaceAll(",", "")
+//    println("Cluster plugins are: " + cluster_plugin)
+//    def components_dict = [:]
+//    // Some hard coding:
+//    components_dict["alerting"] = "opensearch-alerting"
+//    components_dict["anomaly-detection"] = "opensearch-anomaly-detection"
+//    components_dict["asynchronous-search"] = "opensearch-asynchronous-search"
+//    components_dict["cross-cluster-replication"] = "opensearch-cross-cluster-replication"
+//    components_dict["index-management"] = "opensearch-index-management"
+//    components_dict["job-scheduler"] = "opensearch-job-scheduler"
+//    components_dict["k-NN"] = "opensearch-knn"
+//    components_dict["ml-commons"] = "opensearch-ml"
+//    components_dict["observability"] = "opensearch-observability"
+//    components_dict["performance-analyzer"] = "opensearch-performance-analyzer"
+//    components_dict["dashboards-reports"] = "opensearch-reports-scheduler"
+//    components_dict["security"] = "opensearch-security"
+//    components_dict["sql"] = "opensearch-sql"
+//    def cluster_plugin = [:]
+//    for (line in cluster_plugins.split("\n")) {
+//        def component_name = line.split("\\s+")[1]
+//        def component_version = line.split("\\s+")[2]
+//        cluster_plugin[component_name] = component_version
+//    }
+//    for (component in plugin_names) {
+//        if (component == "OpenSearch" || component == "common-utils") {
+//            continue
+//        }
+//        assert cluster_plugin.containsKey(components_dict[component])
+//        assert cluster_plugin[components_dict[component]] == "$version.0"
+//    }
 }
