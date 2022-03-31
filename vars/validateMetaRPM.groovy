@@ -132,7 +132,7 @@ def call(Map args = [:]) {
 
     //Check the starting cluster
     def cluster_info = sh (
-            script:  "curl https://localhost:9200 -u admin:admin --insecure",
+            script:  "curl -s \"https://localhost:9200\" -u admin:admin --insecure",
             returnStdout: true
     ).trim().replaceAll("\"", "").replaceAll(",", "")
     println("Cluster info is: " + cluster_info)
@@ -153,7 +153,7 @@ def call(Map args = [:]) {
 
     //Cluster status validation
     def cluster_status = sh (
-            script:  "curl \"https://localhost:9200/_cluster/health?pretty\" -u admin:admin --insecure",
+            script:  "curl -s \"https://localhost:9200/_cluster/health?pretty\" -u admin:admin --insecure",
             returnStdout: true
     ).trim().replaceAll("\"", "").replaceAll(",", "")
     println("Cluster status is: " + cluster_status)
@@ -169,7 +169,7 @@ def call(Map args = [:]) {
     }
 
     //Check the cluster
-    sh ("curl \"https://localhost:9200/_cat/plugins?v\" -u admin:admin --insecure")
+    sh ("curl -s \"https://localhost:9200/_cat/plugins?v\" -u admin:admin --insecure")
 //    name                                              component                            version
 //    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-alerting                  1.3.0.0
 //    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-anomaly-detection         1.3.0.0
