@@ -188,7 +188,7 @@ def call(Map args = [:]) {
             script: "curl -s \"https://localhost:9200/_cat/plugins?v\" -u admin:admin --insecure",
             returnStdout: true
     ).trim().replaceAll("\"", "").replaceAll(",", "")
-    println("Cluster plugins are: " + cluster_plugin)
+    println("Cluster plugins are: " + cluster_plugins)
     def components_dict = [:]
     // Some hard coding:
     components_dict["alerting"] = "opensearch-alerting"
@@ -216,5 +216,6 @@ def call(Map args = [:]) {
         }
         assert cluster_plugin.containsKey(components_dict[component])
         assert cluster_plugin[components_dict[component]] == "$version.0"
+        println(component + " is validated")
     }
 }
