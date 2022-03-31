@@ -184,37 +184,37 @@ def call(Map args = [:]) {
 //    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-reports-scheduler         1.3.0.0
 //    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-security                  1.3.0.0
 //    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-sql                       1.3.0.0
-//    def cluster_plugins = sh (
-//            script: "curl \"https://localhost:9200/_cat/plugins?v\" -u admin:admin --insecure",
-//            returnStdout: true
-//    ).trim().replaceAll("\"", "").replaceAll(",", "")
-//    println("Cluster plugins are: " + cluster_plugin)
-//    def components_dict = [:]
-//    // Some hard coding:
-//    components_dict["alerting"] = "opensearch-alerting"
-//    components_dict["anomaly-detection"] = "opensearch-anomaly-detection"
-//    components_dict["asynchronous-search"] = "opensearch-asynchronous-search"
-//    components_dict["cross-cluster-replication"] = "opensearch-cross-cluster-replication"
-//    components_dict["index-management"] = "opensearch-index-management"
-//    components_dict["job-scheduler"] = "opensearch-job-scheduler"
-//    components_dict["k-NN"] = "opensearch-knn"
-//    components_dict["ml-commons"] = "opensearch-ml"
-//    components_dict["observability"] = "opensearch-observability"
-//    components_dict["performance-analyzer"] = "opensearch-performance-analyzer"
-//    components_dict["dashboards-reports"] = "opensearch-reports-scheduler"
-//    components_dict["security"] = "opensearch-security"
-//    components_dict["sql"] = "opensearch-sql"
-//    def cluster_plugin = [:]
-//    for (line in cluster_plugins.split("\n")) {
-//        def component_name = line.split("\\s+")[1]
-//        def component_version = line.split("\\s+")[2]
-//        cluster_plugin[component_name] = component_version
-//    }
-//    for (component in plugin_names) {
-//        if (component == "OpenSearch" || component == "common-utils") {
-//            continue
-//        }
-//        assert cluster_plugin.containsKey(components_dict[component])
-//        assert cluster_plugin[components_dict[component]] == "$version.0"
-//    }
+    def cluster_plugins = sh (
+            script: "curl -s \"https://localhost:9200/_cat/plugins?v\" -u admin:admin --insecure",
+            returnStdout: true
+    ).trim().replaceAll("\"", "").replaceAll(",", "")
+    println("Cluster plugins are: " + cluster_plugin)
+    def components_dict = [:]
+    // Some hard coding:
+    components_dict["alerting"] = "opensearch-alerting"
+    components_dict["anomaly-detection"] = "opensearch-anomaly-detection"
+    components_dict["asynchronous-search"] = "opensearch-asynchronous-search"
+    components_dict["cross-cluster-replication"] = "opensearch-cross-cluster-replication"
+    components_dict["index-management"] = "opensearch-index-management"
+    components_dict["job-scheduler"] = "opensearch-job-scheduler"
+    components_dict["k-NN"] = "opensearch-knn"
+    components_dict["ml-commons"] = "opensearch-ml"
+    components_dict["observability"] = "opensearch-observability"
+    components_dict["performance-analyzer"] = "opensearch-performance-analyzer"
+    components_dict["dashboards-reports"] = "opensearch-reports-scheduler"
+    components_dict["security"] = "opensearch-security"
+    components_dict["sql"] = "opensearch-sql"
+    def cluster_plugin = [:]
+    for (line in cluster_plugins.split("\n")) {
+        def component_name = line.split("\\s+")[1]
+        def component_version = line.split("\\s+")[2]
+        cluster_plugin[component_name] = component_version
+    }
+    for (component in plugin_names) {
+        if (component == "OpenSearch" || component == "common-utils") {
+            continue
+        }
+        assert cluster_plugin.containsKey(components_dict[component])
+        assert cluster_plugin[components_dict[component]] == "$version.0"
+    }
 }
