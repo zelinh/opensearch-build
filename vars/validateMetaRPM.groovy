@@ -1,14 +1,14 @@
 def call(Map args = [:]) {
 
     def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
-    def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: args.distManifest))
+    def DistributionManifestObj = lib.jenkins.DistributionManifest.new(readYaml(file: args.distManifest))
     def distFile = args.rpmDistribution
-    def name = buildManifestObj.build.getFilename()   //opensearch; opensearch-dashboards
-    def version = buildManifestObj.build.version        //1.3.0
-    def architecture = buildManifestObj.build.architecture
-    def plugin_names = buildManifestObj.getNames();
+    def name = DistributionManifestObj.build.getFilename()   //opensearch; opensearch-dashboards
+    def version = DistributionManifestObj.build.version        //1.3.0
+    def architecture = DistributionManifestObj.build.architecture
+    def plugin_names = DistributionManifestObj.getNames();
 
-    if (buildManifestObj.build.distribution != 'rpm') {
+    if (DistributionManifestObj.build.distribution != 'rpm') {
         error("Invalid distribution manifest. Please input the correct one.")
     }
     // the context the meta data should be
@@ -16,7 +16,7 @@ def call(Map args = [:]) {
     refMap['Name'] = name
     refMap['Version'] = version
     refMap['Architecture'] = architecture
-    //refMap['Distribution'] = buildManifestObj.build.distribution
+    //refMap['Distribution'] = DistributionManifestObj.build.distribution
     //refMap['Release'] = 1
     //refMap['Platform'] = "linux" //Hard code the platform since it's assumed always linux for rpm
     refMap['Group'] = "Application/Internet"
@@ -190,32 +190,37 @@ def call(Map args = [:]) {
     ).trim().replaceAll("\"", "").replaceAll(",", "")
     println("Cluster plugins are: " + cluster_plugins)
     def components_dict = [:]
-    // Some hard coding:
-    components_dict["alerting"] = "opensearch-alerting"
-    components_dict["anomaly-detection"] = "opensearch-anomaly-detection"
-    components_dict["asynchronous-search"] = "opensearch-asynchronous-search"
-    components_dict["cross-cluster-replication"] = "opensearch-cross-cluster-replication"
-    components_dict["index-management"] = "opensearch-index-management"
-    components_dict["job-scheduler"] = "opensearch-job-scheduler"
-    components_dict["k-NN"] = "opensearch-knn"
-    components_dict["ml-commons"] = "opensearch-ml"
-    components_dict["observability"] = "opensearch-observability"
-    components_dict["performance-analyzer"] = "opensearch-performance-analyzer"
-    components_dict["dashboards-reports"] = "opensearch-reports-scheduler"
-    components_dict["security"] = "opensearch-security"
-    components_dict["sql"] = "opensearch-sql"
-    def cluster_plugin = [:]
-    for (line in cluster_plugins.split("\n")) {
-        def component_name = line.split("\\s+")[1]
-        def component_version = line.split("\\s+")[2]
-        cluster_plugin[component_name] = component_version
-    }
     for (component in plugin_names) {
-        if (component == "OpenSearch" || component == "common-utils") {
-            continue
-        }
-        assert cluster_plugin.containsKey(components_dict[component])
-        assert cluster_plugin[components_dict[component]] == "$version.0"
-        println(component + " is validated")
+        def location = DistributionManifestObj.getLocation(component)
+        def component_name_with_version = location.split('/').last().minus('.zip')
+        println(component_name_with_version)
     }
+    // Some hard coding:
+//    components_dict["alerting"] = "opensearch-alerting"
+//    components_dict["anomaly-detection"] = "opensearch-anomaly-detection"
+//    components_dict["asynchronous-search"] = "opensearch-asynchronous-search"
+//    components_dict["cross-cluster-replication"] = "opensearch-cross-cluster-replication"
+//    components_dict["index-management"] = "opensearch-index-management"
+//    components_dict["job-scheduler"] = "opensearch-job-scheduler"
+//    components_dict["k-NN"] = "opensearch-knn"
+//    components_dict["ml-commons"] = "opensearch-ml"
+//    components_dict["observability"] = "opensearch-observability"
+//    components_dict["performance-analyzer"] = "opensearch-performance-analyzer"
+//    components_dict["dashboards-reports"] = "opensearch-reports-scheduler"
+//    components_dict["security"] = "opensearch-security"
+//    components_dict["sql"] = "opensearch-sql"
+//    def cluster_plugin = [:]
+//    for (line in cluster_plugins.split("\n")) {
+//        def component_name = line.split("\\s+")[1]
+//        def component_version = line.split("\\s+")[2]
+//        cluster_plugin[component_name] = component_version
+//    }
+//    for (component in plugin_names) {
+//        if (component == "OpenSearch" || component == "common-utils") {
+//            continue
+//        }
+//        assert cluster_plugin.containsKey(components_dict[component])
+//        assert cluster_plugin[components_dict[component]] == "$version.0"
+//        println(component + " is validated")
+//    }
 }
