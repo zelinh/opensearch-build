@@ -23,6 +23,8 @@ class BundleManifest(ComponentManifest['BundleManifest', 'BundleComponents']):
           version: string
           platform: linux, darwin or windows
           architecture: x64 or arm64
+          distribution: tar, zip, and rpm
+          id: build id
           location: /relative/path/to/tarball
         components:
           - name: string
@@ -39,6 +41,7 @@ class BundleManifest(ComponentManifest['BundleManifest', 'BundleComponents']):
             "schema": {
                 "platform": {"required": True, "type": "string"},  # added in 1.1
                 "architecture": {"required": True, "type": "string"},
+                "distribution": {"type": "string"},
                 "id": {"required": True, "type": "string"},
                 "location": {"required": True, "type": "string"},
                 "name": {"required": True, "type": "string"},
@@ -53,7 +56,7 @@ class BundleManifest(ComponentManifest['BundleManifest', 'BundleComponents']):
                 "type": "dict",
                 "schema": {
                     "commit_id": {"required": True, "type": "string"},
-                    "location": {"required": True, "type": "string"},
+                    "location": {"type": "string"},  # optional in 1.1
                     "name": {"required": True, "type": "string"},
                     "ref": {"required": True, "type": "string"},
                     "repository": {"required": True, "type": "string"},
@@ -80,6 +83,7 @@ class BundleManifest(ComponentManifest['BundleManifest', 'BundleComponents']):
             self.version = data["version"]
             self.platform = data["platform"]
             self.architecture = data["architecture"]
+            self.distribution: str = data.get('distribution', None)
             self.location = data["location"]
             self.id = data["id"]
 
@@ -89,9 +93,14 @@ class BundleManifest(ComponentManifest['BundleManifest', 'BundleComponents']):
                 "version": self.version,
                 "platform": self.platform,
                 "architecture": self.architecture,
+                "distribution": self.distribution,
                 "location": self.location,
                 "id": self.id,
             }
+
+        @property
+        def filename(self) -> str:
+            return self.name.lower().replace(" ", "-")
 
 
 class BundleComponents(Components['BundleComponent']):
@@ -106,7 +115,7 @@ class BundleComponent(Component):
         self.repository = data["repository"]
         self.ref = data["ref"]
         self.commit_id = data["commit_id"]
-        self.location = data["location"]
+        self.location = data.get("location", None)
 
     def __to_dict__(self) -> dict:
         return {

@@ -10,14 +10,16 @@ function usage() {
     echo ""
     echo "Arguments:"
     echo -e "-v VERSION\t[Required] OpenSearch Dashboards version."
+    echo -e "-q QUALIFIER\t[Optional] Version qualifier."
     echo -e "-s SNAPSHOT\t[Optional] Build a snapshot, default is 'false'."
     echo -e "-p PLATFORM\t[Optional] Platform, default is 'uname -s'."
     echo -e "-a ARCHITECTURE\t[Optional] Build architecture, default is 'uname -m'."
+    echo -e "-d DISTRIBUTION\t[Optional] Distribution, default is 'tar'."
     echo -e "-o OUTPUT\t[Optional] Output path, default is 'artifacts'."
     echo -e "-h help"
 }
 
-while getopts ":h:v:s:o:p:a:" arg; do
+while getopts ":h:v:q:s:o:p:a:d:" arg; do
     case $arg in
         h)
             usage
@@ -25,6 +27,9 @@ while getopts ":h:v:s:o:p:a:" arg; do
             ;;
         v)
             VERSION=$OPTARG
+            ;;
+        q)
+            QUALIFIER=$OPTARG
             ;;
         s)
             SNAPSHOT=$OPTARG
@@ -37,6 +42,9 @@ while getopts ":h:v:s:o:p:a:" arg; do
             ;;
         a)
             ARCHITECTURE=$OPTARG
+            ;;
+        d)
+            DISTRIBUTION=$OPTARG
             ;;
         :)
             echo "Error: -${OPTARG} requires an argument"
@@ -59,35 +67,57 @@ fi
 [ -z "$OUTPUT" ] && OUTPUT=artifacts
 [ -z "$PLATFORM" ] && PLATFORM=$(uname -s | awk '{print tolower($0)}')
 [ -z "$ARCHITECTURE" ] && ARCHITECTURE=`uname -m`
+[ -z "$DISTRIBUTION" ] && DISTRIBUTION="tar"
+[ ! -z "$QUALIFIER" ] && QUALIFIER_IDENTIFIER="-$QUALIFIER"
+[[ "$SNAPSHOT" == "true" ]] && IDENTIFIER="-SNAPSHOT"
+[[ "$SNAPSHOT" != "true" ]] && RELEASE="--release"
 
 # Assemble distribution artifact
 # see https://github.com/opensearch-project/OpenSearch/blob/main/settings.gradle#L34 for other distribution targets
-case $ARCHITECTURE in
-    x64)
+case $PLATFORM-$DISTRIBUTION-$ARCHITECTURE in
+    linux-tar-x64)
         TARGET="--$PLATFORM"
-        QUALIFIER="$PLATFORM-x64"
+        EXT="tar.gz"
+        BUILD_PARAMS="build-platform"
+        EXTRA_PARAMS="--skip-os-packages"
+        SUFFIX="$PLATFORM-x64"
         ;;
-    arm64)
+    linux-tar-arm64)
         TARGET="--$PLATFORM-arm"
-        QUALIFIER="$PLATFORM-arm64"
+        EXT="tar.gz"
+        BUILD_PARAMS="build-platform"
+        EXTRA_PARAMS="--skip-os-packages"
+        SUFFIX="$PLATFORM-arm64"
+        ;;
+    linux-rpm-x64)
+        TARGET="--$DISTRIBUTION"
+        EXT="$DISTRIBUTION"
+        BUILD_PARAMS="build"
+        EXTRA_PARAMS="--skip-archives"
+        SUFFIX="x64"
+        ;;
+    linux-rpm-arm64)
+        TARGET="--$DISTRIBUTION-arm"
+        EXT="$DISTRIBUTION"
+        BUILD_PARAMS="build"
+        EXTRA_PARAMS="--skip-archives"
+        SUFFIX="arm64"
         ;;
     *)
-        echo "Unsupported architecture: ${ARCHITECTURE}"
+        echo "Unsupported platform-distribution-architecture combination: $PLATFORM-$DISTRIBUTION-$ARCHITECTURE"
         exit 1
         ;;
 esac
 
-echo "Building node modules for core"
+echo "Building node modules for core with $PLATFORM-$DISTRIBUTION-$ARCHITECTURE"
 yarn osd bootstrap
 
 echo "Building artifact"
-[[ "$SNAPSHOT" == "true" ]] && IDENTIFIER="-SNAPSHOT"
-[[ "$SNAPSHOT" != "true" ]] && RELEASE="--release"
 
-yarn build-platform $TARGET --skip-os-packages $RELEASE
+yarn $BUILD_PARAMS $TARGET $EXTRA_PARAMS $RELEASE --version-qualifier=$QUALIFIER
 
 mkdir -p "${OUTPUT}/dist"
 # Copy artifact to dist folder in bundle build output
-ARTIFACT_BUILD_NAME=opensearch-dashboards-$VERSION$IDENTIFIER-$QUALIFIER.tar.gz
-ARTIFACT_TARGET_NAME=opensearch-dashboards-min-$VERSION$IDENTIFIER-$QUALIFIER.tar.gz
+ARTIFACT_BUILD_NAME=opensearch-dashboards-$VERSION$QUALIFIER_IDENTIFIER$IDENTIFIER-$SUFFIX.$EXT
+ARTIFACT_TARGET_NAME=opensearch-dashboards-min-$VERSION$QUALIFIER_IDENTIFIER$IDENTIFIER-$SUFFIX.$EXT
 cp target/$ARTIFACT_BUILD_NAME $OUTPUT/dist/$ARTIFACT_TARGET_NAME

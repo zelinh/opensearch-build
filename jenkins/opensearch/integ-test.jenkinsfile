@@ -1,41 +1,78 @@
 lib = library(identifier: "jenkins@20211118", retriever: legacySCM(scm))
 
 pipeline {
+    options {
+        timeout(time: 3, unit: 'HOURS')
+    }
     agent none
     environment {
-        AWS_ROLE_ARN = "arn:aws:iam::${AWS_ACCOUNT_PUBLIC}:role/opensearch-test"
-        AWS_ROLE_SESSION_NAME = "jenkins-test-session"
         BUILD_MANIFEST = "build-manifest.yml"
+        DEFAULT_BUILD_JOB_NAME = "distribution-build-opensearch"
     }
     tools {
-        jdk "JDK14"
         maven "maven-3.8.2"
     }
     parameters {
         string(
-            defaultValue: '',
             name: 'TEST_MANIFEST',
-            description: 'Test manifest under the manifests folder, e.g. manifests/2.0.0/opensearch-2.0.0-test.yml.',
+            description: 'Test manifest under the manifests folder, e.g. 2.0.0/opensearch-2.0.0-test.yml.',
             trim: true
         )
         string(
-            defaultValue: '',
             name: 'BUILD_MANIFEST_URL',
             description: 'The build manifest URL, e.g. https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/1.2.2/98/linux/x64/builds/opensearch/manifest.yml.',
             trim: true
         )
         string(
-            defaultValue: '',
             name: 'AGENT_LABEL',
             description: 'The agent label where the tests should be executed, e.g. Jenkins-Agent-al2-x64-c54xlarge-Docker-Host.',
             trim: true
         )
     }
     stages {
-        stage('integ-test') {
+        stage('verify-parameters') {
             agent {
                 node {
-                    label "${AGENT_LABEL}"
+                    label AGENT_LABEL
+                }
+            }
+            steps {
+                script {
+                    if (AGENT_LABEL == '') {
+                        currentBuild.result = 'ABORTED'
+                        error("Integration Tests failed to start. Missing parameter: AGENT_LABEL.")
+                    }
+                    if (!fileExists("manifests/${TEST_MANIFEST}")) {
+                        currentBuild.result = 'ABORTED'
+                        error("Integration Tests failed to start. Test manifest not found in manifests/${TEST_MANIFEST}.")
+                    }
+                    env.BUILD_JOB_NAME = currentBuild.upstreamBuilds ? 
+                        currentBuild.upstreamBuilds[0].fullProjectName : 
+                        env.DEFAULT_BUILD_JOB_NAME
+                }
+            }
+        }
+        stage('detect docker image + args') {
+            agent {
+                docker {
+                    label 'Jenkins-Agent-al2-x64-c54xlarge-Docker-Host'
+                    image 'opensearchstaging/ci-runner:centos7-x64-arm64-jdkmulti-node10.24.1-cypress6.9.1-20211028'
+                    alwaysPull true
+                }
+            }
+            steps {
+                script { 
+                    DOCKER_AGENT = detectTestDockerAgent()
+                }
+            }
+        }
+        stage('integ-test') {
+            agent {
+                docker {
+                    label AGENT_LABEL
+                    image DOCKER_AGENT.image
+                    args DOCKER_AGENT.args
+                    alwaysPull true
                 }
             }
             steps {
@@ -50,9 +87,10 @@ pipeline {
                     echo "BUILD_ID: ${BUILD_ID}"
 
                     runIntegTestScript(
-                        buildManifest: "${BUILD_MANIFEST}",
-                        testManifest: "${TEST_MANIFEST}",
-                        buildId: "${BUILD_ID}"
+                        jobName: BUILD_JOB_NAME,
+                        buildManifest: BUILD_MANIFEST,
+                        testManifest: "manifests/${TEST_MANIFEST}",
+                        buildId: BUILD_ID
                     )
                 }
             }
@@ -60,12 +98,12 @@ pipeline {
                 always {
                     script {
                         uploadTestResults(
-                            buildManifestFileName: "${BUILD_MANIFEST}",
-                            jobName: 'integ-test',
-                            buildNumber: "${BUILD_ID}"
+                            buildManifestFileName: BUILD_MANIFEST,
+                            jobName: JOB_NAME,
+                            buildNumber: BUILD_ID
                         )
                     }
-                    cleanWs disableDeferredWipeout: true, deleteDirs: true
+                    postCleanup()
                 }
             }
         }
@@ -73,7 +111,7 @@ pipeline {
 
     post {
         success {
-            node('Jenkins-Agent-al2-x64-m5xlarge') {
+            node(AGENT_LABEL) {
                 script {
                     def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
                     publishNotification(
@@ -81,17 +119,15 @@ pipeline {
                         message: 'Integration Tests Successful',
                         extra: stashed,
                         credentialsId: 'INTEG_TEST_WEBHOOK',
+                        manifest: TEST_MANIFEST,
                     )
 
-                    cleanWs(
-                        disableDeferredWipeout: true,
-                        deleteDirs: true
-                    )
+                    postCleanup()
                 }
             }
         }
         failure {
-            node('Jenkins-Agent-al2-x64-m5xlarge') {
+            node(AGENT_LABEL) {
                 script  {
                     def stashed = lib.jenkins.Messages.new(this).get(['integ-test'])
                     publishNotification(
@@ -99,12 +135,10 @@ pipeline {
                         message: 'Failed Integration Tests',
                         extra: stashed,
                         credentialsId: 'INTEG_TEST_WEBHOOK',
+                        manifest: TEST_MANIFEST,
                     )
 
-                    cleanWs(
-                        disableDeferredWipeout: true,
-                        deleteDirs: true
-                    )
+                    postCleanup()
                 }
             }
         }
