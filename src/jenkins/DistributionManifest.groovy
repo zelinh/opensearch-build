@@ -76,7 +76,7 @@ class DistributionManifest implements Serializable {
             this.ref = data.ref
             this.commit_id = data.commit_id
             this.repository = data.repository
-
+            this.location = data.location
         }
 
     }

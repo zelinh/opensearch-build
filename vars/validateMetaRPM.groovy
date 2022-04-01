@@ -192,6 +192,7 @@ def call(Map args = [:]) {
     def components_dict = [:]
     for (component in plugin_names) {
         def location = DistributionManifestObj.getLocation(component)
+        println(location)
         def component_name_with_version = location.split('/').last().minus('.zip')
         println(component_name_with_version)
     }
