@@ -189,7 +189,7 @@ def call(Map args = [:]) {
             returnStdout: true
     ).trim().replaceAll("\"", "").replaceAll(",", "")
     println("Cluster plugins are: " + cluster_plugins)
-    def components_dict = [:]
+    def components_list = []
     for (component in plugin_names) {
         if (component == "OpenSearch" || component == "common-utils") {
             continue
@@ -198,6 +198,13 @@ def call(Map args = [:]) {
         println(location)
         def component_name_with_version = location.split('/').last().minus('.zip')
         println(component_name_with_version)
+        components_list.add(component_name_with_version)
+    }
+    for (line in cluster_plugins.split('\n')) {
+        def component_name = line.split("\\s+")[1]
+        def component_version = line.split("\\s+")[2]
+        assert components_list.contains(component_name + "-" + component_version)
+        println("Component $component_name is present with correct version $component_version." )
     }
     // Some hard coding:
 //    components_dict["alerting"] = "opensearch-alerting"
@@ -216,7 +223,7 @@ def call(Map args = [:]) {
 //    def cluster_plugin = [:]
 //    for (line in cluster_plugins.split("\n")) {
 //        def component_name = line.split("\\s+")[1]
-//        def component_version = line.split("\\s+")[2]
+////        def component_version = line.split("\\s+")[2]
 //        cluster_plugin[component_name] = component_version
 //    }
 //    for (component in plugin_names) {
