@@ -203,8 +203,6 @@ def call(Map args = [:]) {
     for (line in cluster_plugins.split("\n").drop(1)) {
         def component_name = line.split("\\s+")[1].trim()
         def component_version = line.split("\\s+")[2].trim()
-        println(component_name)
-        println(component_version)
         assert components_list.contains([component_name,component_version].join('-'))
         println("Component $component_name is present with correct version $component_version." )
     }
