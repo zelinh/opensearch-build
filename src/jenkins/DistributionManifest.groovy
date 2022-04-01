@@ -7,6 +7,8 @@
  */
 
 
+package jenkins
+
 
 class DistributionManifest implements Serializable {
     class Build implements Serializable {
