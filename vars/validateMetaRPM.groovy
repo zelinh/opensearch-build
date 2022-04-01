@@ -200,10 +200,10 @@ def call(Map args = [:]) {
         println(component_name_with_version)
         components_list.add(component_name_with_version)
     }
-    def lines = cluster_plugins.split("\n").drop(1)
-    for (line in lines) {
-        def component_name = line.split("\\s+")[1]
-        def component_version = line.split("\\s+")[2]
+    def plugins = cluster_plugins.split("\n").drop(1)
+    for (line in plugins) {
+        def component_name = line.split("\\s+")[1].trim()
+        def component_version = line.split("\\s+")[2].trim()
         println(component_name)
         println(component_version)
         assert components_list.contains([component_name,component_version].join('-'))
