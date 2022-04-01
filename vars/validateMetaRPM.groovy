@@ -200,7 +200,7 @@ def call(Map args = [:]) {
         println(component_name_with_version)
         components_list.add(component_name_with_version)
     }
-    for (line in cluster_plugins.split('\n')) {
+    for (line in cluster_plugins.split("\n")) {
         def component_name = line.split("\\s+")[1]
         def component_version = line.split("\\s+")[2]
         println(component_name)
