@@ -191,6 +191,9 @@ def call(Map args = [:]) {
     println("Cluster plugins are: " + cluster_plugins)
     def components_dict = [:]
     for (component in plugin_names) {
+        if (component == "OpenSearch" || component == "common-utils") {
+            continue
+        }
         def location = DistributionManifestObj.getLocation(component)
         println(location)
         def component_name_with_version = location.split('/').last().minus('.zip')
