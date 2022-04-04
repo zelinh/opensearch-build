@@ -65,7 +65,7 @@ def call(Map args = [:]) {
         if (key == "Architecture") {
             if (value == 'x64') {        //up to change if naming confirmed in the distribution manifest
                 assert metaMap[key] == 'x86_64'
-            } else {
+            } else if (value == 'arm64') {
                 assert metaMap[key] == 'aarch64'
             }
         } else {
@@ -79,45 +79,43 @@ def call(Map args = [:]) {
     //install the rpm distribution via yum
     println("Start installation**************************************")
     sh "sudo yum install -y $distFile"
-    println("RPM distribution is installed with yum.")
+    println("RPM distribution for $name is installed with yum.")
 
-    //Check certs in /etc/opensearch/
-    println("Check if the certs are existed.")
-    sh ('[[ -d /etc/opensearch ]] && echo "/etc/opensearch directory exists"' +
-            '|| (echo "/etc/opensearch does not exist" && exit 1)')
-    def certs = sh (
-            script: "ls /etc/opensearch",
-            returnStdout: true
-    ).trim()
-    def requiredCerts = ["esnode-key.pem", "kirk.pem", "esnode.pem", "kirk-key.pem", "root-ca.pem"]
-    requiredCerts.each {
-        if (certs.contains(it)){
-            println("$it is found existed")
+    if (name == "opensearch") {
+        // The validation for opensearch only.
+        //Check certs in /etc/opensearch/
+        println("Check if the certs are existed.")
+        sh ('[[ -d /etc/opensearch ]] && echo "/etc/opensearch directory exists"' +
+                '|| (echo "/etc/opensearch does not exist" && exit 1)')
+        def certs = sh (
+                script: "ls /etc/opensearch",
+                returnStdout: true
+        ).trim()
+        def requiredCerts = ["esnode-key.pem", "kirk.pem", "esnode.pem", "kirk-key.pem", "root-ca.pem"]
+        requiredCerts.each {
+            if (certs.contains(it)){
+                println("$it is found existed")
+            } else {
+                error("Error finding $it certificate.")
+            }
+        }
+        //Check the install_demo_configuration.log
+        println("Checking the demo log**************")
+        sh ('[[ -f /var/log/opensearch/install_demo_configuration.log ]] && echo "install_demo_configuration.log exists" ' +
+                '|| (echo "install_demo_configuration.log does not exist" && exit 1)')
+        def install_demo_configuration_log = sh (
+                script: "cat /var/log/opensearch/install_demo_configuration.log",
+                returnStdout: true
+        ).trim()
+        if (install_demo_configuration_log.contains("Success")) {
+            println("install_demo_configuration.log validation succeed.!!!!!!")
         } else {
-            error("Error finding $it certificate.")
+            println("install_demo_configuration.log failed.")
         }
     }
 
-    //Check the install_demo_configuration.log
-//    sh ("cat /var/log/opensearch/install_demo_configuration.log")
-//    sh ("cd /var/log/opensearch/ && ls")
-    //def install_demo_configuration_log = readFile("/var/log/opensearch/install_demo_configuration.log")
-    println("Checking the demo log**************")
-//    println(fileExists('/var/log/opensearch/install_demo_configuration.log'))
-    sh ('[[ -f /var/log/opensearch/install_demo_configuration.log ]] && echo "install_demo_configuration.log exists" ' +
-            '|| (echo "install_demo_configuration.log does not exist" && exit 1)')
-    def install_demo_configuration_log = sh (
-            script: "cat /var/log/opensearch/install_demo_configuration.log",
-            returnStdout: true
-    ).trim()
-    if (install_demo_configuration_log.contains("Success")) {
-        println("install_demo_configuration.log validation succeed.!!!!!!")
-    } else {
-        println("install_demo_configuration.log failed.")
-    }
-
-    //Start the installed OpenSearch
-    sh ("sudo systemctl restart opensearch")
+    //Start the installed OpenSearch/OpenSearch-Dashboards distribution
+    sh ("sudo systemctl restart $name")
     sleep 30    //wait for 30 secs for opensearch to start
     def running_status = sh (
             script: "sudo systemctl status $name",
@@ -206,32 +204,10 @@ def call(Map args = [:]) {
         assert components_list.contains([component_name,component_version].join('-'))
         println("Component $component_name is present with correct version $component_version." )
     }
-    // Some hard coding:
-//    components_dict["alerting"] = "opensearch-alerting"
-//    components_dict["anomaly-detection"] = "opensearch-anomaly-detection"
-//    components_dict["asynchronous-search"] = "opensearch-asynchronous-search"
-//    components_dict["cross-cluster-replication"] = "opensearch-cross-cluster-replication"
-//    components_dict["index-management"] = "opensearch-index-management"
-//    components_dict["job-scheduler"] = "opensearch-job-scheduler"
-//    components_dict["k-NN"] = "opensearch-knn"
-//    components_dict["ml-commons"] = "opensearch-ml"
-//    components_dict["observability"] = "opensearch-observability"
-//    components_dict["performance-analyzer"] = "opensearch-performance-analyzer"
-//    components_dict["dashboards-reports"] = "opensearch-reports-scheduler"
-//    components_dict["security"] = "opensearch-security"
-//    components_dict["sql"] = "opensearch-sql"
-//    def cluster_plugin = [:]
-//    for (line in cluster_plugins.split("\n")) {
-//        def component_name = line.split("\\s+")[1]
-////        def component_version = line.split("\\s+")[2]
-//        cluster_plugin[component_name] = component_version
-//    }
-//    for (component in plugin_names) {
-//        if (component == "OpenSearch" || component == "common-utils") {
-//            continue
-//        }
-//        assert cluster_plugin.containsKey(components_dict[component])
-//        assert cluster_plugin[components_dict[component]] == "$version.0"
-//        println(component + " is validated")
-//    }
+
+    println("Installation and running for opensearch has been validated.")
+
+    //Start validate if this is dashboards distribution.
+    //curl -s http://localhost:5601/api/status
+
 }
