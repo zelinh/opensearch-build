@@ -10,9 +10,9 @@ def call(Map args = [:]) {
     def latestOpensearchDist = "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
 //    def latestOpensearch = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/$version/latest/linux/$architecture/rpm/dist/opensearch/opensearch-$version-linux-$architechture.rpm"
 
-    if (name == "opensearch-dashboards") {
-        curl -SLO latestOpensearchDist
-    }
+//    if (name == "opensearch-dashboards") {
+//        curl -SLO latestOpensearchDist
+//    }
 
     if (DistributionManifestObj.build.distribution != 'rpm') {
         error("Invalid distribution manifest. Please input the correct one.")
