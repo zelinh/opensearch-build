@@ -7,6 +7,12 @@ def call(Map args = [:]) {
     def version = DistributionManifestObj.build.version        //1.3.0
     def architecture = DistributionManifestObj.build.architecture
     def plugin_names = DistributionManifestObj.getNames();
+    def latestOpensearchDist = "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
+//    def latestOpensearch = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/$version/latest/linux/$architecture/rpm/dist/opensearch/opensearch-$version-linux-$architechture.rpm"
+
+    if (name == "opensearch-dashboards") {
+        curl -SLO latestOpensearchDist
+    }
 
     if (DistributionManifestObj.build.distribution != 'rpm') {
         error("Invalid distribution manifest. Please input the correct one.")
@@ -80,6 +86,10 @@ def call(Map args = [:]) {
     println("Start installation**************************************")
     sh "sudo yum install -y $distFile"
     println("RPM distribution for $name is installed with yum.")
+    if (name == "opensearch-dashboards") {
+        sh "sudo yum install -y $latestOpensearchDist"
+        println("Latest RPM distribution for OpenSearch is also installed with yum.")
+    }
 
     if (name == "opensearch") {
         // The validation for opensearch only.
@@ -116,6 +126,8 @@ def call(Map args = [:]) {
 
     //Start the installed OpenSearch/OpenSearch-Dashboards distribution
     sh ("sudo systemctl restart $name")
+    sleep 30    // We will need to start OpenSearch no matter if we are validating for opensearch or OSD
+    sh ("sudo systemctl restart OpenSearch")
     sleep 30    //wait for 30 secs for opensearch to start
     def running_status = sh (
             script: "sudo systemctl status $name",
@@ -128,46 +140,47 @@ def call(Map args = [:]) {
         error("Something went run! Installed $name is not actively running.")
     }
 
-    //Check the starting cluster
-    def cluster_info = sh (
-            script:  "curl -s \"https://localhost:9200\" -u admin:admin --insecure",
-            returnStdout: true
-    ).trim().replaceAll("\"", "").replaceAll(",", "")
-    println("Cluster info is: " + cluster_info)
-    for (line in cluster_info.split("\n")) {
-        def key = line.split(":")[0].trim()
-        if (key == "cluster_name") {
-            assert line.split(":")[1].trim() == name
-            println("Cluster name is validated.")
-        } else if (key == "number") {
-            assert line.split(":")[1].trim() == version
-            println("Cluster version is validated.")
-        } else if (key == "build_type") {
-            assert line.split(":")[1].trim() == 'rpm'
-            println("Cluster type is validated as rpm.")
+    if (name == "opensearch") {
+        //Check the starting cluster
+        def cluster_info = sh (
+                script:  "curl -s \"https://localhost:9200\" -u admin:admin --insecure",
+                returnStdout: true
+        ).trim().replaceAll("\"", "").replaceAll(",", "")
+        println("Cluster info is: " + cluster_info)
+        for (line in cluster_info.split("\n")) {
+            def key = line.split(":")[0].trim()
+            if (key == "cluster_name") {
+                assert line.split(":")[1].trim() == name
+                println("Cluster name is validated.")
+            } else if (key == "number") {
+                assert line.split(":")[1].trim() == version
+                println("Cluster version is validated.")
+            } else if (key == "build_type") {
+                assert line.split(":")[1].trim() == 'rpm'
+                println("Cluster type is validated as rpm.")
+            }
         }
-    }
-    println("Cluster information is validated.")
+        println("Cluster information is validated.")
 
-    //Cluster status validation
-    def cluster_status = sh (
-            script:  "curl -s \"https://localhost:9200/_cluster/health?pretty\" -u admin:admin --insecure",
-            returnStdout: true
-    ).trim().replaceAll("\"", "").replaceAll(",", "")
-    println("Cluster status is: " + cluster_status)
-    for (line in cluster_status.split("\n")) {
-        def key = line.split(":")[0].trim()
-        if (key == "cluster_name") {
-            assert line.split(":")[1].trim() == name
-            println("Cluster name is validated.")
-        } else if (key == "status") {
-            assert line.split(":")[1].trim() == "green"
-            println("Cluster status is green!")
+        //Cluster status validation
+        def cluster_status = sh (
+                script:  "curl -s \"https://localhost:9200/_cluster/health?pretty\" -u admin:admin --insecure",
+                returnStdout: true
+        ).trim().replaceAll("\"", "").replaceAll(",", "")
+        println("Cluster status is: " + cluster_status)
+        for (line in cluster_status.split("\n")) {
+            def key = line.split(":")[0].trim()
+            if (key == "cluster_name") {
+                assert line.split(":")[1].trim() == name
+                println("Cluster name is validated.")
+            } else if (key == "status") {
+                assert line.split(":")[1].trim() == "green"
+                println("Cluster status is green!")
+            }
         }
-    }
 
-    //Check the cluster
-    sh ("curl -s \"https://localhost:9200/_cat/plugins?v\" -u admin:admin --insecure")
+        //Check the cluster
+        sh ("curl -s \"https://localhost:9200/_cat/plugins?v\" -u admin:admin --insecure")
 //    name                                              component                            version
 //    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-alerting                  1.3.0.0
 //    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-anomaly-detection         1.3.0.0
@@ -182,32 +195,35 @@ def call(Map args = [:]) {
 //    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-reports-scheduler         1.3.0.0
 //    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-security                  1.3.0.0
 //    dev-dsk-zhujiaxi-2a-5c9b3e5e.us-west-2.amazon.com opensearch-sql                       1.3.0.0
-    def cluster_plugins = sh (
-            script: "curl -s \"https://localhost:9200/_cat/plugins?v\" -u admin:admin --insecure",
-            returnStdout: true
-    ).trim().replaceAll("\"", "").replaceAll(",", "")
-    println("Cluster plugins are: " + cluster_plugins)
-    def components_list = []
-    for (component in plugin_names) {
-        if (component == "OpenSearch" || component == "common-utils") {
-            continue
+        def cluster_plugins = sh (
+                script: "curl -s \"https://localhost:9200/_cat/plugins?v\" -u admin:admin --insecure",
+                returnStdout: true
+        ).trim().replaceAll("\"", "").replaceAll(",", "")
+        println("Cluster plugins are: " + cluster_plugins)
+        def components_list = []
+        for (component in plugin_names) {
+            if (component == "OpenSearch" || component == "common-utils") {
+                continue
+            }
+            def location = DistributionManifestObj.getLocation(component)
+            println(location)
+            def component_name_with_version = location.split('/').last().minus('.zip')
+            println(component_name_with_version)
+            components_list.add(component_name_with_version)
         }
-        def location = DistributionManifestObj.getLocation(component)
-        println(location)
-        def component_name_with_version = location.split('/').last().minus('.zip')
-        println(component_name_with_version)
-        components_list.add(component_name_with_version)
-    }
-    for (line in cluster_plugins.split("\n").drop(1)) {
-        def component_name = line.split("\\s+")[1].trim()
-        def component_version = line.split("\\s+")[2].trim()
-        assert components_list.contains([component_name,component_version].join('-'))
-        println("Component $component_name is present with correct version $component_version." )
-    }
+        for (line in cluster_plugins.split("\n").drop(1)) {
+            def component_name = line.split("\\s+")[1].trim()
+            def component_version = line.split("\\s+")[2].trim()
+            assert components_list.contains([component_name,component_version].join('-'))
+            println("Component $component_name is present with correct version $component_version." )
+        }
 
-    println("Installation and running for opensearch has been validated.")
+        println("Installation and running for opensearch has been validated.")
+    } else {    //validating cluster for opensearch-dashboards
+        //Start validate if this is dashboards distribution.
+        //curl -s http://localhost:5601/api/status
+        println("This is a dashboards validation**********************")
 
-    //Start validate if this is dashboards distribution.
-    //curl -s http://localhost:5601/api/status
+    }
 
 }
