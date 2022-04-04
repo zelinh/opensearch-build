@@ -7,7 +7,7 @@ def call(Map args = [:]) {
     def version = DistributionManifestObj.build.version        //1.3.0
     def architecture = DistributionManifestObj.build.architecture
     def plugin_names = DistributionManifestObj.getNames();
-    def latestOpensearchDist = "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
+    def latestOpensearchDist = "$WORKSPACE/dist/Playground/zelin-distribution-build/1.3.0/9/linux/x64/rpm/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
 //    def latestOpensearch = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/$version/latest/linux/$architecture/rpm/dist/opensearch/opensearch-$version-linux-$architechture.rpm"
 
 //    if (name == "opensearch-dashboards") {
