@@ -127,7 +127,7 @@ def call(Map args = [:]) {
     //Start the installed OpenSearch/OpenSearch-Dashboards distribution
     sh ("sudo systemctl restart $name")
     sleep 30    // We will need to start OpenSearch no matter if we are validating for opensearch or OSD
-    sh ("sudo systemctl restart OpenSearch")
+    sh ("sudo systemctl restart opensearch")
     sleep 30    //wait for 30 secs for opensearch to start
     def running_status = sh (
             script: "sudo systemctl status $name",
