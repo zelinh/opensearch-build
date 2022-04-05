@@ -7,12 +7,11 @@ def call(Map args = [:]) {
     def version = DistributionManifestObj.build.version        //1.3.0
     def architecture = DistributionManifestObj.build.architecture
     def plugin_names = DistributionManifestObj.getNames();
-    def latestOpenSearchURL = "https://ci.opensearch.org/ci/dbc/Playground/tianleh-test/tianle-opensearch-build-3-22/1.3.1/latest/linux/$architecture/rpm/dist/opensearch/opensearch-$version-linux-${architecture}.rpm"
+    def latestOpenSearchURL = "https://ci.opensearch.org/ci/dbc/Playground/tianleh-test/tianle-opensearch-build-3-22/$version/latest/linux/$architecture/rpm/dist/opensearch/opensearch-$version-linux-${architecture}.rpm"
     def latestOpensearchDist = "$WORKSPACE/opensearch-$version-linux-${architecture}.rpm"
 
     if (name == "opensearch-dashboards") {
         sh("curl -SLO $latestOpenSearchURL")
-        sh("pwd && ls")
     }
 
     if (DistributionManifestObj.build.distribution != 'rpm') {
