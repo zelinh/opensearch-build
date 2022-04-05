@@ -2,7 +2,7 @@ def call(Map args = [:]) {
 
     def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
     def DistributionManifestObj = lib.jenkins.DistributionManifest.new(readYaml(file: args.distManifest))
-    def distFile = args.rpmDistribution
+    def distFile = args.rpmDistribution         //Distribution file location
     def name = DistributionManifestObj.build.getFilename()   //opensearch; opensearch-dashboards
     def version = DistributionManifestObj.build.version        //1.3.0
     def architecture = DistributionManifestObj.build.architecture
