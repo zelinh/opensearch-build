@@ -253,7 +253,22 @@ def call(Map args = [:]) {
                 returnStdout: true
         ).trim()
         println("osd_plugins are: $osd_plugins")
-
+        def components_list = []
+        for (component in plugin_names) {
+            if (component == "OpenSearch-Dashboards" || component == "functionalTestDashboards") {
+                continue
+            }
+            def location = DistributionManifestObj.getLocation(component)
+            println(location)
+            def component_name_with_version = location.split('/').last().minus('.zip')
+            println(component_name_with_version)
+            components_list.add(component_name_with_version)
+        }
+        for (line in osd_plugins.split("\n")) {
+            line.replace("@", "-")
+            assert components_list.contains("$line.0")
+            println("Component $line is present with correct version $version." )
+        }
     }
 
 }
