@@ -268,7 +268,7 @@ def call(Map args = [:]) {
             def component_with_version = component.replace("-","@") + ".0"
             println("Component check is $component_with_version")
             assert osd_plugins.contains(component_with_version)
-            println("Component $line is present with correct version $version." )
+            println("Component $component is present with correct version $version." )
         }
     }
 
