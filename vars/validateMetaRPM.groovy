@@ -234,7 +234,11 @@ def call(Map args = [:]) {
         //Start validate if this is dashboards distribution.
         //curl -s http://localhost:5601/api/status
         println("This is a dashboards validation**********************")
-
+        def osd_status = sh (
+                script: "curl -s \"http://localhost:5601/api/status\" | jq",
+                returnStdout: true
+        ).trim()
+        println("Dashboards nodes are here: + $osd_status")
     }
 
 }
