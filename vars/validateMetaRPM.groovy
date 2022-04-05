@@ -43,6 +43,7 @@ def call(Map args = [:]) {
                     "For more information, see: https://opensearch.org/"
     }
 
+    //Validation for the Name convention
     println("Name convention for distribution file starts:")
     def distFileNameWithExtension = distFile.split('/').last()
     println("the File name is : $distFileNameWithExtension")        //opensearch-1.3.0-linux-x64.rpm
@@ -54,9 +55,9 @@ def call(Map args = [:]) {
     assert distFileName == refFileName
     println("File name for the RPM distribution has been validated.")
 
+    //Validation for the Meta Data of distribution
     println("*******************************")
     println("Meta data validations start:")
-
     def metadata = sh (
             script: "rpm -qip $distFile",
             returnStdout: true
