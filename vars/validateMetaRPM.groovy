@@ -264,9 +264,8 @@ def call(Map args = [:]) {
             println(component_name_with_version)
             components_list.add(component_name_with_version)
         }
-        for (line in osd_plugins.split("\n")) {
-            line.replace("@", "-")
-            assert components_list.contains("$line.0")
+        for (component in components_list) {
+            assert osd_plugins.contains("$component.0")
             println("Component $line is present with correct version $version." )
         }
     }
