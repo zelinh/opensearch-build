@@ -241,9 +241,10 @@ def call(Map args = [:]) {
         println("Dashboards nodes are here: $osd_status")
         println("-------------------------------------------------------------------------------------------------------")
         def osd_status_json = readJSON(text: osd_status)
-        println(osd_status_json["version"]["number"])
         assert osd_status_json["version"]["number"] == version
+        println("Dashboards host version has been validated.")
         assert osd_status_json["status"]["overall"]["state"] == "green"
+        println("OpenSearch Dashboards overall state is running in green.")
 
     }
 
