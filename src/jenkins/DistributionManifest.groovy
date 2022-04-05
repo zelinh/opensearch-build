@@ -34,22 +34,6 @@ class DistributionManifest implements Serializable {
             return this.name.toLowerCase().replaceAll(' ', '-')
         }
 
-        String getFilenameWithExtension(String platform = null, String architecture = null) {
-            String resolvedPlatform = platform ?: this.platform
-            String resolvedArchitecture = architecture ?: this.architecture
-            String extension = this.distribution == 'rpm' ? 'rpm' : {resolvedPlatform == 'windows' ? 'zip' : 'tar.gz'}
-            return "${this.getFilename()}-${this.version}-${resolvedPlatform}-${resolvedArchitecture}.${extension}"
-        }
-
-        String getPackageName() {
-            String extension = this.distribution == 'rpm' ?'.rpm':'.tar.gz'
-            return [
-                    this.getFilename(),
-                    this.version,
-                    this.platform,
-                    this.architecture,
-            ].join('-') + extension
-        }
     }
 
     class Components extends HashMap<String, Component> {
@@ -87,16 +71,6 @@ class DistributionManifest implements Serializable {
     DistributionManifest(Map data) {
         this.build = new DistributionManifest.Build(data.build)
         this.components = new DistributionManifest.Components(data.components)
-    }
-
-    public String getArtifactRoot(String jobName, String buildNumber) {
-        return [
-                jobName,
-                this.build.version,
-                buildNumber,
-                this.build.platform,
-                this.build.architecture
-        ].join("/")
     }
 
     public String getArtifactArchitecture() {
