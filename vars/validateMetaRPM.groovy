@@ -238,8 +238,10 @@ def call(Map args = [:]) {
                 script: "curl -s \"http://localhost:5601/api/status\"",
                 returnStdout: true
         ).trim()
-        println("Dashboards nodes are here: + $osd_status")
-
+        println("Dashboards nodes are here: $osd_status")
+        println("-------------------------------------------------------------------------------------------------------")
+        def jsonparser = readJSON(text: osd_status)
+        println("JSON parser : $jsonparser")
     }
 
 }
