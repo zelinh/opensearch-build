@@ -235,10 +235,11 @@ def call(Map args = [:]) {
         //curl -s http://localhost:5601/api/status
         println("This is a dashboards validation**********************")
         def osd_status = sh (
-                script: "curl -s \"http://localhost:5601/api/status\" | jq",
+                script: "curl -s \"http://localhost:5601/api/status\"",
                 returnStdout: true
         ).trim()
         println("Dashboards nodes are here: + $osd_status")
+
     }
 
 }
