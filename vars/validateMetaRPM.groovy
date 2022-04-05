@@ -240,13 +240,10 @@ def call(Map args = [:]) {
         ).trim()
         println("Dashboards nodes are here: $osd_status")
         println("-------------------------------------------------------------------------------------------------------")
-        def jsonparser = readJSON(text: osd_status)
-        def jsonparser_status = jsonparser["status"]
-        println("JSON parser status: $jsonparser_status")
-        def jsonparser_status_overall = jsonparser["status"]["overall"]
-        println("JSON parser status: $jsonparser_status_overall")
-        def jsonparser_status_overall_state = jsonparser["status"]["overall"]["state"]
-        println("JSON parser status: $jsonparser_status_overall_state")
+        def osd_status_json = readJSON(text: osd_status)
+        assert osd_status_json["version"]["number"] == version
+        assert osd_status_json["status"]["overall"]["state"] == "green"
+
     }
 
 }
