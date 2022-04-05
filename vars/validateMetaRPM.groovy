@@ -12,6 +12,7 @@ def call(Map args = [:]) {
 
     if (name == "opensearch-dashboards") {
         sh("curl -SLO $latestOpenSearchURL")
+        sh("pwd && ls")
     }
 
     if (DistributionManifestObj.build.distribution != 'rpm') {
