@@ -247,4 +247,11 @@ def call(Map args = [:]) {
         }
     }
 
+    // Stop OpenSearch/Dashboards and uninstall it with yum
+    if(name == "opensearch-dashboards") {
+        sh ("sudo systemctl stop opensearch-dashboards")
+        sh ("sudo yum remove -y opensearch-dashboards")
+    }
+    sh ("sudo systemctl stop opensearch")
+    sh ("sudo yum remove -y opensearch")
 }
