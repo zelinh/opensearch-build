@@ -17,7 +17,7 @@ def call(Map args = [:]) {
     if (DistributionManifestObj.build.distribution != 'rpm') {
         error("Invalid distribution manifest. Please input the correct one.")
     }
-    // the context the meta data should be
+
     def refMap = [:]
     refMap['Name'] = name
     refMap['Version'] = version
@@ -28,10 +28,20 @@ def call(Map args = [:]) {
     refMap['Group'] = "Application/Internet"
     refMap['License'] = "Apache-2.0"
     refMap['Relocations'] = "(not relocatable)"
-    refMap['Summary'] = "An open source distributed and RESTful search engine"
     refMap['URL'] = "https://opensearch.org/"
-    refMap['Description'] = "OpenSearch makes it easy to ingest, search, visualize, and analyze your data.\n" +
-            "For more information, see: https://opensearch.org/"
+    switch (name) {
+        case "opensearch":
+            // the context the meta data should be for OpenSearch
+            refMap['Summary'] = "An open source distributed and RESTful search engine"
+            refMap['Description'] = "OpenSearch makes it easy to ingest, search, visualize, and analyze your data.\n" +
+                    "For more information, see: https://opensearch.org/"
+            break
+        case "opensearch-dashboards":
+            // The context of meta data should be for OSD
+            refMap['Summary'] = "Open source visualization dashboards for OpenSearch"
+            refMap['Description'] = "OpenSearch Dashboards is the visualization tool for data in OpenSearch\n" +
+                    "For more information, see: https://opensearch.org/"
+    }
 
     println("Name convention for distribution file starts:")
     def distFileNameWithExtension = distFile.split('/').last()
