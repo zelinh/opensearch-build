@@ -11,7 +11,7 @@ def call(Map args = [:]) {
     def latestOpensearchDist = "$WORKSPACE/opensearch-$version-linux-${architecture}.rpm"
 
     if (name == "opensearch-dashboards") {
-        sh("curl -SLO latestOpenSearchURL")
+        sh("curl -SLO $latestOpenSearchURL")
     }
     sh("pwd")
     sh("ls")
