@@ -246,6 +246,14 @@ def call(Map args = [:]) {
         assert osd_status_json["status"]["overall"]["state"] == "green"
         println("OpenSearch Dashboards overall state is running in green.")
 
+        //Plugin existence validation;
+        def osd_plugins = sh (
+                script: "cd /usr/share/opensearch-dashboards/bin\n" +
+                        "./opensearch-dashboards-plugin list",
+                returnStdout: true
+        ).trim()
+        println("osd_plugins are: $osd_plugins")
+
     }
 
 }
