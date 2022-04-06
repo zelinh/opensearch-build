@@ -49,9 +49,9 @@ def call(Map args = [:]) {
     println("Latest RPM distribution for OpenSearch is also installed with yum.")
 
     //Start the installed OpenSearch-Dashboards distribution
-    sh ("sudo systemctl restart $name")
+    sh("sudo systemctl restart $name")
     sleep 30
-    sh ("sudo systemctl restart opensearch")
+    sh("sudo systemctl restart opensearch")
     sleep 30    //wait for 30 secs for opensearch to start
 
     //Validate if the running status is succeed
@@ -61,7 +61,7 @@ def call(Map args = [:]) {
 
     //Start validate if this is dashboards distribution.
     println("This is a dashboards validation.")
-    def osd_status = sh (
+    def osd_status = sh(
             script: "curl -s \"http://localhost:5601/api/status\"",
             returnStdout: true
     ).trim()
@@ -73,7 +73,7 @@ def call(Map args = [:]) {
     println("OpenSearch Dashboards overall state is running green.")
 
     //Plugin existence validation;
-    def osd_plugins = sh (
+    def osd_plugins = sh(
             script: "/usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin list",
             returnStdout: true
     ).trim()
@@ -84,16 +84,18 @@ def call(Map args = [:]) {
             continue
         }
         def location = bundleManifestObj.getLocation(component)
-        def component_name_with_version = location.split('/').last().minus('.zip') //e.g. anomalyDetectionDashboards-1.3.0
+        def component_name_with_version = location.split('/').last().minus('.zip')
+        //e.g. anomalyDetectionDashboards-1.3.0
         components_list.add(component_name_with_version)
     }
     for (component in components_list) {
-        def component_with_version = component.replace("-","@") + ".0"  //e.g. anomalyDetectionDashboards@1.3.0.0
+        def component_with_version = component.replace("-", "@") + ".0"  //e.g. anomalyDetectionDashboards@1.3.0.0
         assert osd_plugins.contains(component_with_version)
-        println("Component $component is present with correct version $version." )
+        println("Component $component is present with correct version $version.")
     }
 
-    sh ("sudo systemctl stop opensearch-dashboards")
-    sh ("sudo yum remove -y opensearch-dashboards")
-    sh ("sudo systemctl stop opensearch")
-    sh ("sudo yum remove -y opensearch")
+    sh("sudo systemctl stop opensearch-dashboards")
+    sh("sudo yum remove -y opensearch-dashboards")
+    sh("sudo systemctl stop opensearch")
+    sh("sudo yum remove -y opensearch")
+}
