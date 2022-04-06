@@ -43,13 +43,13 @@ pipeline {
                     println("download completed************")
                     sh "ls $WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch"
                     //for opensearch
-                    validateMetaRPM(
-                        distManifest: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/manifest.yml",
+                    rpmDistValidation(
+                        bundleManifest: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/manifest.yml",
                         rpmDistribution: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch/opensearch-1.3.0-linux-x64.rpm"
                     )
                     //for OSD
-                    validateMetaRPM(
-                        distManifest: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch-dashboards/manifest.yml",
+                    rpmDistValidation(
+                        bundleManifest: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch-dashboards/manifest.yml",
                         rpmDistribution: "$WORKSPACE/dist/$ARTIFACT_PATH/dist/opensearch-dashboards/opensearch-dashboards-1.3.0-linux-x64.rpm"
                     )
 

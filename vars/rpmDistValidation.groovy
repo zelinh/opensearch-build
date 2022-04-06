@@ -1,7 +1,7 @@
 def call(Map args = [:]) {
 
     def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
-    def BundleManifestObj = lib.jenkins.BundleManifest.new(readYaml(file: args.distManifest))
+    def BundleManifestObj = lib.jenkins.BundleManifest.new(readYaml(file: args.bundleManifest))
     def distFile = args.rpmDistribution         //Distribution file location
     def name = BundleManifestObj.build.getFilename()   //opensearch; opensearch-dashboards
     def version = BundleManifestObj.build.version        //1.3.0
