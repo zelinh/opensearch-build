@@ -51,19 +51,6 @@ def call(Map args = [:]) {
     //Start the installed OpenSearch-Dashboards distribution
     sh ("sudo systemctl restart $name")
     sleep 30
-    Member
-    dblock 2 hours ago
-
-    Is there a better way to do this than just wait long enough? try to hit the endpoint in a loop in a waitForService [url] function? You could simplify both waiting for OS and OSD by just giving a URL and looking for certain text with a timeout.
-
-    Member
-    Author
-    zelinh 1 hour ago
-
-    I will investigate on this suggestion
-
-    Reply...
-    Resolve conversation
     sh ("sudo systemctl restart opensearch")
     sleep 30    //wait for 30 secs for opensearch to start
 
