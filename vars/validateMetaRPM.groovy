@@ -29,7 +29,7 @@ def call(Map args = [:]) {
     refMap['URL'] = "https://opensearch.org/"
     switch (name) {
         case "opensearch":
-            // the context the meta data should be for OpenSearch
+            // The context the meta data should be for OpenSearch
             refMap['Summary'] = "An open source distributed and RESTful search engine"
             refMap['Description'] = "OpenSearch makes it easy to ingest, search, visualize, and analyze your data.\n" +
                     "For more information, see: https://opensearch.org/"
@@ -44,7 +44,7 @@ def call(Map args = [:]) {
     //Validation for the Name convention
     println("Name convention for distribution file starts:")
     def distFileNameWithExtension = distFile.split('/').last()
-    println("the File name is : $distFileNameWithExtension")        //opensearch-1.3.0-linux-x64.rpm
+    println("the File name is : $distFileNameWithExtension")        //e.g. opensearch-1.3.0-linux-x64.rpm
     if (!distFileNameWithExtension.endsWith(".rpm")) {
         error("This isn't a valid rpm distribution.")
     }
@@ -90,7 +90,7 @@ def call(Map args = [:]) {
 
     //Validation for the installation
     //Install the rpm distribution via yum
-    println("Start installation**************************************")
+    println("Start installation with yum.")
     sh "sudo yum install -y $distFile"
     println("RPM distribution for $name is installed with yum.")
     if (name == "opensearch-dashboards") {
@@ -117,7 +117,7 @@ def call(Map args = [:]) {
             }
         }
         //Check the install_demo_configuration.log
-        println("Checking the demo log**************")
+        println("Start validating the install_demo_configuration.log.")
         sh ('[[ -f /var/log/opensearch/install_demo_configuration.log ]] && echo "install_demo_configuration.log exists" ' +
                 '|| (echo "install_demo_configuration.log does not exist" && exit 1)')
         def install_demo_configuration_log = sh (
@@ -153,7 +153,7 @@ def call(Map args = [:]) {
                 script:  "curl -s \"https://localhost:9200\" -u admin:admin --insecure",
                 returnStdout: true
         ).trim().replaceAll("\"", "").replaceAll(",", "")
-        println("Cluster info is: " + cluster_info)
+        println("Cluster info is: \n" + cluster_info)
         for (line in cluster_info.split("\n")) {
             def key = line.split(":")[0].trim()
             if (key == "cluster_name") {
@@ -174,7 +174,7 @@ def call(Map args = [:]) {
                 script:  "curl -s \"https://localhost:9200/_cluster/health?pretty\" -u admin:admin --insecure",
                 returnStdout: true
         ).trim().replaceAll("\"", "").replaceAll(",", "")
-        println("Cluster status is: " + cluster_status)
+        println("Cluster status is: \n" + cluster_status)
         for (line in cluster_status.split("\n")) {
             def key = line.split(":")[0].trim()
             if (key == "cluster_name") {
@@ -186,8 +186,7 @@ def call(Map args = [:]) {
             }
         }
 
-        //Check the cluster
-        sh ("curl -s \"https://localhost:9200/_cat/plugins?v\" -u admin:admin --insecure")
+        //Check the cluster plugins
         def cluster_plugins = sh (
                 script: "curl -s \"https://localhost:9200/_cat/plugins?v\" -u admin:admin --insecure",
                 returnStdout: true
@@ -217,7 +216,7 @@ def call(Map args = [:]) {
                 script: "curl -s \"http://localhost:5601/api/status\"",
                 returnStdout: true
         ).trim()
-        println("Dashboards nodes are here: \n" + osd_status)
+        println("Dashboards status are here: \n" + osd_status)
         def osd_status_json = readJSON(text: osd_status)
         assert osd_status_json["version"]["number"] == version
         println("Dashboards host version has been validated.")
@@ -229,7 +228,7 @@ def call(Map args = [:]) {
                 script: "/usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin list",
                 returnStdout: true
         ).trim()
-        println("osd_plugins are: $osd_plugins")
+        println("osd_plugins are: \n" + osd_plugins)
         def components_list = []
         for (component in plugin_names) {
             if (component == "OpenSearch-Dashboards" || component == "functionalTestDashboards") {
@@ -246,7 +245,7 @@ def call(Map args = [:]) {
         }
     }
 
-    // Stop OpenSearch/Dashboards and uninstall it with yum
+    // Stop OpenSearch/Dashboards and uninstall them with yum
     if(name == "opensearch-dashboards") {
         sh ("sudo systemctl stop opensearch-dashboards")
         sh ("sudo yum remove -y opensearch-dashboards")
