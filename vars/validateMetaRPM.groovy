@@ -226,8 +226,7 @@ def call(Map args = [:]) {
 
         //Plugin existence validation;
         def osd_plugins = sh (
-                script: "cd /usr/share/opensearch-dashboards/bin\n" +
-                        "./opensearch-dashboards-plugin list",
+                script: "/usr/share/opensearch-dashboards/bin/opensearch-dashboards-plugin list",
                 returnStdout: true
         ).trim()
         println("osd_plugins are: $osd_plugins")
