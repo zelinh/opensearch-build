@@ -49,10 +49,8 @@ def call(Map args = [:]) {
     println("Latest RPM distribution for OpenSearch is also installed with yum.")
 
     //Start the installed OpenSearch-Dashboards distribution
-    sh("sudo systemctl restart $name")
-    sleep 30
     sh("sudo systemctl restart opensearch")
-    sleep 30    //wait for 30 secs for opensearch to start
+    sh("sudo systemctl restart $name")
 
     //Validate if the running status is succeed
     rpmStatusValidation(
@@ -61,15 +59,15 @@ def call(Map args = [:]) {
 
     //Start validate if this is dashboards distribution.
     println("This is a dashboards validation.")
-    def osd_status = sh(
+    def osd_status_json = sh(
             script: "curl -s \"http://localhost:5601/api/status\"",
             returnStdout: true
     ).trim()
-    println("Dashboards status are here: \n" + osd_status)
-    def osd_status_json = readJSON(text: osd_status)
-    assert osd_status_json["version"]["number"] == version
+    println("Dashboards status are here: \n" + osd_status_json)
+    def osd_status = readJSON(text: osd_status_json)
+    assert osd_status["version"]["number"] == version
     println("Dashboards host version has been validated.")
-    assert osd_status_json["status"]["overall"]["state"] == "green"
+    assert osd_status["status"]["overall"]["state"] == "green"
     println("OpenSearch Dashboards overall state is running green.")
 
     //Plugin existence validation;
