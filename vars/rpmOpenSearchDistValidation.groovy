@@ -84,7 +84,7 @@ def call(Map args = [:]) {
             returnStdout: true
     ).trim()
     println("Cluster info is: \n" + cluster_info_json)
-    def cluster_info = readJSON(Text: cluster_info_json)
+    def cluster_info = readJSON(text: cluster_info_json)
     assert cluster_info["cluster_name"] == name
     println("Cluster name is validated.")
     assert cluster_info["version"]["number"] == version
@@ -98,7 +98,7 @@ def call(Map args = [:]) {
             script:  "curl -s \"https://localhost:9200/_cluster/health?pretty\" -u admin:admin --insecure",
             returnStdout: true
     ).trim()
-    def cluster_status = readJSON(Text: cluster_status_json)
+    def cluster_status = readJSON(text: cluster_status_json)
     println("Cluster status is: \n" + cluster_status)
     assert cluster_status["cluster_name"] == name
     println("Cluster name is validated.")
