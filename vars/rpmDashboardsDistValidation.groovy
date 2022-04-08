@@ -50,6 +50,7 @@ def call(Map args = [:]) {
 
     //Start the installed OpenSearch-Dashboards distribution
     sh("sudo systemctl restart opensearch")
+    sleep 30
     sh("sudo systemctl restart $name")
 
     //Validate if the running status is succeed
