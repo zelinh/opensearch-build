@@ -83,7 +83,7 @@ def call(Map args = [:]) {
             script:  "curl -s \"https://localhost:9200\" -u admin:admin --insecure",
             returnStdout: true
     ).trim()
-    println("Cluster info is: \n" + cluster_info)
+    println("Cluster info is: \n" + cluster_info_json)
     def cluster_info = readJson(Text: cluster_info_json)
     assert cluster_info["cluster_name"] == name
     println("Cluster name is validated.")
