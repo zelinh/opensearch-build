@@ -52,6 +52,7 @@ def call(Map args = [:]) {
     sh("sudo systemctl restart opensearch")
     sleep 30
     sh("sudo systemctl restart $name")
+    sleep 30
 
     //Validate if the running status is succeed
     rpmStatusValidation(
