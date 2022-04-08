@@ -49,10 +49,9 @@ def call(Map args = [:]) {
     println("Latest RPM distribution for OpenSearch is also installed with yum.")
 
     //Start the installed OpenSearch-Dashboards distribution
-    sh("sudo systemctl restart opensearch")
-    sleep 30
+    
     sh("sudo systemctl restart $name")
-    sleep 30
+    sh("sudo systemctl restart opensearch")
 
     //Validate if the running status is succeed
     rpmStatusValidation(
