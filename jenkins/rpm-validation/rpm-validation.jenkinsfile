@@ -1,0 +1,57 @@
+lib = library(identifier: "jenkins@20211123", retriever: legacySCM(scm))
+
+pipeline {
+    agent none
+    options {
+        timeout(time: 1, unit: 'HOURS')
+    }
+    parameters {
+            string(
+                name: 'BUNDLE_MANIFEST_URL',
+                description: 'The bundle manifest url. (e.g. https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.0.0-rc1/2493/linux/x64/rpm/dist/opensearch/manifest.yml)',
+                trim: true,
+                defaultValue: "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.0.0-rc1/2493/linux/x64/rpm/dist/opensearch/manifest.yml"
+            )
+            string(
+                name: 'AGENT_LABEL',
+                description: 'The agent label where the tests should be executed, e.g. Jenkins-Agent-al2-x64-c54xlarge-Docker-Host.',
+                trim: true,
+                defaultValue: "Jenkins-Agent-al2-x64-c54xlarge-Docker-Host"
+            )
+
+        }
+
+    stages {
+        stage('RPM validation') {
+            agent {
+                docker {
+                    label AGENT_LABEL
+                    image 'opensearchstaging/ci-runner:ci-runner-centos7-systemd-base-integtest-v1'
+                    args '--entrypoint=/usr/sbin/init -u root --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro'
+                    alwaysPull true
+                }
+            }
+            steps {
+                script {
+                    rpmDistValidation(
+                        bundleManifestURL: "$BUNDLE_MANIFEST_URL"
+                    )
+                }
+            }
+            post {
+                always {
+                    sh "rm -rf $WORKSPACE/*"
+                    postCleanup()
+                }
+            }
+        }
+    }
+    post() {
+        success {
+            echo "Validation has been completed."
+        }
+        failure {
+            echo "validation failed."
+        }
+    }
+}
