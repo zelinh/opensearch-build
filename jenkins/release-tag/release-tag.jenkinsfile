@@ -30,11 +30,11 @@ pipeline {
         stage('Create Release Tag') {
             steps {
                 script {
-                    release_url = "https://artifacts.opensearch.org/releases/bundle/$PRODUCT/$VERSION/$PRODUCT-$VERSION-linux-x64.tar.gz"
-                    sh "curl -SLO $release_url && tar -xf $PRODUCT-$VERSION-linux-x64.tar.gz $PRODUCT-$VERSION/manifest.yml"
-                    echo "The release distribution manifest is downloaded to $DISTRIBUTION_MANIFEST"
+//                     release_url = "https://artifacts.opensearch.org/releases/bundle/$PRODUCT/$VERSION/$PRODUCT-$VERSION-linux-x64.tar.gz"
+//                     sh "curl -SLO $release_url && tar -xf $PRODUCT-$VERSION-linux-x64.tar.gz $PRODUCT-$VERSION/manifest.yml"
+//                     echo "The release distribution manifest is downloaded to $DISTRIBUTION_MANIFEST"
                     createReleaseTag(
-                        distManifest: "$DISTRIBUTION_MANIFEST",
+                        distManifest: "$WORKSPACE/jenkins/release-tag/manifest.yml",
                         tagVersion: VERSION
                     )
 

@@ -1,0 +1,16 @@
+---
+schema-version: '1.1'
+build:
+  name: OpenSearch
+  version: 2.0.0-rc1
+  platform: linux
+  architecture: x64
+  distribution: rpm
+  location: aaaaaaa
+  id: '1345'
+components:
+  - name: performance-analyzer
+    repository: https://https://github.com/zelinh/performance-analyzer.git
+    ref: main
+    commit_id: d46bd0983809f8d2c0f30821aac3ed63f8542457
+    location: aaaaaaa
