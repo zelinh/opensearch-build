@@ -9,8 +9,18 @@ build:
   location: aaaaaaa
   id: '1345'
 components:
+  - name: OpenSearch
+    repository: https://github.com/zelinh/OpenSearch.git
+    ref: main
+    commit_id: 223d0b2a1c62ca5ebf12b141b9119fda9a465dc8
+    location: aaaaaaaaa
+  - name: job-scheduler
+    repository: https://github.com/opensearch-project/job-scheduler.git
+    ref: main
+    commit_id: a71f410a2dccc0da4c7860e7bc48ed41f63df433
+    location: aaaaaaaaa
   - name: performance-analyzer
-    repository: https://github.com/zelinh/performance-analyzer.git
+    repository: https://github.com/opensearch-project/performance-analyzer.git
     ref: main
     commit_id: d46bd0983809f8d2c0f30821aac3ed63f8542457
     location: aaaaaaa
