@@ -10,7 +10,7 @@ build:
   id: '1345'
 components:
   - name: performance-analyzer
-    repository: https://https://github.com/zelinh/performance-analyzer.git
+    repository: https://github.com/zelinh/performance-analyzer.git
     ref: main
     commit_id: d46bd0983809f8d2c0f30821aac3ed63f8542457
     location: aaaaaaa
