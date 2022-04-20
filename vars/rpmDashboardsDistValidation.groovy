@@ -38,11 +38,7 @@ def call(Map args = [:]) {
     //Validation for the installation
     //Install the rpm distribution via yum
     rpmCommands(
-<<<<<<< HEAD
-            call: "install",
-=======
             command: "install",
->>>>>>> upstream/main
             product: "opensearch-$rpmVersion"
     )
     println("RPM distribution for OpenSearch $version is also installed with yum.")
