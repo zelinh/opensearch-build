@@ -93,7 +93,7 @@ if ! grep -q '## OpenSearch Performance Analyzer' %{config_dir}/jvm.options; the
    echo '## OpenSearch Performance Analyzer' >> %{config_dir}/jvm.options
    echo "-Dclk.tck=$CLK_TCK" >> %{config_dir}/jvm.options
    echo "-Djdk.attach.allowAttachSelf=true" >> %{config_dir}/jvm.options
-   echo "-Djava.security.policy=file:///usr/share/opensearch/plugins/opensearch-performance-analyzer/pa_config/opensearch_security.policy" >> %{config_dir}/jvm.options
+   echo "-Djava.security.policy=file:///etc/opensearch/opensearch-performance-analyzer/opensearch_security.policy" >> %{config_dir}/jvm.options
    echo "--add-opens=jdk.attach/sun.tools.attach=ALL-UNNAMED" >> %{config_dir}/jvm.options
 fi
 # Reload systemctl daemon
@@ -110,7 +110,7 @@ echo " sudo systemctl enable opensearch.service"
 echo "### You can start opensearch service by executing"
 echo " sudo systemctl start opensearch.service"
 if [ -d %{product_dir}/plugins/opensearch-security ]; then
-    echo "### Created opensearch demo certificates in %{config_dir}/certs"
+    echo "### Create opensearch demo certificates in %{config_dir}/"
     echo " See demo certs creation log in %{log_dir}/install_demo_configuration.log"
 fi
 exit 0

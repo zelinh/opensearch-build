@@ -22,6 +22,7 @@ class TestDockerPromoteWithDockerhubOnlyJob extends BuildPipelineTest {
         binding.setVariable('IMAGE_TAG', imageTag)
         binding.setVariable('AWS_ACCOUNT_ARTIFACT', accountName)
         binding.setVariable('PLATFORM', 'docker-hub')
+        binding.setVariable('TAG_LATEST', 'false')
 
     }
 
