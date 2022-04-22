@@ -9,7 +9,7 @@ ci:
     name: opensearchstaging/ci-runner:ci-runner-centos7-opensearch-dashboards-build-v1
 components:
   - name: OpenSearch-Dashboards
-    ref: main
+    ref: '2.0'
     repository: https://github.com/opensearch-project/OpenSearch-Dashboards.git
     checks:
       - npm:package:version
@@ -34,17 +34,17 @@ components:
     ref: '2.0'
   - name: indexManagementDashboards
     repository: https://github.com/opensearch-project/index-management-dashboards-plugin.git
-    ref: main
+    ref: '2.0'
   - name: alertingDashboards
     repository: https://github.com/opensearch-project/alerting-dashboards-plugin.git
-    ref: main
+    ref: '2.0'
   - name: securityDashboards
     repository: https://github.com/opensearch-project/security-dashboards-plugin.git
-    ref: main
+    ref: '2.0'
   - name: anomalyDetectionDashboards
     repository: https://github.com/opensearch-project/anomaly-detection-dashboards-plugin
     ref: '2.0'
   - name: notificationsDashboards
     repository: https://github.com/opensearch-project/notifications.git
     working_directory: dashboards-notifications
-    ref: main
+    ref: '2.0'
