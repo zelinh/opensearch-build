@@ -16,24 +16,25 @@ def call(Map args = [:]) {
     def rpmVersion = version.replace("-", ".")        //2.0.0.rc1
     def architecture = BundleManifestObj.build.architecture
 
-    def repoFileURLBackend = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/$version/latest/linux/$architecture/rpm/dist/opensearch/opensearch-${version}.staging.repo"
-    def repoFileURLProduct = bundleManifestURL.replace("manifest.yml", "${name}-${version}.staging.repo")
-
-    rpmCommands(
-            command: "setup",
-            repoFileURL: "$repoFileURLBackend"
-    )
-    rpmCommands(
-            command: "setup",
-            repoFileURL: "$repoFileURLProduct"
-    )
-    rpmCommands(
-            command: "clean"
-    )
-    rpmCommands(
-            command: "download",
-            product: "$name-$rpmVersion"
-    )
+//    def repoFileURLBackend = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/$version/latest/linux/$architecture/rpm/dist/opensearch/opensearch-${version}.staging.repo"
+//    def repoFileURLProduct = bundleManifestURL.replace("manifest.yml", "${name}-${version}.staging.repo")
+//
+//    rpmCommands(
+//            command: "setup",
+//            repoFileURL: "$repoFileURLBackend"
+//    )
+//    rpmCommands(
+//            command: "setup",
+//            repoFileURL: "$repoFileURLProduct"
+//    )
+//    rpmCommands(
+//            command: "clean"
+//    )
+//    rpmCommands(
+//            command: "download",
+//            product: "$name-$rpmVersion"
+//    )
+    sh ("curl -sL https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/9/linux/x64/rpm/dist/opensearch/opensearch-1.3.0-linux-x64.rpm -o $WORKSPACE/yum-download/opensearch-1.3.0-linux-x64.rpm")
     def distFileName = sh(
             script: "ls $WORKSPACE/yum-download/",
             returnStdout: true
