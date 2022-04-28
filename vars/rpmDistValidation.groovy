@@ -34,12 +34,12 @@ def call(Map args = [:]) {
 //            command: "download",
 //            product: "$name-$rpmVersion"
 //    )
-    sh ("curl -sL https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/9/linux/x64/rpm/dist/opensearch/opensearch-1.3.0-linux-x64.rpm -o $WORKSPACE/yum-download/opensearch-1.3.0-linux-x64.rpm")
-    def distFileName = sh(
-            script: "ls $WORKSPACE/yum-download/",
-            returnStdout: true
-    ).trim()
-    def distFile = "$WORKSPACE/yum-download/$distFileName"
+    sh ("curl -sLO https://ci.opensearch.org/ci/dbc/Playground/zelin-distribution-build/1.3.0/9/linux/x64/rpm/dist/opensearch/opensearch-1.3.0-linux-x64.rpm")
+//    def distFileName = sh(
+//            script: "ls $WORKSPACE/yum-download/",
+//            returnStdout: true
+//    ).trim()
+    def distFile = "$WORKSPACE/opensearch-1.3.0-linux-x64.rpm"
 
     if (BundleManifestObj.build.distribution != 'rpm') {
         error("Invalid distribution manifest. Please input the correct one.")
