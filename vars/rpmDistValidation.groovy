@@ -39,6 +39,7 @@ def call(Map args = [:]) {
 //            script: "ls $WORKSPACE/yum-download/",
 //            returnStdout: true
 //    ).trim()
+    def distFileName = "opensearch-1.3.0-linux-x64.rpm"
     def distFile = "$WORKSPACE/opensearch-1.3.0-linux-x64.rpm"
 
     if (BundleManifestObj.build.distribution != 'rpm') {
