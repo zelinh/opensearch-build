@@ -39,7 +39,7 @@ def call(Map args = [:]) {
     println("Start installation with yum.")
     rpmCommands(
             command: "install",
-            product: "$name-$rpmVersion"
+            product: distFile
     )
     println("RPM distribution for $name is installed with yum.")
 
