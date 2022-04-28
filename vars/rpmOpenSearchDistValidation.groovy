@@ -168,8 +168,8 @@ def call(Map args = [:]) {
             returnStdout: true
     ).trim()
     println("PA metrics is: \n" + pa_metrics)
-    def name_CPU_Utilization = "\"name\":\"CPU_Utilization\""
-    assert pa_metrics.contains(name_CPU_Utilization)
+    assert pa_metrics.contains("\"timestamp\"")
+    assert pa_metrics.contains("\"data\"")
     println("Performance Analyzer is validated.")
 
     println("Installation and running for opensearch has been validated.")
