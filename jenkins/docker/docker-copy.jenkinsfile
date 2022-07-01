@@ -51,21 +51,15 @@ pipeline {
                 stage('Copy Image to ECR/DockerHub') {
                     steps {
                         script {
-                            copyContainer(
-                                sourceImage: "${SOURCE_IMAGE}",
-                                sourceRegistry: "${SOURCE_IMAGE_REGISTRY}",
-                                destinationImage: "${DESTINATION_IMAGE}",
-                                destinationRegistry: "${DESTINATION_IMAGE_REGISTRY}"
-                            )
-                        }
-                    }
-                }
+                	    echo "Promoting ${SOURCE_IMAGE_REGISTRY}:${SOURCE_IMAGE} to ${DESTINATION_IMAGE_REGISTRY}:${DESTINATION_IMAGE}"
+			}
+		    }
+		}
             }  
             post() {
                 always {
                     script {
                         postCleanup()
-                        sh "docker logout ${DESTINATION_IMAGE_REGISTRY} && docker image prune -f --all"
                     }
                 }
             }     
