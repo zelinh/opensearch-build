@@ -10,7 +10,37 @@ ci:
 components:
   - name: OpenSearch
     repository: https://github.com/opensearch-project/OpenSearch.git
-    ref: 2.x
+    ref: '2.2'
     checks:
       - gradle:publish
       - gradle:properties:version
+  - name: common-utils
+    repository: https://github.com/opensearch-project/common-utils.git
+    ref: '2.x'
+    checks:
+      - gradle:publish
+      - gradle:properties:version
+  - name: job-scheduler
+    repository: https://github.com/opensearch-project/job-scheduler.git
+    ref: '2.2'
+    checks:
+      - gradle:properties:version
+      - gradle:dependencies:opensearch.version
+  - name: security
+    repository: https://github.com/opensearch-project/security.git
+    ref: main
+  - name: geospatial
+    repository: https://github.com/opensearch-project/geospatial.git
+    ref: '2.2'
+    checks:
+      - gradle:publish
+      - gradle:properties:version
+  - name: k-NN
+    repository: https://github.com/opensearch-project/k-NN.git
+    ref: '2.x'
+    platforms:
+      - darwin
+      - linux
+    checks:
+      - gradle:properties:version
+      - gradle:dependencies:opensearch.version

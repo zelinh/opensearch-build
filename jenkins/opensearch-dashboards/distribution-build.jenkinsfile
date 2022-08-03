@@ -6,8 +6,8 @@ pipeline {
     }
     agent none
     environment {
-        AGENT_X64 = 'Jenkins-Agent-al2-x64-c54xlarge-Docker-Host'
-        AGENT_ARM64 = 'Jenkins-Agent-al2-arm64-c6g4xlarge-Docker-Host'
+        AGENT_X64 = 'Jenkins-Agent-AL2-X64-C54xlarge-Docker-Host'
+        AGENT_ARM64 = 'Jenkins-Agent-AL2-Arm64-C6g4xlarge-Docker-Host'
         IMAGE_RPM = 'opensearchstaging/ci-runner:ci-runner-rockylinux8-opensearch-build-v2' // required for rpm to create digest sha256 correctly with rpm 4.12+
     }
     parameters {
@@ -62,6 +62,30 @@ pipeline {
                 script { 
                     currentBuild.description = "$INPUT_MANIFEST"
                     dockerAgent = detectDockerAgent()
+                }
+            }
+        }
+        stage('Get Repository Commits') {
+            agent {
+                docker {
+                    label AGENT_X64
+                    image 'opensearchstaging/ci-runner:ci-runner-alpine3-yq-v1'
+                    alwaysPull true
+                }
+            }
+            steps {
+                script {
+                    getRepositoryCommit(
+                        componentName: "${COMPONENT_NAME}",
+                        inputManifest: "manifests/${INPUT_MANIFEST}",
+                        outputFile: "commits.yml"
+                    )
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'commits.yml'
+                    postCleanup()
                 }
             }
         }
