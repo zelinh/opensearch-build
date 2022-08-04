@@ -26,8 +26,8 @@ pipeline {
                     def outputFile = "commits.yml"
                     echo ("$outputFile *******")
                     yamlUpdate(
-                        inputManifest = inputManifestFile,
-                        outputFile = outputFile
+                        inputManifest = "$inputManifestFile",
+                        outputFile = "$outputFile"
                     )
                     echo ("Display outputFile*******")
                     sh "cat outputFile"
