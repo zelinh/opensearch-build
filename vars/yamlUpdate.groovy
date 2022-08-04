@@ -21,5 +21,5 @@ def call(Map args = [:]) {
         }
     }
     writeYaml(file: outputFile, data: inputManifest, overwrite: true)
-
+    sh("yq -i $outputFile")
 }
