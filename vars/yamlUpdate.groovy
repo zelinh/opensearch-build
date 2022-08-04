@@ -1,4 +1,4 @@
-void call(Map args = [:]) {
+def call(Map args = [:]) {
     lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
 
     echo ("Im in the groovy**************")
