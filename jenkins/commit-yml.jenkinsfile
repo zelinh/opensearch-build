@@ -26,12 +26,6 @@ pipeline {
                     def outputFile = "commits.yml"
                     echo ("$outputFile *******")
                     echo ("$inputManifestFile *******")
-//                     downloadFromS3(
-//                         destPath: "$WORKSPACE/artifacts",
-//                         bucket: "testtest",
-//                         path: "testtest/",
-//                         force: true
-//                     )
                     yamlUpdate(
                         inputManifest: "$inputManifestFile",
                         outputFile: "$outputFile"

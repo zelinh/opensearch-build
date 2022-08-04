@@ -5,7 +5,10 @@ def call(Map args = [:]) {
     def inputManifest = readYaml(file: args.inputManifest)
     def outputFile = args.outputFile
 
-    inputManifest.ci.image.name = "Temptempname"
+    inputManifest.ci.status = "IN_PROGRESS"
+    inputManifest.component.each { item ->
+        item.status = "NOT_START"
+    }
     writeYaml(file: outputFile, data: inputManifest)
 
 }
