@@ -4,18 +4,22 @@ def call(Map args = [:]) {
     echo ("Im in the groovy**************")
     def inputManifest = readYaml(file: args.inputManifest)
     def outputFile = args.outputFile
+    def components = args.componentName
 
+    if (components != null) {
+        componentsList = inputManifest.components
+    }
     if (args.stage == "START") {
-        inputManifest.ci.status = "IN_PROGRESS"
+        inputManifest.build.status = "IN_PROGRESS"
         inputManifest.components.each { component ->
             component.status = "NOT_START"
         }
     } else if (args.stage == "IN_PROGRESS") {
-        inputManifest.components.each { component ->
+        inputManifest.build.each { component ->
             component.status = "IN_PROGRESS"
         }
     } else if (args.stage == "COMPLETE") {
-        inputManifest.ci.status = "COMPLETED"
+        inputManifest.build.status = "COMPLETED"
         inputManifest.components.each { component ->
             component.status = "COMPLETED"
         }
