@@ -25,6 +25,7 @@ pipeline {
                     def inputManifestFile = "manifests/2.2.0/opensearch-2.2.0.yml"
                     def outputFile = "commits.yml"
                     echo ("$outputFile *******")
+                    echo ("$inputManifestFile *******")
 //                     downloadFromS3(
 //                         destPath: "$WORKSPACE/artifacts",
 //                         bucket: "testtest",
@@ -32,8 +33,8 @@ pipeline {
 //                         force: true
 //                     )
                     yamlUpdate(
-                        inputManifest = "$inputManifestFile",
-                        outputFile = "$outputFile"
+                        inputManifest: "$inputManifestFile",
+                        outputFile: "$outputFile"
                     )
                     echo ("Display outputFile*******")
                     sh "cat outputFile"
