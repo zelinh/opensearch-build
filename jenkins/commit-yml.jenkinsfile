@@ -24,6 +24,7 @@ pipeline {
                 script {
                     def inputManifestFile = "manifests/2.2.0/opensearch-2.2.0.yml"
                     def outputFile = "commits.yml"
+                    echo ("$outputFile *******")
                     yamlUpdate(
                         inputManifest = inputManifestFile,
                         outputFile = outputFile
