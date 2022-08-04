@@ -5,7 +5,7 @@ def call(Map args = [:]) {
     def inputManifest = readYaml(file: args.inputManifest)
     def outputFile = args.outputFile
 
-    inputManifest.ci.name = "Temptempname"
+    inputManifest.ci.image.name = "Temptempname"
     writeYaml(file: outputFile, data: inputManifest)
 
 }
