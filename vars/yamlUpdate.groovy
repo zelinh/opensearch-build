@@ -6,7 +6,7 @@ def call(Map args = [:]) {
     def outputFile = args.outputFile
 
     inputManifest.ci.status = "IN_PROGRESS"
-    inputManifest.component.each { item ->
+    inputManifest.components.each { item ->
         item.status = "NOT_START"
     }
     writeYaml(file: outputFile, data: inputManifest)
