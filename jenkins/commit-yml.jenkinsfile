@@ -24,10 +24,11 @@ pipeline {
                 script {
                     def inputManifestFile = "manifests/2.2.0/opensearch-2.2.0.yml"
                     def outputFile = "$WORKSPACE/commits.yml"
+                    def COMPONENT_NAME = "OpenSearch"
                     echo ("$outputFile *******")
                     echo ("$inputManifestFile *******")
                     yamlUpdate(
-                        componentName: "${COMPONENT_NAME}",
+                        componentName: "$COMPONENT_NAME",
                         inputManifest: "$inputManifestFile",
                         outputFile: "$outputFile",
                         stage: "START"
