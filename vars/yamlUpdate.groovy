@@ -1,5 +1,5 @@
 def call(Map args = [:]) {
-    def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
+//    def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
 
     echo ("Im in the groovy**************")
     def inputManifest = readYaml(file: args.inputManifest)
