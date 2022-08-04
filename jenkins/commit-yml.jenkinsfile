@@ -1,0 +1,44 @@
+lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
+
+pipeline {
+    options {
+            timeout(time: 2, unit: 'HOURS')
+    }
+    agent {
+        docker {
+            label 'Jenkins-Agent-AL2-X64-C54xlarge-Docker-Host'
+            image 'opensearchstaging/ci-runner:centos7-x64-arm64-jdkmulti-node10.24.1-cypress6.9.1-20211130'
+            alwaysPull true
+        }
+    }
+    parameters {
+        string(
+            name: 'INPUT_MANIFEST_URL',
+            description: 'INPUT_MANIFEST_URL',
+            trim: true
+        )
+    }
+    stages {
+        stage('Write Yaml') {
+            steps {
+                script {
+                    def inputManifestFile = "manifests/2.2.0/opensearch-2.2.0.yml"
+                    def outputFile = "commits.yml"
+                    yamlUpdate(
+                        inputManifest = inputManifestFile,
+                        outputFile = outputFile
+                    )
+                    echo ("Display outputFile*******")
+                    sh "cat outputFile"
+                }
+            }
+        }
+    }
+    post() {
+        always {
+            script {
+                postCleanup()
+            }
+        }
+    }
+}

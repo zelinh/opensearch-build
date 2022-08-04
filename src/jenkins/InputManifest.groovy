@@ -30,6 +30,7 @@ class InputManifest {
         Ci(Map data) {
             this.image = new InputManifest.Ci.Image(data.image)
         }
+
     }
 
     class Build implements Serializable {
@@ -67,4 +68,8 @@ class InputManifest {
             'shas'
         ].join("/")
     }
+
+//    Map toMap() {
+//        def data = ["ci" : this.Ci.toMap]
+//    }
 }
