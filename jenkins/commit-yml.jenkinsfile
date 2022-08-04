@@ -34,14 +34,14 @@ pipeline {
                     echo ("Display outputFile1*******")
                     sh "cat $outputFile"
                     yamlUpdate(
-                        inputManifest: "$inputManifestFile",
+                        inputManifest: "$outputFile",
                         outputFile: "$outputFile",
                         stage: "IN_PROGRESS"
                     )
                     echo ("Display outputFile2*******")
                     sh "cat $outputFile"
                     yamlUpdate(
-                        inputManifest: "$inputManifestFile",
+                        inputManifest: "$outputFile",
                         outputFile: "$outputFile",
                         stage: "COMPLETE"
                     )

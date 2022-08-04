@@ -16,6 +16,9 @@ def call(Map args = [:]) {
         }
     } else if (args.stage == "COMPLETE") {
         inputManifest.ci.status = "COMPLETED"
+        inputManifest.components.each { component ->
+            component.status = "COMPLETED"
+        }
     }
     writeYaml(file: outputFile, data: inputManifest, overwrite: true)
 
