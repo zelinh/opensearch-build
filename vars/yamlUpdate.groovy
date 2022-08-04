@@ -5,9 +5,17 @@ def call(Map args = [:]) {
     def inputManifest = readYaml(file: args.inputManifest)
     def outputFile = args.outputFile
 
-    inputManifest.ci.status = "IN_PROGRESS"
-    inputManifest.components.each { item ->
-        item.status = "NOT_START"
+    if (args.stage == "START") {
+        inputManifest.ci.status = "IN_PROGRESS"
+        inputManifest.components.each { component ->
+            component.status = "NOT_START"
+        }
+    } else if (args.stage == "IN_PROGRESS") {
+        inputManifest.components.each { component ->
+            component.status = "IN_PROGRESS"
+        }
+    } else if (args.stage == "COMPLETE") {
+        inputManifest.ci.status = "COMPLETED"
     }
     writeYaml(file: outputFile, data: inputManifest)
 

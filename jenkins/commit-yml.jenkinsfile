@@ -28,9 +28,24 @@ pipeline {
                     echo ("$inputManifestFile *******")
                     yamlUpdate(
                         inputManifest: "$inputManifestFile",
-                        outputFile: "$outputFile"
+                        outputFile: "$outputFile",
+                        stage: "START"
                     )
-                    echo ("Display outputFile*******")
+                    echo ("Display outputFile1*******")
+                    sh "cat $outputFile"
+                    yamlUpdate(
+                        inputManifest: "$inputManifestFile",
+                        outputFile: "$outputFile",
+                        stage: "IN_PROGRESS"
+                    )
+                    echo ("Display outputFile2*******")
+                    sh "cat $outputFile"
+                    yamlUpdate(
+                        inputManifest: "$inputManifestFile",
+                        outputFile: "$outputFile",
+                        stage: "COMPLETE"
+                    )
+                    echo ("Display outputFile3*******")
                     sh "cat $outputFile"
                 }
             }
