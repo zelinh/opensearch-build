@@ -27,7 +27,7 @@ pipeline {
                     echo ("$outputFile *******")
                     downloadFromS3(
                         destPath: "$WORKSPACE/artifacts",
-                        bucket: "${ARTIFACT_BUCKET_NAME}",
+                        bucket: "testtest",
                         path: "testtest/",
                         force: true
                     )
