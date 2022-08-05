@@ -24,7 +24,7 @@ def call(Map args = [:]) {
         inputManifest.components.each { component ->
             if (componentsList.contains(component.name)) {
                 component.status = "NOT_START"
-                dir (component) {
+                dir (component.name) {
                     checkout([$class: 'GitSCM', branches: [[name: component.ref]],
                               userRemoteConfigs: [[url: component.repository]]])
                     def commitID = sh (
