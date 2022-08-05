@@ -8,12 +8,12 @@ def call(Map args = [:]) {
     def componentsList = []
     echo("Components is $components")
     if (!components.isEmpty()) {
-        echo ("Components is not null")
+        echo ("Components parameter is not null")
         for (component in components.split(" ")) {
             componentsList.add(component.trim())
         }
     } else {
-        echo ("Components is null")
+        echo ("Components parameter is null")
         inputManifest.components.each { component ->
             componentsList.add(component.name)
         }
@@ -24,6 +24,15 @@ def call(Map args = [:]) {
         inputManifest.components.each { component ->
             if (componentsList.contains(component.name)) {
                 component.status = "NOT_START"
+                dir (component) {
+                    checkout([$class: 'GitSCM', branches: [[name: component.ref]],
+                              userRemoteConfigs: [[url: component.repository]]])
+                    def commitID = sh (
+                            script: "git rev-parse HEAD",
+                            returnStdout: true
+                    ).trim()
+                    component.ref = commitID
+                }
             }
         }
     }
