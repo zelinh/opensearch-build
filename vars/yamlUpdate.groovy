@@ -11,10 +11,13 @@ def call(Map args = [:]) {
         componentsList = inputManifest.components
     } else {
         inputManifest.components.each { component ->
-            componentsList.add(component.name)
+            echo (component)
+            echo (component.name)
+            echo (component.repository)
+            //componentsList.add(component.name)
         }
     }
-    echo (componentsList.toString())
+    //echo (componentsList.toString())
 //    if (args.stage == "START") {
 //        inputManifest.build.status = "IN_PROGRESS"
 //        inputManifest.components.each { component ->
