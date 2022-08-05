@@ -32,7 +32,7 @@ pipeline {
                     echo ("$outputFile *******")
                     echo ("$inputManifestFile *******")
                     yamlUpdate(
-                        componentName: "$COMPONENT_NAME",
+                        componentName: COMPONENT_NAME,
                         inputManifest: "$inputManifestFile",
                         outputFile: "$outputFile",
                         stage: "START"
