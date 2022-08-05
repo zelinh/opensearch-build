@@ -6,7 +6,7 @@ def call(Map args = [:]) {
     def outputFile = args.outputFile
     def components = args.componentName
     def componentsList = []
-
+    echo("Components is $components")
     if (components.isEmpty()) {
         echo ("Components is not null")
         componentsList = inputManifest.components
