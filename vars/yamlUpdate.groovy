@@ -9,7 +9,9 @@ def call(Map args = [:]) {
     echo("Components is $components")
     if (!components.isEmpty()) {
         echo ("Components is not null")
-        componentsList = components
+        for (component in components) {
+            componentsList.add(component)
+        }
     } else {
         echo ("Components is null")
         inputManifest.components.each { component ->
