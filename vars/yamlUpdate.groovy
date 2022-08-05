@@ -9,7 +9,7 @@ def call(Map args = [:]) {
     echo("Components is $components")
     if (!components.isEmpty()) {
         echo ("Components is not null")
-        for (component in components) {
+        for (component in components.split("")) {
             componentsList.add(component)
         }
     } else {
