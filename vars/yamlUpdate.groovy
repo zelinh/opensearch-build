@@ -14,7 +14,7 @@ def call(Map args = [:]) {
             componentsList.add(component.name)
         }
     }
-    echo (componentsList)
+    echo (componentsList.toString())
 //    if (args.stage == "START") {
 //        inputManifest.build.status = "IN_PROGRESS"
 //        inputManifest.components.each { component ->
