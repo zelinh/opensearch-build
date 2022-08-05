@@ -32,14 +32,14 @@ pipeline {
                     echo ("$outputFile *******")
                     echo ("$inputManifestFile *******")
                     echo ("$COMPONENT_NAME")
-//                     yamlUpdate(
-//                         componentName: COMPONENT_NAME,
-//                         inputManifest: "$inputManifestFile",
-//                         outputFile: "$outputFile",
-//                         stage: "START"
-//                     )
-//                     echo ("Display outputFile1*******")
-//                     sh "cat $outputFile"
+                    yamlUpdate(
+                        componentName: COMPONENT_NAME,
+                        inputManifest: "$inputManifestFile",
+                        outputFile: "$outputFile",
+                        stage: "START"
+                    )
+                    echo ("Display outputFile1*******")
+                    sh "cat $outputFile"
                     getRepositoryCommit(
                         componentName: COMPONENT_NAME,
                         inputManifest: inputManifestFile,

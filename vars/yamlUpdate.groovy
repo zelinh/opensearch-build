@@ -9,8 +9,8 @@ def call(Map args = [:]) {
     echo("Components is $components")
     if (!components.isEmpty()) {
         echo ("Components is not null")
-        for (component in components.split("")) {
-            componentsList.add(component)
+        for (component in components.split(" ")) {
+            componentsList.add(component.trim())
         }
     } else {
         echo ("Components is null")
@@ -19,12 +19,15 @@ def call(Map args = [:]) {
         }
     }
     echo (componentsList.toString())
-//    if (args.stage == "START") {
-//        inputManifest.build.status = "IN_PROGRESS"
-//        inputManifest.components.each { component ->
-//            component.status = "NOT_START"
-//        }
-//    } else if (args.stage == "IN_PROGRESS") {
+    if (args.stage == "START") {
+        inputManifest.build.status = "IN_PROGRESS"
+        inputManifest.components.each { component ->
+            if (componentsList.contains(component.name)) {
+                component.status = "NOT_START"
+            }
+        }
+    }
+//    else if (args.stage == "IN_PROGRESS") {
 //        inputManifest.build.each { component ->
 //            component.status = "IN_PROGRESS"
 //        }
@@ -34,6 +37,6 @@ def call(Map args = [:]) {
 //            component.status = "COMPLETED"
 //        }
 //    }
-//    writeYaml(file: outputFile, data: inputManifest, overwrite: true)
-//    sh("yq -i $outputFile") //reformat the yaml
+    writeYaml(file: outputFile, data: inputManifest, overwrite: true)
+    sh("yq -i $outputFile") //reformat the yaml
 }
