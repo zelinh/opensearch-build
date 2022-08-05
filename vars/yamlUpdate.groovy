@@ -8,8 +8,10 @@ def call(Map args = [:]) {
     def componentsList = []
 
     if (components != null) {
+        echo ("Components is not null")
         componentsList = inputManifest.components
     } else {
+        echo ("Components is null")
         inputManifest.components.each { component ->
             echo (component)
             echo (component.name)

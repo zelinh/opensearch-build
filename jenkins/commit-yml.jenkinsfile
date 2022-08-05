@@ -17,6 +17,11 @@ pipeline {
             description: 'INPUT_MANIFEST_URL',
             trim: true
         )
+        string(
+            name: 'COMPONENT_NAME',
+            description: 'COMPONENT_NAME',
+            trim: true
+        )
     }
     stages {
         stage('Write Yaml') {
@@ -24,7 +29,6 @@ pipeline {
                 script {
                     def inputManifestFile = "manifests/2.2.0/opensearch-2.2.0.yml"
                     def outputFile = "$WORKSPACE/commits.yml"
-                    def COMPONENT_NAME = null
                     echo ("$outputFile *******")
                     echo ("$inputManifestFile *******")
                     yamlUpdate(
