@@ -31,6 +31,7 @@ pipeline {
                     def outputFile = "$WORKSPACE/commits.yml"
                     echo ("$outputFile *******")
                     echo ("$inputManifestFile *******")
+                    echo ("$COMPONENT_NAME")
                     yamlUpdate(
                         componentName: COMPONENT_NAME,
                         inputManifest: "$inputManifestFile",
