@@ -22,7 +22,6 @@ def call(Map args = [:]) {
     if (args.stage == "START") {
         inputManifest.build.status = "IN_PROGRESS"
         inputManifest.build.number = "${BUILD_NUMBER}"
-        inputManifest.build.numberwithenv = "${env.BUILD_NUMBER}"
         inputManifest.components.each { component ->
             if (componentsList.contains(component.name)) {
                 component.status = "NOT_START"
@@ -35,6 +34,10 @@ def call(Map args = [:]) {
                     ).trim()
                     component.ref = commitID
                 }
+                component.x64_tar_status = "NOT_STARTED"
+                component.x64_rpm_status = "NOT_STARTED"
+                component.arm64_tar_status = "NOT_STARTED"
+                component.arm64_rpm_status = "NOT_STARTED"
             }
         }
     }
