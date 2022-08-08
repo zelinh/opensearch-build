@@ -21,6 +21,7 @@ def call(Map args = [:]) {
     echo (componentsList.toString())
     if (args.stage == "START") {
         inputManifest.build.status = "IN_PROGRESS"
+        inputManifest.build.number = ${BUILD_NUMBER}
         inputManifest.components.each { component ->
             if (componentsList.contains(component.name)) {
                 component.status = "NOT_START"
@@ -36,11 +37,13 @@ def call(Map args = [:]) {
             }
         }
     }
-//    else if (args.stage == "IN_PROGRESS") {
-//        inputManifest.build.each { component ->
-//            component.status = "IN_PROGRESS"
-//        }
-//    } else if (args.stage == "COMPLETE") {
+        // x64_tar; x64_rpm; arm_tar; arm_rpm
+    else if (args.stage == "IN_PROGRESS") {
+        inputManifest.build.each { component ->
+            component.status = "IN_PROGRESS"
+        }
+    }
+//    else if (args.stage == "COMPLETE") {
 //        inputManifest.build.status = "COMPLETED"
 //        inputManifest.components.each { component ->
 //            component.status = "COMPLETED"
