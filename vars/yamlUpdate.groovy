@@ -24,7 +24,7 @@ def call(Map args = [:]) {
         inputManifest.build.number = "${BUILD_NUMBER}"
         inputManifest.components.each { component ->
             if (componentsList.contains(component.name)) {
-                component.status = "NOT_START"
+                // Convert ref from branch to commit
                 dir (component.name) {
                     checkout([$class: 'GitSCM', branches: [[name: component.ref]],
                               userRemoteConfigs: [[url: component.repository]]])
@@ -34,6 +34,7 @@ def call(Map args = [:]) {
                     ).trim()
                     component.ref = commitID
                 }
+                //initialize the status for all components
                 component.x64_tar_status = "NOT_STARTED"
                 component.x64_rpm_status = "NOT_STARTED"
                 component.arm64_tar_status = "NOT_STARTED"
@@ -42,9 +43,11 @@ def call(Map args = [:]) {
         }
     }
         // x64_tar; x64_rpm; arm_tar; arm_rpm
-    else if (args.stage == "IN_PROGRESS") {
-        inputManifest.build.each { component ->
-            component.status = "IN_PROGRESS"
+    else if (args.stage == "x64_tar") {
+        inputManifest.components.each { component ->
+            if (componentsList.contains(component.name)) {
+                component.x64_tar_status = ""
+            }
         }
     }
 //    else if (args.stage == "COMPLETE") {
