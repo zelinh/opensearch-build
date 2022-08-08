@@ -21,7 +21,8 @@ def call(Map args = [:]) {
     echo (componentsList.toString())
     if (args.stage == "START") {
         inputManifest.build.status = "IN_PROGRESS"
-        inputManifest.build.number = ${BUILD_NUMBER}
+        inputManifest.build.number = "${BUILD_NUMBER}"
+        inputManifest.build.numberwithenv = "${env.BUILD_NUMBER}"
         inputManifest.components.each { component ->
             if (componentsList.contains(component.name)) {
                 component.status = "NOT_START"
