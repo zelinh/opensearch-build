@@ -79,7 +79,7 @@ pipeline {
                     echo("input file is $inputManifestFile")
                     yamlUpdate(
                         componentName: COMPONENT_NAME,
-                        inputManifest: "$inputManifestFile",
+                        inputManifest: "manifests/$INPUT_MANIFEST",
                         outputFile: "commits.yml",
                         stage: "START"
                     )
@@ -114,7 +114,7 @@ pipeline {
                                 def outputFile = "$WORKSPACE/commits.yml"
                                 yamlUpdate(
                                     componentName: COMPONENT_NAME,
-                                    inputManifest: "$INPUT_MANIFEST",
+                                    inputManifest: "manifests/$INPUT_MANIFEST",
                                     outputFile: "$outputFile",
                                     status: "succeed",
                                     stage: "x64_tar"
@@ -172,7 +172,7 @@ pipeline {
                                     unstash "commits_manifest"
                                     yamlUpdate(
                                         componentName: COMPONENT_NAME,
-                                        inputManifest: "$INPUT_MANIFEST",
+                                        inputManifest: "manifests/$INPUT_MANIFEST",
                                         outputFile: "commits.yml",
                                         status: "Succeed",
                                         stage: "x64_rpm"
@@ -183,7 +183,7 @@ pipeline {
                                     unstash "commits_manifest"
                                     yamlUpdate(
                                         componentName: COMPONENT_NAME,
-                                        inputManifest: "$INPUT_MANIFEST",
+                                        inputManifest: "manifests/$INPUT_MANIFEST",
                                         outputFile: "commits.yml",
                                         status: "Failed",
                                         stage: "x64_rpm"
@@ -214,7 +214,7 @@ pipeline {
                                 unstash "commits_manifest"
                                 yamlUpdate(
                                     componentName: COMPONENT_NAME,
-                                    inputManifest: "$INPUT_MANIFEST",
+                                    inputManifest: "manifests/$INPUT_MANIFEST",
                                     outputFile: "commits.yml",
                                     status: "succeed",
                                     stage: "arm64_tar"
@@ -271,7 +271,7 @@ pipeline {
                                     unstash "commits_manifest"
                                     yamlUpdate(
                                         componentName: COMPONENT_NAME,
-                                        inputManifest: "$INPUT_MANIFEST",
+                                        inputManifest: "manifests/$INPUT_MANIFEST",
                                         outputFile: "commits.yml",
                                         status: "Succeed",
                                         stage: "arm64_rpm"
@@ -282,7 +282,7 @@ pipeline {
                                     unstash "commits_manifest"
                                     yamlUpdate(
                                         componentName: COMPONENT_NAME,
-                                        inputManifest: "$INPUT_MANIFEST",
+                                        inputManifest: "manifests/$INPUT_MANIFEST",
                                         outputFile: "commits.yml",
                                         status: "Failed",
                                         stage: "arm64_rpm"
