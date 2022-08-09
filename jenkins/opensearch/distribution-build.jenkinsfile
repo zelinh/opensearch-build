@@ -81,6 +81,7 @@ pipeline {
                         componentName: COMPONENT_NAME,
                         inputManifest: "manifests/$INPUT_MANIFEST",
                         outputFile: "commits.yml",
+                        status: "NOT_STARTED"
                         stage: "START"
                     )
                     stash includes: "commits.yml", name: "commits_manifest"

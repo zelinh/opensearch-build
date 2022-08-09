@@ -22,10 +22,10 @@ def call(Map args = [:]) {
     if (args.stage == "START") {
         inputManifest.build.status = "IN_PROGRESS"
         inputManifest.build.number = "${BUILD_NUMBER}"
-        inputManifest.results.x64_tar = "NOT_STARTED"
-        inputManifest.results.arm64_tar = "NOT_STARTED"
-        inputManifest.results.x64_rpm = "NOT_STARTED"
-        inputManifest.results.arm64_rpm = "NOT_STARTED"
+        inputManifest.results.x64_tar = args.status
+        inputManifest.results.arm64_tar = args.status
+        inputManifest.results.x64_rpm = args.status
+        inputManifest.results.arm64_rpm = args.status
         inputManifest.components.each { component ->
             if (componentsList.contains(component.name)) {
                 // Convert ref from branch to commit
