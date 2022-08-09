@@ -42,11 +42,6 @@ def call(Map args = [:]) {
                     ).trim()
                     component.ref = commitID
                 }
-//                //initialize the status for all components
-//                component.x64_tar_status = "NOT_STARTED"
-//                component.x64_rpm_status = "NOT_STARTED"
-//                component.arm64_tar_status = "NOT_STARTED"
-//                component.arm64_rpm_status = "NOT_STARTED"
             }
         }
     }
@@ -55,7 +50,7 @@ def call(Map args = [:]) {
         stageField = args.stage
         echo("stage is $stageField")
         echo("status is $status")
-        inputManifest.results.("$stageField".toString()) = status
+        inputManifest.results.("$stageField".toString()) = "$status"
     }
 //    else if (args.stage == "COMPLETE") {
 //        inputManifest.build.status = "COMPLETED"
