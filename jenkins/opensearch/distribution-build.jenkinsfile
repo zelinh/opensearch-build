@@ -116,7 +116,7 @@ pipeline {
                                     componentName: COMPONENT_NAME,
                                     inputManifest: "$INPUT_MANIFEST",
                                     outputFile: "$outputFile",
-                                    status: "succeed"
+                                    status: "succeed",
                                     stage: "x64_tar"
                                 )
                                 stash includes: "commits.yml", name: "commits_manifest"
