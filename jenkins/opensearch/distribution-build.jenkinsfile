@@ -89,7 +89,6 @@ pipeline {
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'commits.yml'
                     postCleanup()
                 }
             }
@@ -296,6 +295,7 @@ pipeline {
             node(AGENT_X64) {
                 script {
                     echo ("Succeed.")
+                    archiveArtifacts artifacts: 'commits.yml'
                     postCleanup()
                 }
             }
