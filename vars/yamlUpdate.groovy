@@ -53,7 +53,7 @@ def call(Map args = [:]) {
         // x64_tar; x64_rpm; arm_tar; arm_rpm
     else if (args.stage == "x64_tar" || args.stage == "x64_rpm" || args.stage == "arm64_tar" || args.stage == "arm64_rpm") {
         stageField = args.stage
-        //inputManifest.results.stageField = "NOT_STARTED"
+        echo("status is $status")
         inputManifest.results.stageField = status
     }
 //    else if (args.stage == "COMPLETE") {
