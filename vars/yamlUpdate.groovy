@@ -55,7 +55,7 @@ def call(Map args = [:]) {
         stageField = args.stage
         echo("stage is $stageField")
         echo("status is $status")
-        inputManifest.results.stageField = status
+        inputManifest.results.("$stageField".toString()) = status
     }
 //    else if (args.stage == "COMPLETE") {
 //        inputManifest.build.status = "COMPLETED"
