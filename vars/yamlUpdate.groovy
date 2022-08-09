@@ -6,6 +6,7 @@ def call(Map args = [:]) {
     def outputFile = args.outputFile
     def components = args.componentName
     def componentsList = []
+    def status = args.status
     echo("Components is $components")
     if (!components.isEmpty()) {
         echo ("Components parameter is not null")
@@ -20,12 +21,15 @@ def call(Map args = [:]) {
     }
     echo (componentsList.toString())
     if (args.stage == "START") {
+        echo("we are on the start stage.")
         inputManifest.build.status = "IN_PROGRESS"
         inputManifest.build.number = "${BUILD_NUMBER}"
-        inputManifest.results.x64_tar = args.status
-        inputManifest.results.arm64_tar = args.status
-        inputManifest.results.x64_rpm = args.status
-        inputManifest.results.arm64_rpm = args.status
+
+        echo("status is $status")
+        inputManifest.results.x64_tar = status
+        inputManifest.results.arm64_tar = status
+        inputManifest.results.x64_rpm = status
+        inputManifest.results.arm64_rpm = status
         inputManifest.components.each { component ->
             if (componentsList.contains(component.name)) {
                 // Convert ref from branch to commit
@@ -50,7 +54,7 @@ def call(Map args = [:]) {
     else if (args.stage == "x64_tar" || args.stage == "x64_rpm" || args.stage == "arm64_tar" || args.stage == "arm64_rpm") {
         stageField = args.stage
         //inputManifest.results.stageField = "NOT_STARTED"
-        inputManifest.results.stageField = args.status
+        inputManifest.results.stageField = status
     }
 //    else if (args.stage == "COMPLETE") {
 //        inputManifest.build.status = "COMPLETED"
