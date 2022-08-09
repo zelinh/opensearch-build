@@ -163,12 +163,6 @@ pipeline {
                                 }
                             }
                             post {
-                                always {
-                                    script {
-                                        postCleanup()
-                                    }
-                                }
-
                                 success {
                                     unstash "commits_manifest"
                                     yamlUpdate(
@@ -179,6 +173,7 @@ pipeline {
                                         stage: "x64_rpm"
                                     )
                                     stash includes: "commits.yml", name: "commits_manifest"
+                                    postCleanup()
                                 }
                                 failure {
                                     unstash "commits_manifest"
@@ -190,6 +185,7 @@ pipeline {
                                         stage: "x64_rpm"
                                     )
                                     stash includes: "commits.yml", name: "commits_manifest"
+                                    postCleanup()
                                 }
                             }
                         }
@@ -263,11 +259,6 @@ pipeline {
                                 }
                             }
                             post {
-                                always {
-                                    script {
-                                        postCleanup()
-                                    }
-                                }
                                 success {
                                     unstash "commits_manifest"
                                     yamlUpdate(
@@ -278,6 +269,7 @@ pipeline {
                                         stage: "arm64_rpm"
                                     )
                                     stash includes: "commits.yml", name: "commits_manifest"
+                                    postCleanup()
                                 }
                                 failure {
                                     unstash "commits_manifest"
@@ -289,6 +281,7 @@ pipeline {
                                         stage: "arm64_rpm"
                                     )
                                     stash includes: "commits.yml", name: "commits_manifest"
+                                    postCleanup()
                                 }
                             }
                         }
