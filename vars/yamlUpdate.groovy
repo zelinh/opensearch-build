@@ -22,6 +22,10 @@ def call(Map args = [:]) {
     if (args.stage == "START") {
         inputManifest.build.status = "IN_PROGRESS"
         inputManifest.build.number = "${BUILD_NUMBER}"
+        inputManifest.results.x64_tar = "NOT_STARTED"
+        inputManifest.results.arm64_tar = "NOT_STARTED"
+        inputManifest.results.x64_rpm = "NOT_STARTED"
+        inputManifest.results.arm64_rpm = "NOT_STARTED"
         inputManifest.components.each { component ->
             if (componentsList.contains(component.name)) {
                 // Convert ref from branch to commit
@@ -34,21 +38,19 @@ def call(Map args = [:]) {
                     ).trim()
                     component.ref = commitID
                 }
-                //initialize the status for all components
-                component.x64_tar_status = "NOT_STARTED"
-                component.x64_rpm_status = "NOT_STARTED"
-                component.arm64_tar_status = "NOT_STARTED"
-                component.arm64_rpm_status = "NOT_STARTED"
+//                //initialize the status for all components
+//                component.x64_tar_status = "NOT_STARTED"
+//                component.x64_rpm_status = "NOT_STARTED"
+//                component.arm64_tar_status = "NOT_STARTED"
+//                component.arm64_rpm_status = "NOT_STARTED"
             }
         }
     }
         // x64_tar; x64_rpm; arm_tar; arm_rpm
-    else if (args.stage == "x64_tar") {
-        inputManifest.components.each { component ->
-            if (componentsList.contains(component.name)) {
-                component.x64_tar_status = ""
-            }
-        }
+    else if (args.stage == "x64_tar" || args.stage == "x64_rpm" || args.stage == "arm64_tar" || args.stage == "arm64_rpm") {
+        stageField = args.stage
+        //inputManifest.results.stageField = "NOT_STARTED"
+        inputManifest.results.stageField = args.status
     }
 //    else if (args.stage == "COMPLETE") {
 //        inputManifest.build.status = "COMPLETED"
@@ -58,4 +60,5 @@ def call(Map args = [:]) {
 //    }
     writeYaml(file: outputFile, data: inputManifest, overwrite: true)
     sh("yq -i $outputFile") //reformat the yaml
+    sh ("cat $outputFile")
 }
