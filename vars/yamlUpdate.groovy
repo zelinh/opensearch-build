@@ -24,7 +24,7 @@ def call(Map args = [:]) {
         echo("we are on the start stage.")
         inputManifest.build.status = "IN_PROGRESS"
         inputManifest.build.number = "${BUILD_NUMBER}"
-
+        inputManifest.results = [:]
         echo("status is $status")
         inputManifest.results.x64_tar = status
         inputManifest.results.arm64_tar = status
