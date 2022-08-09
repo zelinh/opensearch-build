@@ -295,6 +295,7 @@ pipeline {
             node(AGENT_X64) {
                 script {
                     echo ("Succeed.")
+                    unstash "commits_manifest"
                     archiveArtifacts artifacts: 'commits.yml'
                     postCleanup()
                 }
