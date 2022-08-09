@@ -76,11 +76,11 @@ pipeline {
             steps {
                 script {
                     def inputManifestFile = "$INPUT_MANIFEST"
-                    def outputFile = "$WORKSPACE/commits.yml"
+                    echo("input file is $inputManifestFile")
                     yamlUpdate(
                         componentName: COMPONENT_NAME,
                         inputManifest: "$inputManifestFile",
-                        outputFile: "$outputFile",
+                        outputFile: "commits.yml",
                         stage: "START"
                     )
                     stash includes: "commits.yml", name: "commits_manifest"
