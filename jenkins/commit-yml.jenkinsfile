@@ -40,13 +40,13 @@ pipeline {
                     )
                     echo ("Display outputFile1*******")
                     sh "cat $outputFile"
-                    getRepositoryCommit(
-                        componentName: COMPONENT_NAME,
-                        inputManifest: inputManifestFile,
-                        outputFile: "commitsPeter.yml"
-                    )
-                    echo ("Display outputFilePeter*******")
-                    sh "cat commitsPeter.yml"
+//                     getRepositoryCommit(
+//                         componentName: COMPONENT_NAME,
+//                         inputManifest: inputManifestFile,
+//                         outputFile: "commitsPeter.yml"
+//                     )
+//                     echo ("Display outputFilePeter*******")
+//                     sh "cat commitsPeter.yml"
 //                     yamlUpdate(
 //                         inputManifest: "$outputFile",
 //                         outputFile: "$outputFile",
@@ -54,11 +54,12 @@ pipeline {
 //                     )
 //                     echo ("Display outputFile2*******")
 //                     sh "cat $outputFile"
-//                     yamlUpdate(
-//                         inputManifest: "$outputFile",
-//                         outputFile: "$outputFile",
-//                         stage: "COMPLETE"
-//                     )
+                    yamlUpdate(
+                        inputManifest: "$outputFile",
+                        outputFile: "$outputFile",
+                        status: "Succeed"
+                        stage: "COMPLETE"
+                    )
 //                     echo ("Display outputFile3*******")
 //                     sh "cat $outputFile"
                 }
