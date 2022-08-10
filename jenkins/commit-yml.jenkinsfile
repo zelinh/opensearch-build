@@ -55,13 +55,11 @@ pipeline {
 //                     echo ("Display outputFile2*******")
 //                     sh "cat $outputFile"
                     yamlUpdate(
-                        yamlUpdate(
-                            componentName: COMPONENT_NAME,
-                            inputManifest: "commits.yml",
-                            outputFile: "commits.yml",
-                            status: "Succeed",
-                            stage: "COMPLETE"
-                        )
+                        componentName: COMPONENT_NAME,
+                        inputManifest: "commits.yml",
+                        outputFile: "commits.yml",
+                        status: "Succeed",
+                        stage: "COMPLETE"
                     )
 //                     echo ("Display outputFile3*******")
 //                     sh "cat $outputFile"
