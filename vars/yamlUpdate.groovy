@@ -52,12 +52,9 @@ def call(Map args = [:]) {
         echo("status is $status")
         inputManifest.results.("$stageField".toString()) = "$status"
     }
-//    else if (args.stage == "COMPLETE") {
-//        inputManifest.build.status = "COMPLETED"
-//        inputManifest.components.each { component ->
-//            component.status = "COMPLETED"
-//        }
-//    }
+    else if (args.stage == "COMPLETE") {
+        inputManifest.build.status = status
+    }
     writeYaml(file: outputFile, data: inputManifest, overwrite: true)
     sh("yq -i $outputFile") //reformat the yaml
     sh ("cat $outputFile")
