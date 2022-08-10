@@ -57,7 +57,7 @@ pipeline {
                     yamlUpdate(
                         inputManifest: "$outputFile",
                         outputFile: "$outputFile",
-                        status: "Succeed"
+                        status: "Succeed",
                         stage: "COMPLETE"
                     )
 //                     echo ("Display outputFile3*******")
