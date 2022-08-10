@@ -60,7 +60,6 @@ pipeline {
                         inputManifest: "commits.yml",
                         outputFile: "commits.yml",
                         status: "Succeed",
-                        duration: currentBuild.duration,
                         stage: "COMPLETE"
                     )
 
