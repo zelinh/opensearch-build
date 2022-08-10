@@ -265,7 +265,7 @@ pipeline {
                                         componentName: COMPONENT_NAME,
                                         inputManifest: "commits.yml",
                                         outputFile: "commits.yml",
-                                        status: "Succeed",
+                                        status: "SUCCESS",
                                         stage: "arm64_rpm"
                                     )
                                     stash includes: "commits.yml", name: "commits_manifest"
@@ -276,7 +276,7 @@ pipeline {
                                         componentName: COMPONENT_NAME,
                                         inputManifest: "commits.yml",
                                         outputFile: "commits.yml",
-                                        status: "Failed",
+                                        status: "FAILURE",
                                         stage: "arm64_rpm"
                                     )
                                     stash includes: "commits.yml", name: "commits_manifest"
@@ -298,6 +298,13 @@ pipeline {
                 script {
                     echo ("Succeed.")
                     unstash "commits_manifest"
+                    yamlUpdate(
+                        componentName: COMPONENT_NAME,
+                        inputManifest: "commits.yml",
+                        outputFile: "commits.yml",
+                        status: "SUCCESS",
+                        stage: "COMPLETE"
+                    )
                     archiveArtifacts artifacts: 'commits.yml'
                     postCleanup()
                 }
@@ -307,7 +314,15 @@ pipeline {
             node(AGENT_X64) {
                 script {
                     echo ("Failed.")
-
+                    unstash "commits_manifest"
+                    yamlUpdate(
+                        componentName: COMPONENT_NAME,
+                        inputManifest: "commits.yml",
+                        outputFile: "commits.yml",
+                        status: "FAILURE",
+                        stage: "COMPLETE"
+                    )
+                    archiveArtifacts artifacts: 'commits.yml'
                     postCleanup()
                 }
             }
