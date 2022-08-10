@@ -54,7 +54,7 @@ pipeline {
 //                     )
 //                     echo ("Display outputFile2*******")
 //                     sh "cat $outputFile"
-                       echo (${currentBuild.durationString()})
+                       echo (currentBuild.durationString())
 //                     yamlUpdate(
 //                         componentName: COMPONENT_NAME,
 //                         inputManifest: "commits.yml",
