@@ -54,6 +54,7 @@ def call(Map args = [:]) {
     }
     else if (args.stage == "COMPLETE") {
         inputManifest.build.status = status
+        inputManifest.results.duration = ${currentBuild.durationString}
     }
     writeYaml(file: outputFile, data: inputManifest, overwrite: true)
     sh("yq -i $outputFile") //reformat the yaml
