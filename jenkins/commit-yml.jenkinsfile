@@ -74,6 +74,8 @@ pipeline {
         always {
             script {
                 postCleanup()
+                echo (currentBuild.durationString)
+
             }
         }
     }
