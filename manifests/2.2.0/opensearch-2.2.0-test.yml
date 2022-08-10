@@ -82,3 +82,13 @@ components:
       test-configs:
         - with-security
         - without-security
+
+  - name: security
+    integ-test:
+      test-configs:
+        - with-security
+
+  - name: geospatial
+    integ-test:
+      test-configs:
+        - without-security

@@ -22,9 +22,13 @@ RUN echo "export LC_ALL=en_US.utf-8" >> /etc/profile.d/python3_ascii.sh && \
     localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || echo set locale
 
 # Add normal dependencies
-RUN yum clean all && \
+RUN yum clean all && yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo && \
     yum update -y && \
-    yum install -y which curl git gnupg2 tar net-tools procps-ng python3 python3-devel python3-pip zip unzip
+    yum install -y which curl git gnupg2 tar net-tools procps-ng python3 python3-devel python3-pip zip unzip jq gh
+
+# Tools setup
+COPY --chown=0:0 config/yq-setup.sh /tmp
+RUN /tmp/yq-setup.sh
 
 # Create user group
 RUN groupadd -g 1000 opensearch && \
@@ -90,7 +94,7 @@ ENV PATH=/usr/share/opensearch/.gem/gems/fpm-1.14.2/bin:$PATH
 # nvm environment variables
 ENV NVM_DIR /usr/share/opensearch/.nvm
 ENV NODE_VERSION 10.24.1
-ARG NODE_VERSION_LIST="10.24.1 14.19.1"
+ARG NODE_VERSION_LIST="10.24.1 14.19.1 14.20.0"
 COPY --chown=1000:1000 config/build-opensearch-dashboards-entrypoint.sh /usr/share/opensearch
 # install nvm
 # https://github.com/creationix/nvm#install-script
