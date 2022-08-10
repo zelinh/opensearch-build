@@ -59,6 +59,7 @@ pipeline {
                         inputManifest: "commits.yml",
                         outputFile: "commits.yml",
                         status: "Succeed",
+                        duration: ${currentBuild.durationString},
                         stage: "COMPLETE"
                     )
 //                     echo ("Display outputFile3*******")
