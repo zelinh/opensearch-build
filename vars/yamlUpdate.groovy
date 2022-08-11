@@ -7,6 +7,7 @@ def call(Map args = [:]) {
     def components = args.componentName
     def componentsList = []
     def status = args.status
+    echo("The status is $status")
     echo("Components is $components")
     if (!components.isEmpty()) {
         echo ("Components parameter is not null")
