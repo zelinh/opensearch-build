@@ -293,7 +293,31 @@ pipeline {
                 }
             }
         }
-
+        stage("Finalize the buildInfo yaml") {
+            agent {
+                docker {
+                    label AGENT_X64
+                    image dockerAgent.image
+                    alwaysPull true
+                }
+            }
+            script {
+                unstash "commits_manifest"
+                yamlUpdate(
+                    componentName: COMPONENT_NAME,
+                    inputManifest: "commits.yml",
+                    outputFile: "commits.yml",
+                    status: currentBuild.result,
+                    stage: "COMPLETE"
+                )
+                archiveArtifacts artifacts: 'commits.yml'
+            }
+            post {
+                        always {
+                            postCleanup()
+                        }
+                    }
+        }
     }
     post {
         success {

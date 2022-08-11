@@ -666,11 +666,11 @@ pipeline {
                 )
                 archiveArtifacts artifacts: 'commits.yml'
             }
-        }
-        post {
-            always {
-                postCleanup()
-            }
+            post {
+                        always {
+                            postCleanup()
+                        }
+                    }
         }
     }
     post {
