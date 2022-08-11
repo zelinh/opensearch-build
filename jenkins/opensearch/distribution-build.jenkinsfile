@@ -159,6 +159,7 @@ pipeline {
                             steps {
                                 script {
                                     echo("assemble archive x64 rpm")
+                                    sleep 10
                                 }
                             }
                             post {
@@ -203,6 +204,7 @@ pipeline {
                     steps {
                         script {
                             echo ("build and test arm64 tarball.")
+                            sleep 20
                         }
                     }
                     post {
@@ -256,6 +258,7 @@ pipeline {
                             steps {
                                 script {
                                     echo("archive rpm arm64.")
+                                    sleep 40
                                 }
                             }
                             post {
