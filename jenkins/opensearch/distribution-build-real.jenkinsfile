@@ -649,19 +649,29 @@ pipeline {
         }
     }
     post {
+        always {
+            agent {
+                docker {
+                    label AGENT_X64
+                    image dockerAgent.image
+                    alwaysPull true
+                }
+            }
+            script {
+                unstash "commits_manifest"
+                yamlUpdate(
+                    componentName: COMPONENT_NAME,
+                    inputManifest: "commits.yml",
+                    outputFile: "commits.yml",
+                    status: currentBuild.result,
+                    stage: "COMPLETE"
+                )
+                archiveArtifacts artifacts: 'commits.yml'
+            }
+        }
         success {
             node(AGENT_X64) {
                 script {
-                    unstash "commits_manifest"
-                    yamlUpdate(
-                        componentName: COMPONENT_NAME,
-                        inputManifest: "commits.yml",
-                        outputFile: "commits.yml",
-                        status: "Succeed",
-                        stage: "COMPLETE"
-                    )
-                    archiveArtifacts artifacts: 'commits.yml'
-
                     postCleanup()
                 }
             }
@@ -669,16 +679,6 @@ pipeline {
         failure {
             node(AGENT_X64) {
                 script {
-                    unstash "commits_manifest"
-                    yamlUpdate(
-                        componentName: COMPONENT_NAME,
-                        inputManifest: "commits.yml",
-                        outputFile: "commits.yml",
-                        status: "Failed",
-                        stage: "COMPLETE"
-                    )
-                    archiveArtifacts artifacts: 'commits.yml'
-
                     postCleanup()
                 }
             }
