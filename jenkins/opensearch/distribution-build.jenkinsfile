@@ -346,6 +346,7 @@ pipeline {
         success {
             node(AGENT_X64) {
                 script {
+                    echo("SUCCESS")
                     postCleanup()
                 }
             }
