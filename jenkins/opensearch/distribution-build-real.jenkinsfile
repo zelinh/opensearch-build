@@ -65,7 +65,7 @@ pipeline {
                 }
             }
         }
-        stage('Initialize the build yaml') {
+        stage('Initialize the buildInfo yaml') {
             agent {
                 docker {
                     label AGENT_X64
@@ -647,9 +647,7 @@ pipeline {
                 }
             }
         }
-    }
-    post {
-        always {
+        stage("Finalize the buildInfo yaml") {
             agent {
                 docker {
                     label AGENT_X64
@@ -669,6 +667,8 @@ pipeline {
                 archiveArtifacts artifacts: 'commits.yml'
             }
         }
+    }
+    post {
         success {
             node(AGENT_X64) {
                 script {
