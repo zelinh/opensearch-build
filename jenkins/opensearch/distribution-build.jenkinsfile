@@ -325,16 +325,6 @@ pipeline {
         success {
             node(AGENT_X64) {
                 script {
-                    echo ("Succeed.")
-                    unstash "commits_manifest"
-                    yamlUpdate(
-                        componentName: COMPONENT_NAME,
-                        inputManifest: "commits.yml",
-                        outputFile: "commits.yml",
-                        status: "SUCCESS",
-                        stage: "COMPLETE"
-                    )
-                    archiveArtifacts artifacts: 'commits.yml'
                     postCleanup()
                 }
             }
@@ -342,16 +332,6 @@ pipeline {
         failure {
             node(AGENT_X64) {
                 script {
-                    echo ("Failed.")
-                    unstash "commits_manifest"
-                    yamlUpdate(
-                        componentName: COMPONENT_NAME,
-                        inputManifest: "commits.yml",
-                        outputFile: "commits.yml",
-                        status: "FAILURE",
-                        stage: "COMPLETE"
-                    )
-                    archiveArtifacts artifacts: 'commits.yml'
                     postCleanup()
                 }
             }
