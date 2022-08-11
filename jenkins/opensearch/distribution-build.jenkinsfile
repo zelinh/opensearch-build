@@ -326,7 +326,7 @@ pipeline {
             agent {
                 docker {
                     label AGENT_X64
-                    image dockerAgent.image
+                    image 'opensearchstaging/ci-runner:ci-runner-centos7-opensearch-build-v2'
                     alwaysPull true
                 }
             }
