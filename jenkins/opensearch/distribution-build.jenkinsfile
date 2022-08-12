@@ -324,13 +324,13 @@ pipeline {
     }
     post {
         always {
-            agent {
-                docker {
-                    label AGENT_X64
-                    image 'opensearchstaging/ci-runner:ci-runner-centos7-opensearch-build-v2'
-                    alwaysPull true
-                }
-            }
+//             agent {
+//                 docker {
+//                     label AGENT_X64
+//                     image 'opensearchstaging/ci-runner:ci-runner-centos7-opensearch-build-v2'
+//                     alwaysPull true
+//                 }
+//             }
             script {
                 unstash "commits_manifest"
                 yamlUpdate(

@@ -59,6 +59,6 @@ def call(Map args = [:]) {
         inputManifest.results.startTimestamp = currentBuild.startTimeInMillis
     }
     writeYaml(file: outputFile, data: inputManifest, overwrite: true)
-    sh("yq -i $outputFile") //reformat the yaml
+//    sh("yq -i $outputFile") //reformat the yaml
     sh ("cat $outputFile")
 }
