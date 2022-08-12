@@ -105,19 +105,21 @@ pipeline {
                         }
                     }
                     steps {
-                        echo ("build-and-test-x64-tar success")
-                        'integ-test': {
-                            def integTestResults =
-                                build job: 'integ-test',
-                                propagate: false,
-                                wait: true,
-                                parameters: [
-                                    string(name: 'TEST_MANIFEST', value: "111"),
-                                    string(name: 'BUILD_MANIFEST_URL', value: "buildManifestUrl"),
-                                    string(name: 'AGENT_LABEL', value: AGENT_X64)
-                                ]
+                        script {
+                            echo ("build-and-test-x64-tar success")
+                            'integ-test': {
+                                def integTestResults =
+                                    build job: 'integ-test',
+                                    propagate: false,
+                                    wait: true,
+                                    parameters: [
+                                        string(name: 'TEST_MANIFEST', value: "111"),
+                                        string(name: 'BUILD_MANIFEST_URL', value: "buildManifestUrl"),
+                                        string(name: 'AGENT_LABEL', value: AGENT_X64)
+                                    ]
 
-                            echo ("${integTestResults.getId()} + integ number")
+                                echo ("${integTestResults.getId()} + integ number")
+                            }
                         }
                     }
                     post {
