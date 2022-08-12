@@ -119,7 +119,6 @@ pipeline {
 
                             echo ("${integTestResults.getId()} + integ number")
                         }
-
                     }
                     post {
                         always {      
