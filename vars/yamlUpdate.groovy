@@ -27,6 +27,8 @@ def call(Map args = [:]) {
         inputManifest.build.number = "${BUILD_NUMBER}"
         inputManifest.results = [:]
         echo("status is $status")
+        inputManifest.results.integ_test = status
+        inputManifest.results.bwc_test = status
         inputManifest.results.x64_tar = status
         inputManifest.results.arm64_tar = status
         inputManifest.results.x64_rpm = status
@@ -48,6 +50,12 @@ def call(Map args = [:]) {
     }
         // x64_tar; x64_rpm; arm_tar; arm_rpm
     else if (args.stage == "x64_tar" || args.stage == "x64_rpm" || args.stage == "arm64_tar" || args.stage == "arm64_rpm") {
+        stageField = args.stage
+        echo("stage is $stageField")
+        echo("status is $status")
+        inputManifest.results.("$stageField".toString()) = "$status"
+    }
+    else if (args.stage == "integ_test" || args.stage == "bwc_test") {
         stageField = args.stage
         echo("stage is $stageField")
         echo("status is $status")

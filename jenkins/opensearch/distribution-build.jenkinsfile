@@ -116,6 +116,13 @@ pipeline {
                                        string(name: 'BUILD_MANIFEST_URL', value: "buildManifestUrl"),
                                        string(name: 'AGENT_LABEL', value: AGENT_X64)
                                    ]
+                               yamlUpdate(
+                                   componentName: COMPONENT_NAME,
+                                   inputManifest: "commits.yml",
+                                   outputFile: "$outputFile",
+                                   status: integTestResults.getId(),
+                                   stage: "integ_test"
+                               )
                                echo ("${integTestResults.getId()} + integ number")
                         }
                     }
