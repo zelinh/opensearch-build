@@ -119,7 +119,7 @@ pipeline {
                                yamlUpdate(
                                    componentName: COMPONENT_NAME,
                                    inputManifest: "commits.yml",
-                                   outputFile: "$outputFile",
+                                   outputFile: "commits.yml",
                                    status: integTestResults.getId(),
                                    stage: "integ_test"
                                )
