@@ -107,6 +107,7 @@ pipeline {
                     steps {
                         script {
                             echo ("build-and-test-x64-tar success")
+                            unstash "commits_manifest"
                                def integTestResults =
                                    build job: 'integ-test',
                                    propagate: false,
@@ -123,6 +124,7 @@ pipeline {
                                    status: integTestResults.getId(),
                                    stage: "integ_test"
                                )
+                               stash includes: "commits.yml", name: "commits_manifest"
                                echo ("${integTestResults.getId()} + integ number")
                         }
                     }
