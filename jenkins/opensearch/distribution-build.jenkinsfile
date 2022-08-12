@@ -259,6 +259,7 @@ pipeline {
                                 script {
                                     echo("archive rpm arm64.")
                                     sleep 40
+                                    exit 1
                                 }
                             }
                             post {
