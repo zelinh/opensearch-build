@@ -294,56 +294,56 @@ pipeline {
                 }
             }
         }
-        stage("Finalize the buildInfo yaml") {
-            agent {
-                docker {
-                    label AGENT_X64
-                    image dockerAgent.image
-                    alwaysPull true
-                }
-            }
-            steps {
-                script {
-                    unstash "commits_manifest"
-                    yamlUpdate(
-                        componentName: COMPONENT_NAME,
-                        inputManifest: "commits.yml",
-                        outputFile: "commits.yml",
-                        status: currentBuild.currentResult,
-                        stage: "COMPLETE"
-                    )
-                    archiveArtifacts artifacts: 'commits.yml'
-                }
-            }
-            post {
-                always {
-                    postCleanup()
-                }
-            }
-        }
-    }
-    post {
-//         always {
+//         stage("Finalize the buildInfo yaml") {
 //             agent {
 //                 docker {
 //                     label AGENT_X64
-//                     image 'opensearchstaging/ci-runner:ci-runner-centos7-opensearch-build-v2'
+//                     image dockerAgent.image
 //                     alwaysPull true
 //                 }
 //             }
-//             script {
-//                 unstash "commits_manifest"
-//                 yamlUpdate(
-//                     componentName: COMPONENT_NAME,
-//                     inputManifest: "commits.yml",
-//                     outputFile: "commits.yml",
-//                     status: currentBuild.result,
-//                     stage: "COMPLETE"
-//                 )
-//                 archiveArtifacts artifacts: 'commits.yml'
-//                 postCleanup()
+//             steps {
+//                 script {
+//                     unstash "commits_manifest"
+//                     yamlUpdate(
+//                         componentName: COMPONENT_NAME,
+//                         inputManifest: "commits.yml",
+//                         outputFile: "commits.yml",
+//                         status: currentBuild.currentResult,
+//                         stage: "COMPLETE"
+//                     )
+//                     archiveArtifacts artifacts: 'commits.yml'
+//                 }
+//             }
+//             post {
+//                 always {
+//                     postCleanup()
+//                 }
 //             }
 //         }
+    }
+    post {
+        always {
+            agent {
+                docker {
+                    label AGENT_X64
+                    image 'opensearchstaging/ci-runner:ci-runner-centos7-opensearch-build-v2'
+                    alwaysPull true
+                }
+            }
+            script {
+                unstash "commits_manifest"
+                yamlUpdate(
+                    componentName: COMPONENT_NAME,
+                    inputManifest: "commits.yml",
+                    outputFile: "commits.yml",
+                    status: currentBuild.result,
+                    stage: "COMPLETE"
+                )
+                archiveArtifacts artifacts: 'commits.yml'
+                postCleanup()
+            }
+        }
         success {
             node(AGENT_X64) {
                 script {
@@ -355,6 +355,7 @@ pipeline {
         failure {
             node(AGENT_X64) {
                 script {
+                echo ("FAILURE")
                     postCleanup()
                 }
             }
