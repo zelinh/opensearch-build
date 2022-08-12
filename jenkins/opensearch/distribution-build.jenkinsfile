@@ -331,17 +331,19 @@ pipeline {
 //                     alwaysPull true
 //                 }
 //             }
-            script {
-                unstash "commits_manifest"
-                yamlUpdate(
-                    componentName: COMPONENT_NAME,
-                    inputManifest: "commits.yml",
-                    outputFile: "commits.yml",
-                    status: currentBuild.result,
-                    stage: "COMPLETE"
-                )
-                archiveArtifacts artifacts: 'commits.yml'
-                postCleanup()
+            node(AGENT_X64) {
+                script {
+                    unstash "commits_manifest"
+                    yamlUpdate(
+                        componentName: COMPONENT_NAME,
+                        inputManifest: "commits.yml",
+                        outputFile: "commits.yml",
+                        status: currentBuild.result,
+                        stage: "COMPLETE"
+                    )
+                    archiveArtifacts artifacts: 'commits.yml'
+                    postCleanup()
+                }
             }
         }
         success {
