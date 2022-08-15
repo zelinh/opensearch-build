@@ -280,7 +280,7 @@ pipeline {
                                 script {
                                     echo("archive rpm arm64.")
                                     sleep 40
-//                                     error("force fail")
+                                    error("force fail")
                                 }
                             }
                             post {
