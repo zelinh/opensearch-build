@@ -307,6 +307,7 @@ pipeline {
                                     stash includes: "commits.yml", name: "commits_manifest"
                                 }
                                 always {
+                                    echo ("Current stage result is ${currentStage.getCurrentResult()}")
                                     postCleanup()
                                 }
                             }
