@@ -27,20 +27,21 @@ def call(Map args = [:]) {
         inputManifest.build.status = "IN_PROGRESS"
         inputManifest.build.number = "${BUILD_NUMBER}"
         inputManifest.results = [:]
-        inputManifest.components.each { component ->
-            if (componentsList.contains(component.name)) {
-                // Convert ref from branch to commit
-                dir(component.name) {
-                    checkout([$class           : 'GitSCM', branches: [[name: component.ref]],
-                              userRemoteConfigs: [[url: component.repository]]])
-                    def commitID = sh(
-                            script: "git rev-parse HEAD",
-                            returnStdout: true
-                    ).trim()
-                    component.ref = commitID
-                }
-            }
-        }
+
+//        inputManifest.components.each { component ->
+//            if (componentsList.contains(component.name)) {
+//                // Convert ref from branch to commit
+//                dir(component.name) {
+//                    checkout([$class           : 'GitSCM', branches: [[name: component.ref]],
+//                              userRemoteConfigs: [[url: component.repository]]])
+//                    def commitID = sh(
+//                            script: "git rev-parse HEAD",
+//                            returnStdout: true
+//                    ).trim()
+//                    component.ref = commitID
+//                }
+//            }
+//        }
     } else if (args.stage == "COMPLETE") {
         inputManifest.build.status = status
     } else {
@@ -51,6 +52,9 @@ def call(Map args = [:]) {
         inputManifest.results.duration = currentBuild.duration
         inputManifest.results.startTimestamp = currentBuild.startTimeInMillis
     }
+
+
+
 //    if (args.stage == "START") {
 //        echo("we are on the start stage.")
 //        inputManifest.build.status = "IN_PROGRESS"
@@ -99,4 +103,8 @@ def call(Map args = [:]) {
     writeYaml(file: outputFile, data: inputManifest, overwrite: true)
 //    sh("yq -i $outputFile") //reformat the yaml
     sh ("cat $outputFile")
+}
+
+void updateCommit() {
+    def distManifest = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.2.0/5905/linux/x64/tar/dist/opensearch/manifest.yml"
 }
