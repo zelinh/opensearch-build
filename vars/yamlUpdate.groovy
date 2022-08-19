@@ -2,8 +2,11 @@ def call(Map args = [:]) {
 //    def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
 
     echo ("Im in the groovy**************")
-    def inputManifest = readYaml(file: args.inputManifest)
-    def outputFile = args.outputFile
+    unstash "job_yml"
+
+    def inputManifest = args.inputManifest ?: "job.yml"
+    def sourceyml = readYaml(file: inputManifest)
+    def outputyml = args.outputyml ?: "job.yml"
     def components = args.componentName
     def componentsList = []
     def status = args.status
@@ -28,21 +31,22 @@ def call(Map args = [:]) {
         inputManifest.build.number = "${BUILD_NUMBER}"
         inputManifest.results = [:]
 
-//        inputManifest.components.each { component ->
-//            if (componentsList.contains(component.name)) {
-//                // Convert ref from branch to commit
-//                dir(component.name) {
-//                    checkout([$class           : 'GitSCM', branches: [[name: component.ref]],
-//                              userRemoteConfigs: [[url: component.repository]]])
-//                    def commitID = sh(
-//                            script: "git rev-parse HEAD",
-//                            returnStdout: true
-//                    ).trim()
-//                    component.ref = commitID
-//                }
-//            }
-//        }
+
     } else if (args.stage == "COMPLETE") {
+        inputManifest.components.each { component ->
+            if (componentsList.contains(component.name)) {
+                // Convert ref from branch to commit
+                dir(component.name) {
+                    checkout([$class           : 'GitSCM', branches: [[name: component.ref]],
+                              userRemoteConfigs: [[url: component.repository]]])
+                    def commitID = sh(
+                            script: "git rev-parse HEAD",
+                            returnStdout: true
+                    ).trim()
+                    component.ref = commitID
+                }
+            }
+        }
         inputManifest.build.status = status
     } else {
         stageField = args.stage
@@ -103,8 +107,9 @@ def call(Map args = [:]) {
     writeYaml(file: outputFile, data: inputManifest, overwrite: true)
 //    sh("yq -i $outputFile") //reformat the yaml
     sh ("cat $outputFile")
+    stash includes: "job.yml", name: "job_yml"
 }
 
-void updateCommit() {
-    def distManifest = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.2.0/5905/linux/x64/tar/dist/opensearch/manifest.yml"
-}
+//void updateCommit() {
+//    def distManifest = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.2.0/5905/linux/x64/tar/dist/opensearch/manifest.yml"
+//}

@@ -80,11 +80,9 @@ pipeline {
                     yamlUpdate(
                         componentName: COMPONENT_NAME,
                         inputManifest: "manifests/$INPUT_MANIFEST",
-                        outputFile: "commits.yml",
                         status: "NOT_STARTED",
                         stage: "START"
                     )
-                    stash includes: "commits.yml", name: "commits_manifest"
                 }
             }
             post {
@@ -107,7 +105,6 @@ pipeline {
                     steps {
                         script {
                             echo ("build-and-test-x64-tar success")
-                            unstash "commits_manifest"
                                def integTestResults =
                                    build job: 'integ-test',
                                    propagate: false,
@@ -119,28 +116,21 @@ pipeline {
                                    ]
                                yamlUpdate(
                                    componentName: COMPONENT_NAME,
-                                   inputManifest: "commits.yml",
-                                   outputFile: "commits.yml",
                                    status: integTestResults.getId(),
                                    stage: "integ_test"
                                )
-                               stash includes: "commits.yml", name: "commits_manifest"
                                echo ("${integTestResults.getId()} + integ number")
                         }
                     }
                     post {
                         always {      
                             script {
-                                unstash "commits_manifest"
                                 def outputFile = "$WORKSPACE/commits.yml"
                                 yamlUpdate(
                                     componentName: COMPONENT_NAME,
-                                    inputManifest: "commits.yml",
-                                    outputFile: "$outputFile",
-                                    status: "succeed",
+                                    status: "SUCCESS",
                                     stage: "x64_tar"
                                 )
-                                stash includes: "commits.yml", name: "commits_manifest"
                                 postCleanup()
                             }
                         }
@@ -185,26 +175,19 @@ pipeline {
                             }
                             post {
                                 success {
-                                    unstash "commits_manifest"
                                     yamlUpdate(
                                         componentName: COMPONENT_NAME,
-                                        inputManifest: "commits.yml",
-                                        outputFile: "commits.yml",
-                                        status: "Succeed",
+                                        status: "SUCCESS",
                                         stage: "x64_rpm"
                                     )
-                                    stash includes: "commits.yml", name: "commits_manifest"
                                 }
                                 failure {
                                     unstash "commits_manifest"
                                     yamlUpdate(
                                         componentName: COMPONENT_NAME,
-                                        inputManifest: "commits.yml",
-                                        outputFile: "commits.yml",
-                                        status: "Failed",
+                                        status: "FAILURE",
                                         stage: "x64_rpm"
                                     )
-                                    stash includes: "commits.yml", name: "commits_manifest"
                                 }
                                 always {
                                     postCleanup()
@@ -231,15 +214,11 @@ pipeline {
                     post {
                         always {
                             script {
-                                unstash "commits_manifest"
                                 yamlUpdate(
                                     componentName: COMPONENT_NAME,
-                                    inputManifest: "commits.yml",
-                                    outputFile: "commits.yml",
-                                    status: "succeed",
+                                    status: "SUCCESS",
                                     stage: "arm64_tar"
                                 )
-                                stash includes: "commits.yml", name: "commits_manifest"
                                 postCleanup()
                             }
                         }
@@ -280,31 +259,23 @@ pipeline {
                                 script {
                                     echo("archive rpm arm64.")
                                     sleep 40
-                                    error("force fail")
+//                                     error("force fail")
                                 }
                             }
                             post {
                                 success {
-                                    unstash "commits_manifest"
                                     yamlUpdate(
                                         componentName: COMPONENT_NAME,
-                                        inputManifest: "commits.yml",
-                                        outputFile: "commits.yml",
                                         status: "SUCCESS",
                                         stage: "arm64_rpm"
                                     )
-                                    stash includes: "commits.yml", name: "commits_manifest"
                                 }
                                 failure {
-                                    unstash "commits_manifest"
                                     yamlUpdate(
                                         componentName: COMPONENT_NAME,
-                                        inputManifest: "commits.yml",
-                                        outputFile: "commits.yml",
                                         status: "FAILURE",
                                         stage: "arm64_rpm"
                                     )
-                                    stash includes: "commits.yml", name: "commits_manifest"
                                 }
                                 always {
                                     echo ("Current stage result is ${currentStage.getCurrentResult()}")
@@ -355,15 +326,12 @@ pipeline {
 //             }
             node(AGENT_X64) {
                 script {
-                    unstash "commits_manifest"
                     yamlUpdate(
                         componentName: COMPONENT_NAME,
-                        inputManifest: "commits.yml",
-                        outputFile: "commits.yml",
                         status: currentBuild.result,
                         stage: "COMPLETE"
                     )
-                    archiveArtifacts artifacts: 'commits.yml'
+                    archiveArtifacts artifacts: 'job.yml'
                     postCleanup()
                 }
             }
