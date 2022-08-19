@@ -278,7 +278,6 @@ pipeline {
                                     )
                                 }
                                 always {
-                                    echo ("Current stage result is ${currentStage.getCurrentResult()}")
                                     postCleanup()
                                 }
                             }
