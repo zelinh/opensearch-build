@@ -5,7 +5,7 @@ def call(Map args = [:]) {
     try {
         unstash "job_yml"
     } catch(Exception ex) {
-        pass
+        echo("No job.yml exists in stashed. Please make sure inputManifest parameter is passed.")
     }
 
     def inputManifest = args.inputManifest ?: "job.yml"
