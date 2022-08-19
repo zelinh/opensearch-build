@@ -2,7 +2,11 @@ def call(Map args = [:]) {
 //    def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
 
     echo ("Im in the groovy**************")
-    unstash "job_yml"
+    try {
+        unstash "job_yml"
+    } catch(Exception ex) {
+        pass
+    }
 
     def inputManifest = args.inputManifest ?: "job.yml"
     def sourceyml = readYaml(file: inputManifest)
