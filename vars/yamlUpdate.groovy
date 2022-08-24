@@ -1,5 +1,5 @@
 def call(Map args = [:]) {
-//    def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
+    def lib = library(identifier: 'jenkins@20211123', retriever: legacySCM(scm))
 
     echo ("Im in the groovy**************")
     try {
@@ -40,15 +40,18 @@ def call(Map args = [:]) {
         sourceyml.components.each { component ->
             if (componentsList.contains(component.name)) {
                 // Convert ref from branch to commit
-                dir(component.name) {
-                    checkout([$class           : 'GitSCM', branches: [[name: component.ref]],
-                              userRemoteConfigs: [[url: component.repository]]])
-                    def commitID = sh(
-                            script: "git rev-parse HEAD",
-                            returnStdout: true
-                    ).trim()
-                    component.ref = commitID
-                }
+//                dir(component.name) {
+//                    checkout([$class           : 'GitSCM', branches: [[name: component.ref]],
+//                              userRemoteConfigs: [[url: component.repository]]])
+//                    def commitID = sh(
+//                            script: "git rev-parse HEAD",
+//                            returnStdout: true
+//                    ).trim()
+//                    component.ref = commitID
+//                }
+                sh ("wget https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.2.0/5905/linux/x64/tar/builds/opensearch/manifest.yml")
+                def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: "$WORKSPACE/manifest.yml"))
+                component.ref = buildManifestObj.getCommitId(component.name)
             }
         }
         sourceyml.build.status = status
@@ -114,6 +117,6 @@ def call(Map args = [:]) {
     stash includes: "job.yml", name: "job_yml"
 }
 
-//void updateCommit() {
-//    def distManifest = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.2.0/5905/linux/x64/tar/dist/opensearch/manifest.yml"
-//}
+void updateCommit() {
+    def distManifest = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.2.0/5905/linux/x64/tar/dist/opensearch/manifest.yml"
+}
