@@ -7,19 +7,13 @@ ci:
     args: -e JAVA_HOME=/opt/java/openjdk-17
 components:
   - name: index-management
-    integ-test:
-      build-dependencies:
-        - job-scheduler
+    bwc-test:
       test-configs:
         - with-security
         - without-security
-      additional-cluster-configs:
-        path.repo: [/tmp]
 
   - name: anomaly-detection
-    integ-test:
-      build-dependencies:
-        - job-scheduler
+    bwc-test:
       test-configs:
         - with-security
         - without-security
@@ -29,66 +23,66 @@ components:
       test-configs:
         - with-security
         - without-security
-
-  - name: alerting
-    integ-test:
+    bwc-test:
       test-configs:
         - with-security
         - without-security
-      additional-cluster-configs:
-        plugins.destination.host.deny_list: [10.0.0.0/8, 127.0.0.1]
+
+  - name: alerting
+    bwc-test:
+      test-configs:
+        - with-security
+        - without-security
 
   - name: notifications
     working-directory: notifications
-    integ-test:
+    bwc-test:
       test-configs:
         - with-security
         - without-security
 
   - name: sql
-    integ-test:
+    bwc-test:
       test-configs:
         - with-security
         - without-security
-      additional-cluster-configs:
-        script.context.field.max_compilations_rate: 1000/1m
 
   - name: k-NN
-    integ-test:
+    bwc-test:
       test-configs:
         - with-security
         - without-security
 
   - name: dashboards-reports
     working-directory: reports-scheduler
-    integ-test:
+    bwc-test:
       test-configs:
         - without-security
 
   - name: opensearch-observability
     working-directory: opensearch-observability
-    integ-test:
+    bwc-test:
       test-configs:
         - without-security
 
   - name: ml-commons
-    integ-test:
+    bwc-test:
       test-configs:
         - with-security
         - without-security
 
   - name: cross-cluster-replication
-    integ-test:
+    bwc-test:
       test-configs:
         - with-security
         - without-security
 
   - name: security
-    integ-test:
+    bwc-test:
       test-configs:
         - with-security
 
   - name: geospatial
-    integ-test:
+    bwc-test:
       test-configs:
         - without-security
