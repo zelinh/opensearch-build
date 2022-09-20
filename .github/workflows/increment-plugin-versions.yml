@@ -2,6 +2,8 @@
 name: Increment Plugin Versions
 
 on:
+  schedule:
+    - cron: 0 0 * * *
   workflow_dispatch:
     inputs:
       logLevel:
@@ -39,7 +41,15 @@ jobs:
           - {repo: security}
           - {repo: sql}
         branch:
-          - '2.2'
+          - '1.3'
+          - 2.x
+          - '2.4'
+          - 3.x
+          - '3.0'
+          - '2.3'
+        exclude:
+          - {entry: {repo: geospatial}, branch: '1.3'}
+          - {entry: {repo: notifications, path: notifications}, branch: '1.3'}
     steps:
       - name: Check out OpenSearch repo
         uses: actions/checkout@v3
