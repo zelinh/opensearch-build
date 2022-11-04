@@ -90,7 +90,7 @@ case $PLATFORM-$DISTRIBUTION-$ARCHITECTURE in
         SUFFIX="$PLATFORM-arm64"
         ;;
     windows-zip-x64)
-        TARGET="--all-platforms"
+        TARGET="--windows"
         EXT="$DISTRIBUTION"
         BUILD_PARAMS="build-platform"
         EXTRA_PARAMS="--skip-os-packages"
@@ -116,15 +116,12 @@ case $PLATFORM-$DISTRIBUTION-$ARCHITECTURE in
         ;;
 esac
 
-echo "Setting node version"
-
-if [ "$PLATFORM" != "windows" ]; then
-    source $NVM_DIR/nvm.sh
-    nvm use
-else
-    volta install node@`cat .nvmrc`
-    volta install yarn
+NVM_CMD="source $NVM_DIR/nvm.sh && nvm use"
+if [ "$PLATFORM" = "windows" ]; then
+    NVM_CMD="volta install node@`cat .nvmrc` && volta install yarn@`jq -r '.engines.yarn' package.json`"
 fi
+
+eval $NVM_CMD
 
 echo "Building node modules for core with $PLATFORM-$DISTRIBUTION-$ARCHITECTURE"
 yarn osd bootstrap
