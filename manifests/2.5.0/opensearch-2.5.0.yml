@@ -23,3 +23,17 @@ components:
     checks:
       - gradle:publish
       - gradle:properties:version
+  - name: security
+    repository: https://github.com/opensearch-project/security.git
+    ref: 2.x
+    platforms:
+      - linux
+      - windows
+  - name: performance-analyzer
+    repository: https://github.com/opensearch-project/performance-analyzer.git
+    ref: 2.x
+    platforms:
+      - linux
+    checks:
+      - gradle:properties:version
+      - gradle:dependencies:opensearch.version
