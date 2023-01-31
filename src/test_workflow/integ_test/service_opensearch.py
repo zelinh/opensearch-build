@@ -43,7 +43,11 @@ class ServiceOpenSearch(Service):
 
     def start(self) -> None:
         self.dist.install(self.download())
-
+        print("*******************************__work_dir__*****************" + self.work_dir)
+        print("*******************************__install_dir__*****************" + self.install_dir)
+        print("*******************************__version__*****************" + self.work_dir)
+        print("*******************************__distribution__*****************" + self.distribution)
+        exit("EXIT ON PURPOSE")
         self.opensearch_yml_dir = os.path.join(self.dist.config_dir, "opensearch.yml")
         self.security_plugin_dir = os.path.join(self.install_dir, "plugins", "opensearch-security")
 
