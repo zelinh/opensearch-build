@@ -110,7 +110,7 @@ OS="`uname`"
 #Interix (Services for UNIX)	Interix
 #MSYS	MSYS_NT-6.1
 #MSYS2	MSYS_NT-10.0-17763
-if [[ $OS =~ CYGWIN*|MINGW*|MINGW32*|MSYS* ]]
+if ! [[ $OS =~ CYGWIN*|MINGW*|MINGW32*|MSYS* ]]
 then
 	OPENSEARCH_HOME=`ps -ef | grep -o "[o]pensearch.path.home=\S\+" | cut -d= -f2- | head -n1`
 	curl -SL https://raw.githubusercontent.com/opensearch-project/sql/main/integ-test/src/test/resources/datasource/datasources.json -o "$OPENSEARCH_HOME"/datasources.json
