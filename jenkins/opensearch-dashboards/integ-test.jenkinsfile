@@ -73,15 +73,20 @@ pipeline {
                         url: BUILD_MANIFEST_URL,
                         path: BUILD_MANIFEST
                     )
+	            echo "0"
 
                     downloadBuildManifest(
                         url: BUILD_MANIFEST_URL_OPENSEARCH,
                         path: BUILD_MANIFEST_OPENSEARCH
                     )
-                    print(BUILD_MANIFEST)
+                    
+                    echo "1"
                     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: BUILD_MANIFEST))
                     def buildManifestObjOpenSearch = lib.jenkins.BuildManifest.new(readYaml(file: BUILD_MANIFEST_OPENSEARCH))
+                    echo "2"
                     env.architecture = buildManifestObj.getArtifactArchitecture()
+                    echo "********3******************"
+                    print(env.architecture)
                     env.buildId = buildManifestObj.getArtifactBuildId()
                     env.buildIdOpenSearch = buildManifestObjOpenSearch.getArtifactBuildId()
                     env.distribution = buildManifestObj.getDistribution()
