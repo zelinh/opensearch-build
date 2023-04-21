@@ -78,7 +78,7 @@ pipeline {
                         url: BUILD_MANIFEST_URL_OPENSEARCH,
                         path: BUILD_MANIFEST_OPENSEARCH
                     )
-
+                    print(BUILD_MANIFEST)
                     def buildManifestObj = lib.jenkins.BuildManifest.new(readYaml(file: BUILD_MANIFEST))
                     def buildManifestObjOpenSearch = lib.jenkins.BuildManifest.new(readYaml(file: BUILD_MANIFEST_OPENSEARCH))
                     env.architecture = buildManifestObj.getArtifactArchitecture()
