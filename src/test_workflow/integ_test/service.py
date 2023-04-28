@@ -71,8 +71,6 @@ class Service(abc.ABC):
             self.log_files
         )
 
-        self.uninstall()
-
         return service_termination_result
 
     def endpoint(self) -> str:
