@@ -64,14 +64,16 @@ class Service(abc.ABC):
 
         self.return_code = self.process_handler.terminate()
 
-        self.uninstall()
-
-        return ServiceTerminationResult(
+        service_termination_result = ServiceTerminationResult(
             self.return_code,
             self.process_handler.stdout_data,
             self.process_handler.stderr_data,
             self.log_files
         )
+
+        self.uninstall()
+
+        return service_termination_result
 
     def endpoint(self) -> str:
         return "localhost"

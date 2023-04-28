@@ -44,4 +44,5 @@ class DistributionTar(Distribution):
         # subprocess.check_call(f"rm -rf {self.install_dir}", shell=True)
         # subprocess.check_call(f"mkdir {self.install_dir}", shell=True)
         # subprocess.check_call(f"mv {self.work_dir}/logs {self.install_dir}", shell=True)
+        subprocess.check_call(f"rm -rf {self.work_dir}/*", shell=True)
         logging.info(f"{self.work_dir}/* would be deleted or kept subject to TemporaryDirectory rules.")
