@@ -1,6 +1,6 @@
-lib = library(identifier: 'jenkins@4.1.1', retriever: modernSCM([
+lib = library(identifier: 'jenkins@jenkin-test-base-path', retriever: modernSCM([
     $class: 'GitSCMSource',
-    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
+    remote: 'https://github.com/zelinh/opensearch-build-libraries.git',
 ]))
 
 def docker_images = [
