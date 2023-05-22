@@ -131,9 +131,9 @@ pipeline {
                         localPath: "${WORKSPACE}/artifacts",
                         force: true
                       )
-                    sh("ls $WORKSPACE/artifacts/${artifactPath}")
-                    sh("ls $WORKSPACE/artifacts/")
                     sh("ls $WORKSPACE")
+                    sh("ls $WORKSPACE/artifacts/")
+                    sh("ls $WORKSPACE/artifacts/${artifactPath}")
                     sh("mv -v $WORKSPACE/artifacts/${artifactPath} $WORKSPACE")
 
                     // Stash the current working directory files, aka opensearch-build repo
