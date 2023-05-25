@@ -34,6 +34,7 @@ class TestArgs:
         parser.add_argument(
             "-v", "--verbose", help="Show more verbose output.", action="store_const", default=logging.INFO, const=logging.DEBUG, dest="logging_level"
         )
+        parser.add_argument("-b", "--base-path", dest="base_path", help="The base path to retrieve the logs.")
         args = parser.parse_args()
         self.test_run_id = args.test_run_id or uuid.uuid4().hex
         self.components = args.components
@@ -41,6 +42,7 @@ class TestArgs:
         self.logging_level = args.logging_level
         self.test_manifest_path = args.test_manifest_path
         self.paths = args.paths
+        self.base_path = args.base_path
 
 
 TestArgs.__test__ = False  # type:ignore

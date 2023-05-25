@@ -24,7 +24,7 @@ class TestRecorder:
     remote_cluster_logs: Any
     test_results_logs: Any
 
-    def __init__(self, test_run_id: str, test_type: str, tests_dir: str) -> None:
+    def __init__(self, test_run_id: str, test_type: str, tests_dir: str, base_path: str, repo_dir: str) -> None:
         self.test_run_id = test_run_id
         self.test_type = test_type
         self.location = os.path.join(tests_dir, str(self.test_run_id), self.test_type)

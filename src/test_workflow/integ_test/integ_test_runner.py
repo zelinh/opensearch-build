@@ -17,7 +17,7 @@ from test_workflow.integ_test.integ_test_suite import IntegTestSuite
 from test_workflow.test_args import TestArgs
 from test_workflow.test_recorder.test_recorder import TestRecorder
 from test_workflow.test_result.test_suite_results import TestSuiteResults
-
+from test_workflow.test_recorder.test_run_report import TestRunReport
 
 class IntegTestRunner(abc.ABC):
     args: TestArgs
@@ -25,15 +25,19 @@ class IntegTestRunner(abc.ABC):
     tests_dir: str
     test_recorder: TestRecorder
     components: Components
+    test_run_yml: TestRunReport
 
     def __init__(self, args: TestArgs, test_manifest: TestManifest, components: Components) -> None:
         self.args = args
         self.test_manifest = test_manifest
         self.components = components
 
-        self.tests_dir = os.path.join(os.getcwd(), "test-results")
+        self.base_path = args.base_path
+        self.repo_dir = os.getcwd()
+        self.tests_dir = os.path.join(self.repo_dir, "test-results")
         os.makedirs(self.tests_dir, exist_ok=True)
-        self.test_recorder = TestRecorder(self.args.test_run_id, "integ-test", self.tests_dir)
+        self.test_recorder = TestRecorder(self.args.test_run_id, "integ-test", self.tests_dir, self.base_path, self.repo_dir)
+        self.test_run_yml = TestRunReport(args.test_run_id, "integ-test", "OpenSearch", args.test_manifest_path, self.base_path, self.repo_dir)
 
     def run(self) -> TestSuiteResults:
         with TemporaryDirectory(keep=self.args.keep, chdir=True) as work_dir:

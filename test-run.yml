@@ -1,0 +1,29 @@
+---
+schema-version: '1.0'
+name: OpenSearch
+test-run:
+  Command: ./test.sh integ-test manifests/2.6.0/opensearch-2.6.0-test.yml --paths
+    opensearch=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.6.0/7083/linux/x64/tar
+  TestType: integ-test
+  TestManifest: manifests/2.6.0/opensearch-2.6.0-test.yml
+  DistributionManifest: https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.6.0/7083/linux/x64/tar/dist/opensearch/manifest.yml
+  TestID: '2345'
+components:
+  - name: sql
+    command: ./test.sh integ-test manifests/2.6.0/opensearch-2.6.0-test.yml --component
+      sql --paths opensearch=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.6.0/7083/linux/x64/tar
+    configs:
+      - name: with-security
+        status: pass
+        logs:
+          - https://ci.opensearch.org/ci/dbc/integ-test/2.6.0/7083/linux/x64/tar/test-results/2345/integ-test/sql/with-security/test-results/stderr.txt
+          - https://ci.opensearch.org/ci/dbc/integ-test/2.6.0/7083/linux/x64/tar/test-results/2345/integ-test/sql/with-security/test-results/stdout.txt
+          - https://ci.opensearch.org/ci/dbc/integ-test/2.6.0/7083/linux/x64/tar/test-results/2345/integ-test/sql/with-security/local-cluster-logs/stderr.txt
+          - https://ci.opensearch.org/ci/dbc/integ-test/2.6.0/7083/linux/x64/tar/test-results/2345/integ-test/sql/with-security/local-cluster-logs/stdout.txt
+      - name: without-security
+        status: fail
+        logs:
+          - https://ci.opensearch.org/ci/dbc/integ-test/2.6.0/7083/linux/x64/tar/test-results/2345/integ-test/sql/without-security/test-results/stderr.txt
+          - https://ci.opensearch.org/ci/dbc/integ-test/2.6.0/7083/linux/x64/tar/test-results/2345/integ-test/sql/without-security/test-results/stdout.txt
+          - https://ci.opensearch.org/ci/dbc/integ-test/2.6.0/7083/linux/x64/tar/test-results/2345/integ-test/sql/without-security/local-cluster-logs/stderr.txt
+          - https://ci.opensearch.org/ci/dbc/integ-test/2.6.0/7083/linux/x64/tar/test-results/2345/integ-test/sql/without-security/local-cluster-logs/stdout.txt

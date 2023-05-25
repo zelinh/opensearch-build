@@ -105,7 +105,7 @@ class TestRunManifest(ComponentManifest['TestManifest', 'TestComponents']):
 
         def __to_dict__(self) -> Optional[dict]:
             if (self.command and self.test_type and self.test_manifest and self.distribution_manifest and
-                    self.test_id) is None:
+                self.test_id) is None:
                 return None
             else:
                 return {
@@ -128,9 +128,6 @@ class TestComponent(Component):
         super().__init__(data)
         self.command = data["command"]
         self.configs = self.TestComponentConfigs(data.get("configs", None))
-        # self.integ_test = data.get("integ-test", None)
-        # self.bwc_test = data.get("bwc-test", None)
-        # self.components = TestComponents(data.get("components", []))  # type: ignore[assignment]
 
     def __to_dict__(self) -> dict:
         return {
@@ -139,17 +136,14 @@ class TestComponent(Component):
             "configs": self.configs.__to_list__()
         }
 
-
     class TestComponentConfigs:
         def __init__(self, data: list) -> None:
             self.configs = []
             for config in data:
                 self.configs.append(self.TestComponentConfig(config).__to_dict__())
 
-
         def __to_list__(self):
             return self.configs
-
 
         class TestComponentConfig:
             def __init__(self, data: dict) -> None:
