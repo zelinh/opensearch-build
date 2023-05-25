@@ -5,8 +5,11 @@ build:
   version: 2.7.1
 ci:
   image:
-    name: opensearchstaging/ci-runner:ci-runner-centos7-opensearch-dashboards-build-v2
+    name: opensearchstaging/ci-runner:ci-runner-centos7-opensearch-dashboards-build-v3
 components:
   - name: OpenSearch-Dashboards
     repository: https://github.com/opensearch-project/OpenSearch-Dashboards.git
+    ref: '2.7'
+  - name: searchRelevanceDashboards
+    repository: https://github.com/opensearch-project/dashboards-search-relevance.git
     ref: '2.7'

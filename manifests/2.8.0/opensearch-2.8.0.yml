@@ -41,6 +41,15 @@ components:
     checks:
       - gradle:properties:version
       - gradle:dependencies:opensearch.version
+  - name: geospatial
+    repository: https://github.com/opensearch-project/geospatial.git
+    ref: 2.x
+    platforms:
+      - linux
+      - windows
+    checks:
+      - gradle:properties:version
+      - gradle:dependencies:opensearch.version
   - name: security
     repository: https://github.com/opensearch-project/security.git
     ref: 2.x
@@ -62,6 +71,23 @@ components:
     platforms:
       - linux
       - windows
+    checks:
+      - gradle:properties:version
+      - gradle:dependencies:opensearch.version
+  - name: ml-commons
+    repository: https://github.com/opensearch-project/ml-commons.git
+    ref: 2.x
+    platforms:
+      - linux
+      - windows
+    checks:
+      - gradle:properties:version
+      - gradle:dependencies:opensearch.version: opensearch-ml-plugin
+  - name: performance-analyzer
+    repository: https://github.com/opensearch-project/performance-analyzer.git
+    ref: 2.x
+    platforms:
+      - linux
     checks:
       - gradle:properties:version
       - gradle:dependencies:opensearch.version

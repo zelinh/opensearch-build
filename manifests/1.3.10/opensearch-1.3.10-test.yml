@@ -1,51 +1,68 @@
 ---
 schema-version: '1.0'
-name: OpenSearch Dashboards
+name: OpenSearch
 ci:
   image:
-    name: opensearchstaging/ci-runner:ci-runner-rockylinux8-opensearch-dashboards-integtest-v3
+    name: opensearchstaging/ci-runner:ci-runner-centos7-opensearch-build-v2
+    args: -e JAVA_HOME=/opt/java/openjdk-11
 components:
-  - name: OpenSearch-Dashboards
-    bwc-test:
+  - name: index-management
+    integ-test:
+      build-dependencies:
+        - job-scheduler
       test-configs:
         - with-security
         - without-security
-  - name: notificationsDashboards
+      additional-cluster-configs:
+        path.repo: [/tmp]
+
+  - name: anomaly-detection
+    integ-test:
+      build-dependencies:
+        - job-scheduler
+      test-configs:
+        - with-security
+        - without-security
+
+  - name: asynchronous-search
     integ-test:
       test-configs:
         - with-security
         - without-security
-  - name: observabilityDashboards
+
+  - name: alerting
     integ-test:
       test-configs:
         - with-security
         - without-security
-  - name: reportsDashboards
+      additional-cluster-configs:
+        plugins.destination.host.deny_list: [10.0.0.0/8, 127.0.0.1]
+
+  - name: sql
     integ-test:
       test-configs:
         - with-security
         - without-security
-  - name: ganttChartDashboards
+      additional-cluster-configs:
+        script.context.field.max_compilations_rate: 1000/1m
+
+  - name: k-NN
     integ-test:
       test-configs:
         - with-security
         - without-security
-  - name: queryWorkbenchDashboards
+
+  - name: opensearch-reports
     integ-test:
       test-configs:
-        - with-security
         - without-security
-  - name: securityDashboards
+
+  - name: opensearch-observability
     integ-test:
       test-configs:
-        - with-security
         - without-security
-  - name: searchRelevanceDashboards
-    integ-test:
-      test-configs:
-        - with-security
-        - without-security
-  - name: customImportMapDashboards
+
+  - name: ml-commons
     integ-test:
       test-configs:
         - with-security
