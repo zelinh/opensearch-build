@@ -4,7 +4,7 @@ name: OpenSearch
 ci:
   image:
     name: opensearchstaging/ci-runner:ci-runner-centos7-opensearch-build-v3
-    args: -e JAVA_HOME=/opt/java/openjdk-20
+    args: -e JAVA_HOME=/opt/java/openjdk-17
 components:
   - name: alerting
     integ-test:
@@ -38,10 +38,10 @@ components:
     integ-test:
       topology:
         - cluster_name: leader
-          data_nodes: 2
+          data_nodes: 1
           cluster_manager_nodes: 0
         - cluster_name: follower
-          data_nodes: 2
+          data_nodes: 1
           cluster_manager_nodes: 0
       test-configs:
         - with-security
