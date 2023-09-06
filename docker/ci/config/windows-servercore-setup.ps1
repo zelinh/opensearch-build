@@ -81,7 +81,10 @@ $zlibRegFilePath
 regedit /s $zlibRegFilePath
 
 # Install jdk
-$jdkVersionList = "temurin8-jdk JAVA8_HOME", "temurin11-jdk JAVA11_HOME", "temurin17-jdk JAVA17_HOME", "temurin19-jdk JAVA19_HOME", "openjdk20 JAVA20_HOME", "openjdk14 JAVA14_HOME"
+# Temurin jdk does not have all the versions supported on scoop, especially version 14, 20, and above
+# As of now we will mix temurin and openjdk as temurin for production has support policies for fixes and patches
+# We need to make sure we do not mis-install temurin and openjdk with the same version or the distribution build code will have issues
+$jdkVersionList = "temurin8-jdk JAVA8_HOME", "temurin11-jdk JAVA11_HOME", "openjdk14 JAVA14_HOME", "temurin17-jdk JAVA17_HOME", "temurin19-jdk JAVA19_HOME", "openjdk20 JAVA20_HOME"
 Foreach ($jdkVersion in $jdkVersionList)
 {
     $jdkVersion
@@ -94,7 +97,7 @@ Foreach ($jdkVersion in $jdkVersionList)
     [System.Environment]::SetEnvironmentVariable($jdkArray[1], "$JAVA_HOME_TEMP", [System.EnvironmentVariableTarget]::User)
     java -version
 }
-# Need to reset to jdk11 for Jenkins Agent to start
+# Switch to temurin11-jdk as it is the widest supported version to build OpenSearch
 scoop reset temurin11-jdk
 $JAVA_HOME_TEMP = [System.Environment]::GetEnvironmentVariable("JAVA_HOME", [System.EnvironmentVariableTarget]::User).replace("\", "/")
 $JAVA_HOME_TEMP
@@ -102,7 +105,7 @@ $JAVA_HOME_TEMP
 java -version
 
 # Install python and lock onto 3.9.13 now
-scoop install https://raw.githubusercontent.com/ScoopInstaller/Versions/13510e2f3fb92b696c203de5a008c0dc62a44220/bucket/python39.json
+scoop install https://raw.githubusercontent.com/ScoopInstaller/Versions/cadc6e36c880e99965d4b8e1f1bf81e91421ec97/bucket/python39.json
 python --version
 # Reg PEP
 $versionInfo = (scoop info python39 | out-string -stream | Select-String 'Version.*:')
@@ -199,6 +202,7 @@ cmake --version
 
 # Install zip
 scoop install zip
+scoop install unzip
 
 # Install docker
 scoop install docker
@@ -211,10 +215,10 @@ wget https://bootstrap.pypa.io/get-pip.py -OutFile get-pip.py
 python get-pip.py
 pip --version
 # Install pipenv
-pip install pipenv
+pip install pipenv==2023.6.12
 pipenv --version
 # Install awscli
-pip install awscli
+pip install awscli==1.22.12
 aws --version
 # Cleanup
 pip cache remove * 
@@ -225,3 +229,4 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 
 # Enable Long Path
 set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem LongPathsEnabled -Type DWORD -Value 1 -Force
+

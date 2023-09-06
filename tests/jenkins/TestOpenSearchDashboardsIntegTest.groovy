@@ -24,7 +24,7 @@ class TestOpenSearchDashboardsIntegTest extends BuildPipelineTest {
 
         helper.registerSharedLibrary(
             library().name('jenkins')
-                .defaultVersion('5.4.1')
+                .defaultVersion('5.7.1')
                 .allowOverride(true)
                 .implicit(true)
                 .targetPath('vars')
@@ -38,6 +38,8 @@ class TestOpenSearchDashboardsIntegTest extends BuildPipelineTest {
         def buildId = 215
         def buildManifest = "tests/jenkins/data/opensearch-dashboards-3.0.0-build.yml"
         def buildManifestUrl = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch-dashboards/3.0.0/${buildId}/linux/x64/tar/builds/opensearch-dashboards/opensearch-dashboards-3.0.0-linux-x64.tar.gz"
+        def buildManifestOpenSearch = "tests/jenkins/data/opensearch-3.0.0-build.yml"
+        def buildManifestUrlOpenSearch = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/3.0.0/${buildId}/linux/x64/tar/dist/opensearch/opensearch-3.0.0-linux-x64.tar.gz"
         def agentLabel = "Jenkins-Agent-AL2-X64-C54xlarge-Docker-Host"
         def bucketName = 'job-s3-bucket-name'
 
@@ -55,12 +57,16 @@ class TestOpenSearchDashboardsIntegTest extends BuildPipelineTest {
         binding.setVariable('WEBHOOK_URL', 'htth://WEBHOOK_URL_dummy.com')
         binding.setVariable('TEST_MANIFEST', testManifest)
         binding.setVariable('BUILD_MANIFEST_URL', buildManifestUrl)
+        binding.setVariable('BUILD_MANIFEST_URL_OPENSEARCH', buildManifestUrlOpenSearch)
         binding.setVariable('BUILD_NUMBER', '215')
         binding.setVariable('ARTIFACT_BUCKET_NAME', bucketName)
         binding.setVariable('RUN_DISPLAY_URL', 'https://some/url/redirect')
         binding.setVariable('AGENT_LABEL', agentLabel)
         binding.setVariable('BUILD_MANIFEST', buildManifest)
+        binding.setVariable('BUILD_MANIFEST_OPENSEARCH', buildManifestOpenSearch)
         binding.setVariable('BUILD_ID', "${buildId}")
+        binding.setVariable('distribution', 'tar' )
+        binding.setVariable('COMPONENT_NAME', '' )
         binding.getVariable('currentBuild').upstreamBuilds = [[fullProjectName: jobName]]
         def env = binding.getVariable('env')
         env['DOCKER_AGENT'] = [image:'opensearchstaging/opensearchstaging/ci-runner:ci-runner-rockylinux8-opensearch-dashboards-integtest-v2', args:'-e JAVA_HOME=/opt/java/openjdk-11']
@@ -103,6 +109,7 @@ class TestOpenSearchDashboardsIntegTest extends BuildPipelineTest {
                 'env PATH=$PATH  ./test.sh integ-test manifests/tests/jenkins/data/opensearch-dashboards-3.0.0-test.yml --component reportsDashboards --test-run-id 215 --paths opensearch=/tmp/workspace/tar opensearch-dashboards=/tmp/workspace/tar --base-path DUMMY_PUBLIC_ARTIFACT_URL/dummy_job/3.0.0/215/linux/x64/tar '.toString(),
                 'env PATH=$PATH  ./test.sh integ-test manifests/tests/jenkins/data/opensearch-dashboards-3.0.0-test.yml --component observabilityDashboards --test-run-id 215 --paths opensearch=/tmp/workspace/tar opensearch-dashboards=/tmp/workspace/tar --base-path DUMMY_PUBLIC_ARTIFACT_URL/dummy_job/3.0.0/215/linux/x64/tar '.toString()
         ))
+        assertThat(getCommandExecutions('sh', 'report.sh'), hasItems('./report.sh manifests/tests/jenkins/data/opensearch-dashboards-3.0.0-test.yml --artifact-paths opensearch=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/3.0.0/215/linux/x64/tar opensearch-dashboards=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch-dashboards/3.0.0/215/linux/x64/tar --test-run-id 215 --test-type integ-test --base-path DUMMY_PUBLIC_ARTIFACT_URL/dummy_job/3.0.0/215/linux/x64/tar '))
     }
 
     @Test
@@ -133,7 +140,7 @@ class TestOpenSearchDashboardsIntegTest extends BuildPipelineTest {
             runScript('jenkins/opensearch-dashboards/integ-test.jenkinsfile')
         }
         assertJobStatusFailure()
-        assertThat(getCommandExecutions('sh', 'create'), hasItem('{script=gh issue create --title \"[AUTOCUT] Integration Test failed for observabilityDashboards: 3.0.0 tar distribution\" --body \"The integration test failed at distribution level for component observabilityDashboards<br>Version: 3.0.0<br>Distribution: tar<br>Architecture: x64<br>Platform: linux<br><br>Please check the logs: https://some/url/redirect<br><br> * Steps to reproduce: See https://github.com/opensearch-project/opensearch-build/tree/main/src/test_workflow#integration-tests<br>* See all log files:<br> - [With security](https://ci.opensearch.org/ci/dbc/dummy_job/3.0.0/215/linux/x64/tar/test-results/215/integ-test/observabilityDashboards/with-security/observabilityDashboards.yml) (if applicable)<br> - [Without security](https://ci.opensearch.org/ci/dbc/dummy_job/3.0.0/215/linux/x64/tar/test-results/215/integ-test/observabilityDashboards/without-security/observabilityDashboards.yml) (if applicable)<br><br>\" --label autocut,v3.0.0,integ-test-failure --label \"untriaged\" --repo https://github.com/opensearch-project/dashboards-observability.git, returnStdout=true}'))
+        assertThat(getCommandExecutions('sh', 'create'), hasItem('{script=gh issue create --title \"[AUTOCUT] Integration Test failed for observabilityDashboards: 3.0.0 tar distribution\" --body \"The integration test failed at distribution level for component observabilityDashboards<br>Version: 3.0.0<br>Distribution: tar<br>Architecture: x64<br>Platform: linux<br><br>Please check the logs: https://some/url/redirect<br><br> * Test-report manifest:*<br> - https://ci.opensearch.org/ci/dbc/dummy_job/3.0.0/215/linux/x64/tar/test-results/215/integ-test/test-report.yml <br><br> _Note: Steps to reproduce, additional logs and other files can be found within the above test-report manifest._\" --label autocut,v3.0.0,integ-test-failure --label \"untriaged\" --repo https://github.com/opensearch-project/dashboards-observability.git, returnStdout=true}'))
     }
 
     @Test
@@ -158,7 +165,7 @@ class TestOpenSearchDashboardsIntegTest extends BuildPipelineTest {
         assertJobStatusFailure()
         assertThat(getCommandExecutions('println', 'Issue'), hasItem('Issue already exists, adding a comment.'))
         assertThat(getCommandExecutions('sh', 'script'), hasItem("{script=gh issue list --repo https://github.com/opensearch-project/dashboards-visualizations.git -S \"[AUTOCUT] Integration Test failed for ganttChartDashboards: 3.0.0 tar distribution in:title\" --label autocut,v3.0.0,integ-test-failure --json number --jq '.[0].number', returnStdout=true}"))
-        assertThat(getCommandExecutions('sh', 'script'), hasItem("{script=gh issue comment bbb\nccc --repo https://github.com/opensearch-project/dashboards-observability.git --body \"The integration test failed at distribution level for component observabilityDashboards<br>Version: 3.0.0<br>Distribution: tar<br>Architecture: x64<br>Platform: linux<br><br>Please check the logs: https://some/url/redirect<br><br> * Steps to reproduce: See https://github.com/opensearch-project/opensearch-build/tree/main/src/test_workflow#integration-tests<br>* See all log files:<br> - [With security](https://ci.opensearch.org/ci/dbc/dummy_job/3.0.0/215/linux/x64/tar/test-results/215/integ-test/observabilityDashboards/with-security/observabilityDashboards.yml) (if applicable)<br> - [Without security](https://ci.opensearch.org/ci/dbc/dummy_job/3.0.0/215/linux/x64/tar/test-results/215/integ-test/observabilityDashboards/without-security/observabilityDashboards.yml) (if applicable)<br><br>\", returnStdout=true}"))
+        assertThat(getCommandExecutions('sh', 'script'), hasItem("{script=gh issue comment bbb\nccc --repo https://github.com/opensearch-project/dashboards-observability.git --body \"The integration test failed at distribution level for component observabilityDashboards<br>Version: 3.0.0<br>Distribution: tar<br>Architecture: x64<br>Platform: linux<br><br>Please check the logs: https://some/url/redirect<br><br> * Test-report manifest:*<br> - https://ci.opensearch.org/ci/dbc/dummy_job/3.0.0/215/linux/x64/tar/test-results/215/integ-test/test-report.yml <br><br> _Note: Steps to reproduce, additional logs and other files can be found within the above test-report manifest._\", returnStdout=true}"))
     }
 
     def getCommandExecutions(methodName, command) {
