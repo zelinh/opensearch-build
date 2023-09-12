@@ -16,8 +16,8 @@ def docker_args = [
 ]
 
 def agent_nodes = [
-    "x64": "Jenkins-Agent-AL2-X64-C54xlarge-Docker-Host",
-    "arm64": "Jenkins-Agent-AL2-Arm64-C6g4xlarge-Docker-Host",
+    "x64": "Jenkins-Agent-AL2023-X64-C54xlarge-Docker-Host",
+    "arm64": "Jenkins-Agent-AL2023-Arm64-C6g4xlarge-Docker-Host",
 ]
 
 pipeline {
@@ -32,6 +32,12 @@ pipeline {
         BUILD_JOB_NAME = "distribution-build-opensearch-dashboards"
         BUILD_JOB_NAME_OPENSEARCH = "distribution-build-opensearch"
         ARTIFACT_BUCKET_NAME = credentials('jenkins-artifact-bucket-name')
+    }
+    triggers {
+        parameterizedCron '''
+            H */3 * * * %TEST_MANIFEST=2.10.0/opensearch-dashboards-2.10.0-test.yml;BUILD_MANIFEST_URL=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch-dashboards/2.10.0/latest/linux/arm64/tar/builds/opensearch-dashboards/manifest.yml;BUILD_MANIFEST_URL_OPENSEARCH=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.10.0/latest/linux/arm64/tar/builds/opensearch/manifest.yml
+            H */3 * * * %TEST_MANIFEST=2.10.0/opensearch-dashboards-2.10.0-test.yml;BUILD_MANIFEST_URL=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch-dashboards/2.10.0/latest/linux/x64/tar/builds/opensearch-dashboards/manifest.yml;BUILD_MANIFEST_URL_OPENSEARCH=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.10.0/latest/linux/x64/tar/builds/opensearch/manifest.yml
+            '''
     }
     parameters {
         string(
@@ -208,7 +214,7 @@ pipeline {
                                                 }
                                             } catch (e) {
                                                 echo "Error running integtest for component ${local_component}, creating Github issue"
-                                                String issueBodyMessage = "The integration test failed at distribution level for component ${local_component}<br>Version: ${version}<br>Distribution: ${distribution}<br>Architecture: ${architecture}<br>Platform: ${platform}<br><br>Please check the logs: ${RUN_DISPLAY_URL}<br><br> * Test-report manifest:*<br> - https://ci.opensearch.org/ci/dbc/${JOB_NAME}/${version}/${buildId}/${platform}/${architecture}/${distribution}/test-results/${BUILD_NUMBER}/integ-test/test-report.yml <br><br> _Note: Steps to reproduce, additional logs and other files can be found within the above test-report manifest._"
+                                                String issueBodyMessage = "The integration test failed at distribution level for component ${local_component}<br>Version: ${version}<br>Distribution: ${distribution}<br>Architecture: ${architecture}<br>Platform: ${platform}<br><br>Please check the logs: ${RUN_DISPLAY_URL}<br><br> * Test-report manifest:*<br> - https://ci.opensearch.org/ci/dbc/${JOB_NAME}/${version}/${buildId}/${platform}/${architecture}/${distribution}/test-results/${BUILD_NUMBER}/integ-test/test-report.yml <br><br> _Note: Steps to reproduce, additional logs and other files can be found within the above test-report manifest. <br>Instructions of this test-report manifest can be found [here](https://github.com/opensearch-project/opensearch-build/tree/main/src/report_workflow#guide-on-test-report-manifest-from-ci)._"
                                                 createGithubIssue(
                                                     repoUrl: buildManifestObj.getRepo("${local_component}"),
                                                     issueTitle: "[AUTOCUT] Integration Test failed for ${local_component}: ${version} ${distribution} distribution",
