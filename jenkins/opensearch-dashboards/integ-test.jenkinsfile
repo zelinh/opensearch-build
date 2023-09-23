@@ -12,8 +12,8 @@ def docker_images = [
 
 def docker_args = [
     "tar": "-u 1000",
-    "rpm": "--entrypoint=/usr/sbin/init -u root --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro",
-    "deb": "--entrypoint=/usr/sbin/init -u root --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro",
+    "rpm": "--entrypoint=/usr/lib/systemd/systemd -u root --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:rw --cgroupns=host",
+    "deb": "--entrypoint=/usr/lib/systemd/systemd -u root --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:rw --cgroupns=host",
     "zip": "-u ContainerAdministrator",
 ]
 
@@ -303,6 +303,8 @@ pipeline {
                                         testType: "integ-test",
                                         componentName: "${COMPONENT_NAME}",
                                     )
+                                    echo("Download report manifest from https://ci.opensearch.org/ci/dbc/integ-test/${env.version}/${env.buildId}/${env.platform}/${env.architecture}/${env.distribution}/test-results/${env.BUILD_NUMBER}/integ-test/test-report.yml")
+                                    archiveArtifacts artifacts: 'test-report.yml'
                                 }
                             }
                         }
