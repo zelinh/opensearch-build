@@ -12,8 +12,8 @@ def docker_images = [
 
 def docker_args = [
     "tar": "-u 1000",
-    "rpm": "--entrypoint=/usr/sbin/init -u root --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro",
-    "deb": "--entrypoint=/usr/sbin/init -u root --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro",
+    "rpm": "--entrypoint=/usr/lib/systemd/systemd -u root --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:rw --cgroupns=host",
+    "deb": "--entrypoint=/usr/lib/systemd/systemd -u root --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:rw --cgroupns=host",
     "zip": "-u ContainerAdministrator",
 ]
 
@@ -33,14 +33,6 @@ pipeline {
         BUILD_MANIFEST = "build-manifest.yml"
         BUILD_JOB_NAME = "distribution-build-opensearch"
         ARTIFACT_BUCKET_NAME = credentials('jenkins-artifact-bucket-name')
-    }
-    triggers {
-        parameterizedCron '''
-            H */3 * * * %TEST_MANIFEST=2.10.0/opensearch-2.10.0-concurrent-search-test.yml;BUILD_MANIFEST_URL=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.10.0/latest/linux/arm64/tar/builds/opensearch/manifest.yml
-            H */3 * * * %TEST_MANIFEST=2.10.0/opensearch-2.10.0-concurrent-search-test.yml;BUILD_MANIFEST_URL=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.10.0/latest/linux/x64/tar/builds/opensearch/manifest.yml
-            H */3 * * * %TEST_MANIFEST=2.10.0/opensearch-2.10.0-test.yml;BUILD_MANIFEST_URL=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.10.0/latest/linux/arm64/tar/builds/opensearch/manifest.yml
-            H */3 * * * %TEST_MANIFEST=2.10.0/opensearch-2.10.0-test.yml;BUILD_MANIFEST_URL=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.10.0/latest/linux/x64/tar/builds/opensearch/manifest.yml
-            '''
     }
     parameters {
         string(
@@ -252,6 +244,8 @@ pipeline {
                                         testType: "integ-test",
                                         componentName: "${COMPONENT_NAME}",
                                     )
+                                    echo("Download report manifest from https://ci.opensearch.org/ci/dbc/integ-test/${env.version}/${env.buildId}/${env.platform}/${env.architecture}/${env.distribution}/test-results/${env.BUILD_NUMBER}/integ-test/test-report.yml")
+                                    archiveArtifacts artifacts: 'test-report.yml'
                                 }
                             }
                         }
