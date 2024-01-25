@@ -7,9 +7,9 @@
  * compatible open source license.
  */
 
-lib = library(identifier: 'jenkins@6.1.0', retriever: modernSCM([
+lib = library(identifier: 'jenkins@update-latest-url', retriever: modernSCM([
     $class: 'GitSCMSource',
-    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
+    remote: 'https://github.com/zelinh/opensearch-build-libraries.git',
 ]))
 
 pipeline {
