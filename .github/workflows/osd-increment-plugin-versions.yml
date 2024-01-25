@@ -29,6 +29,7 @@ jobs:
           - {repo: dashboards-reporting}
           - {repo: dashboards-visualizations, path: gantt-chart}
           - {repo: dashboards-query-workbench}
+          - {repo: dashboards-assistant}
           - {repo: dashboards-maps}
           - {repo: anomaly-detection-dashboards-plugin}
           - {repo: ml-commons-dashboards}
@@ -164,6 +165,9 @@ jobs:
           body: |
             - Incremented version to **${{ env.OSD_PLUGIN_VERSION }}**.
           path: 'OpenSearch-Dashboards/plugins/${{ matrix.entry.repo }}'
+          add-paths: |
+              opensearch_dashboards.json
+              package.json
       - name: Check outputs
         run: |-
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"

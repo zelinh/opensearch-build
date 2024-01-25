@@ -7,7 +7,7 @@
  * compatible open source license.
  */
 
-lib = library(identifier: 'jenkins@5.11.1', retriever: modernSCM([
+lib = library(identifier: 'jenkins@6.1.0', retriever: modernSCM([
     $class: 'GitSCMSource',
     remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
 ]))
@@ -84,6 +84,17 @@ pipeline {
             description: 'Continue building the distribution even if a one or more component fails',
             defaultValue: true
         )
+        booleanParam(
+            name: 'INCREMENTAL',
+            description: 'Whether to trigger incremental build. Defaults to false.',
+            defaultValue: false
+        )
+        string(
+            name: 'PREVIOUS_BUILD_ID',
+            description: 'The build ID used to download previous build artifacts. Defaults to latest.',
+            defaultValue: 'latest',
+            trim: true
+        )
     }
     stages {
         stage('verify-parameters') {
@@ -138,7 +149,7 @@ pipeline {
                             def snapshotBuild =
                                 build job: 'publish-opensearch-min-snapshots',
                                 propagate: false,
-                                wait: false,                               
+                                wait: false,
                                 parameters: [
                                     string(name: 'INPUT_MANIFEST', value: "${INPUT_MANIFEST}"),
                                 ]
@@ -169,30 +180,21 @@ pipeline {
                                 platform: 'linux',
                                 architecture: 'x64',
                                 distribution: 'tar',
-                                continueOnError: params.CONTINUE_ON_ERROR
+                                continueOnError: params.CONTINUE_ON_ERROR,
+                                incremental: params.INCREMENTAL,
+                                previousBuildId: params.PREVIOUS_BUILD_ID
                             )
                             String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
                             String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
                             env.ARTIFACT_URL_LINUX_X64_TAR = artifactUrl
-                            env.INDEX_FILE_PATH = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
+                            env.INDEX_FILE_PATH_X64_TAR = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
 
                             echo "buildManifestUrl (linux, x64, tar): ${buildManifestUrl}"
                             echo "artifactUrl (linux, x64, tar): ${artifactUrl}"
 
                             parallel([
                                 'integ-test': {
-                                    Boolean skipIntegTests = (INTEG_TEST_JOB_NAME == '' || TEST_MANIFEST == '' || buildManifestUrl == '')
-                                    echo "${skipIntegTests ? 'Skipping integration tests as one of the values has empty string: INTEG_TEST_JOB_NAME, TEST_MANIFEST, buildManifestUrl' : 'Running integration tests'}"
-                                    if (!skipIntegTests) {
-                                        def integTestResults =
-                                            build job: INTEG_TEST_JOB_NAME,
-                                            propagate: false,
-                                            wait: false,
-                                            parameters: [
-                                                string(name: 'TEST_MANIFEST', value: TEST_MANIFEST),
-                                                string(name: 'BUILD_MANIFEST_URL', value: buildManifestUrl)
-                                            ]
-                                    }
+                                    triggerIntegrationTests(buildManifestUrl)
                                 },
                                 'bwc-test': {
                                     Boolean skipBwcTests = (BWC_TEST_JOB_NAME == '' || TEST_MANIFEST == '' || buildManifestUrl == '')
@@ -209,17 +211,37 @@ pipeline {
                                             ]
                                     }
                                 }
-                            ])
+                                ])
                         }
                     }
                     post {
+                        success {
+                            script {
+                                if (params.UPDATE_LATEST_URL) {
+                                    uploadIndexFile(
+                                        indexFilePath: env.INDEX_FILE_PATH_X64_TAR
+                                    )
+                                }
+                            }
+                        }
+                        unstable {
+                            script {
+                                if (params.UPDATE_LATEST_URL) {
+                                    uploadIndexFile(
+                                        indexFilePath: env.INDEX_FILE_PATH_X64_TAR
+                                    )
+                                }
+                            }
+                        }
                         always {
                             script {
                                 lib.jenkins.Messages.new(this).add(
                                     "${STAGE_NAME}",
                                     lib.jenkins.Messages.new(this).get(["${STAGE_NAME}"])
                                 )
-
+                                if (params.CONTINUE_ON_ERROR) {
+                                    markStageUnstableIfPluginsFailedToBuild()
+                                }
                                 postCleanup()
                             }
                         }
@@ -253,13 +275,20 @@ pipeline {
                                         architecture: 'x64',
                                         distribution: 'rpm',
                                         continueOnError: params.CONTINUE_ON_ERROR,
+                                        incremental: params.INCREMENTAL,
+                                        previousBuildId: params.PREVIOUS_BUILD_ID,
                                         stashName: "build-archive-linux-x64-rpm-${JOB_NAME}-${BUILD_NUMBER}"
                                     )
                                 }
                             }
                             post {
                                 always {
-                                    postCleanup()
+                                    script {
+                                        if (params.CONTINUE_ON_ERROR) {
+                                            markStageUnstableIfPluginsFailedToBuild()
+                                        }
+                                        postCleanup()
+                                    }
                                 }
                             }
                         }
@@ -286,31 +315,47 @@ pipeline {
                                     String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
                                     String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
                                     env.ARTIFACT_URL_LINUX_X64_RPM = artifactUrl
+                                    env.INDEX_FILE_PATH_X64_RPM = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
 
                                     echo "buildManifestUrl (linux, x64, rpm): ${buildManifestUrl}"
                                     echo "artifactUrl (linux, x64, rpm): ${artifactUrl}"
 
                                     String bundleManifestUrl = buildManifestObj.getBundleManifestUrl(JOB_NAME, BUILD_NUMBER)
-
-                                    echo "Trigger rpm validation for linux x64 rpm ${bundleManifestUrl}"
-                                    def rpmValidationResults =
-                                        build job: 'rpm-validation',
-                                        propagate: false,
-                                        wait: false,
-                                        parameters: [
-                                            string(name: 'BUNDLE_MANIFEST_URL', value: bundleManifestUrl),
-                                            string(name: 'AGENT_LABEL', value: AGENT_LINUX_X64)
-                                        ]
+                                    parallel([
+                                        'integ-test': {
+                                            triggerIntegrationTests(buildManifestUrl)
+                                        },
+                                        'rpm-validation': {
+                                            triggerRpmValidation(bundleManifestUrl)
+                                        }
+                                    ])
                                 }
                             }
                             post {
+                                success {
+                                    script {
+                                        if (params.UPDATE_LATEST_URL) {
+                                            uploadIndexFile(
+                                                indexFilePath: env.INDEX_FILE_PATH_X64_RPM
+                                            )
+                                        }
+                                    }
+                                }
+                                unstable {
+                                    script {
+                                        if (params.UPDATE_LATEST_URL) {
+                                            uploadIndexFile(
+                                                indexFilePath: env.INDEX_FILE_PATH_X64_RPM
+                                            )
+                                        }
+                                    }
+                                }
                                 always {
                                     script {
                                         lib.jenkins.Messages.new(this).add(
                                             "${STAGE_NAME}",
                                             lib.jenkins.Messages.new(this).get(["${STAGE_NAME}"])
                                         )
-
                                         postCleanup()
                                     }
                                 }
@@ -346,13 +391,20 @@ pipeline {
                                         architecture: 'x64',
                                         distribution: 'deb',
                                         continueOnError: params.CONTINUE_ON_ERROR,
+                                        incremental: params.INCREMENTAL,
+                                        previousBuildId: params.PREVIOUS_BUILD_ID,
                                         stashName: "build-archive-linux-x64-deb-${JOB_NAME}-${BUILD_NUMBER}"
                                     )
                                 }
                             }
                             post {
                                 always {
-                                    postCleanup()
+                                    script {
+                                        if (params.CONTINUE_ON_ERROR) {
+                                            markStageUnstableIfPluginsFailedToBuild()
+                                        }
+                                        postCleanup()
+                                    }
                                 }
                             }
                         }
@@ -379,14 +431,34 @@ pipeline {
                                     String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
                                     String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
                                     env.ARTIFACT_URL_LINUX_X64_DEB = artifactUrl
+                                    env.INDEX_FILE_PATH_X64_DEB = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
 
                                     echo "buildManifestUrl (linux, x64, deb): ${buildManifestUrl}"
                                     echo "artifactUrl (linux, x64, deb): ${artifactUrl}"
 
                                     String bundleManifestUrl = buildManifestObj.getBundleManifestUrl(JOB_NAME, BUILD_NUMBER)
+                                    triggerIntegrationTests(buildManifestUrl)
                                 }
                             }
                             post {
+                                success {
+                                    script {
+                                        if (params.UPDATE_LATEST_URL) {
+                                            uploadIndexFile(
+                                                indexFilePath: env.INDEX_FILE_PATH_X64_DEB
+                                            )
+                                        }
+                                    }
+                                }
+                                unstable {
+                                    script {
+                                        if (params.UPDATE_LATEST_URL) {
+                                            uploadIndexFile(
+                                                indexFilePath: env.INDEX_FILE_PATH_X64_DEB
+                                            )
+                                        }
+                                    }
+                                }
                                 always {
                                     script {
                                         lib.jenkins.Messages.new(this).add(
@@ -425,41 +497,48 @@ pipeline {
                                 platform: 'linux',
                                 architecture: 'arm64',
                                 distribution: 'tar',
-                                continueOnError: params.CONTINUE_ON_ERROR
+                                continueOnError: params.CONTINUE_ON_ERROR,
+                                incremental: params.INCREMENTAL,
+                                previousBuildId: params.PREVIOUS_BUILD_ID
                             )
                             String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
                             String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
                             env.ARTIFACT_URL_LINUX_ARM64_TAR = artifactUrl
+                            env.INDEX_FILE_PATH_ARM64_TAR = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
 
                             echo "buildManifestUrl (linux, arm64, tar): ${buildManifestUrl}"
                             echo "artifactUrl (linux, arm64, tar): ${artifactUrl}"
-
-                            parallel([
-                                'integ-test': {
-                                    Boolean skipIntegTests = (INTEG_TEST_JOB_NAME == '' || TEST_MANIFEST == '' || buildManifestUrl == '')
-                                    echo "${skipIntegTests ? 'Skipping integration tests as one of the values has empty string: INTEG_TEST_JOB_NAME, TEST_MANIFEST, buildManifestUrl' : 'Running integration tests'}"
-                                    if (!skipIntegTests) {
-                                        def integTestResults =
-                                            build job: INTEG_TEST_JOB_NAME,
-                                            propagate: false,
-                                            wait: false,
-                                            parameters: [
-                                                string(name: 'TEST_MANIFEST', value: TEST_MANIFEST),
-                                                string(name: 'BUILD_MANIFEST_URL', value: buildManifestUrl)
-                                            ]
-                                    }
-                                }
-                            ])
+                            triggerIntegrationTests(buildManifestUrl)
                         }
                     }
                     post {
+                        success {
+                            script {
+                                if (params.UPDATE_LATEST_URL) {
+                                    uploadIndexFile(
+                                        indexFilePath: env.INDEX_FILE_PATH_ARM64_TAR
+                                    )
+                                }
+                            }
+                        }
+                        unstable {
+                            script {
+                                if (params.UPDATE_LATEST_URL) {
+                                    uploadIndexFile(
+                                        indexFilePath: env.INDEX_FILE_PATH_ARM64_TAR
+                                    )
+                                }
+                            }
+                        }
                         always {
                             script {
                                 lib.jenkins.Messages.new(this).add(
                                     "${STAGE_NAME}",
                                     lib.jenkins.Messages.new(this).get(["${STAGE_NAME}"])
                                 )
-
+                                if (params.CONTINUE_ON_ERROR) {
+                                    markStageUnstableIfPluginsFailedToBuild()
+                                }
                                 postCleanup()
                             }
                         }
@@ -493,13 +572,20 @@ pipeline {
                                         architecture: 'arm64',
                                         distribution: 'rpm',
                                         continueOnError: params.CONTINUE_ON_ERROR,
+                                        incremental: params.INCREMENTAL,
+                                        previousBuildId: params.PREVIOUS_BUILD_ID,
                                         stashName: "build-archive-linux-arm64-rpm-${JOB_NAME}-${BUILD_NUMBER}"
                                     )
                                 }
                             }
                             post {
                                 always {
-                                    postCleanup()
+                                    script {
+                                        if (params.CONTINUE_ON_ERROR) {
+                                            markStageUnstableIfPluginsFailedToBuild()
+                                        }
+                                        postCleanup()
+                                    }
                                 }
                             }
                         }
@@ -526,31 +612,47 @@ pipeline {
                                     String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
                                     String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
                                     env.ARTIFACT_URL_LINUX_ARM64_RPM = artifactUrl
+                                    env.INDEX_FILE_PATH_ARM64_RPM = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
 
                                     echo "buildManifestUrl (linux, arm64, rpm): ${buildManifestUrl}"
                                     echo "artifactUrl (linux, arm64, rpm): ${artifactUrl}"
 
                                     String bundleManifestUrl = buildManifestObj.getBundleManifestUrl(JOB_NAME, BUILD_NUMBER)
-
-                                    echo "Trigger rpm validation for linux arm64 rpm ${bundleManifestUrl}"
-                                    def rpmValidationResults =
-                                        build job: 'rpm-validation',
-                                        propagate: false,
-                                        wait: false,
-                                        parameters: [
-                                            string(name: 'BUNDLE_MANIFEST_URL', value: bundleManifestUrl),
-                                            string(name: 'AGENT_LABEL', value: AGENT_LINUX_ARM64)
-                                        ]
+                                    parallel([
+                                        'integ-test': {
+                                            triggerIntegrationTests(buildManifestUrl)
+                                        },
+                                        'rpm-validation': {
+                                            triggerRpmValidation(bundleManifestUrl)
+                                        }
+                                    ])
                                 }
                             }
                             post {
+                                success {
+                                    script {
+                                        if (params.UPDATE_LATEST_URL) {
+                                            uploadIndexFile(
+                                                indexFilePath: env.INDEX_FILE_PATH_ARM64_RPM
+                                            )
+                                        }
+                                    }
+                                }
+                                unstable {
+                                    script {
+                                        if (params.UPDATE_LATEST_URL) {
+                                            uploadIndexFile(
+                                                indexFilePath: env.INDEX_FILE_PATH_ARM64_RPM
+                                            )
+                                        }
+                                    }
+                                }
                                 always {
                                     script {
                                         lib.jenkins.Messages.new(this).add(
                                             "${STAGE_NAME}",
                                             lib.jenkins.Messages.new(this).get(["${STAGE_NAME}"])
                                         )
-
                                         postCleanup()
                                     }
                                 }
@@ -586,13 +688,20 @@ pipeline {
                                         architecture: 'arm64',
                                         distribution: 'deb',
                                         continueOnError: params.CONTINUE_ON_ERROR,
+                                        incremental: params.INCREMENTAL,
+                                        previousBuildId: params.PREVIOUS_BUILD_ID,
                                         stashName: "build-archive-linux-arm64-deb-${JOB_NAME}-${BUILD_NUMBER}"
                                     )
                                 }
                             }
                             post {
                                 always {
-                                    postCleanup()
+                                    script {
+                                        if (params.CONTINUE_ON_ERROR) {
+                                            markStageUnstableIfPluginsFailedToBuild()
+                                        }
+                                        postCleanup()
+                                    }
                                 }
                             }
                         }
@@ -619,21 +728,40 @@ pipeline {
                                     String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
                                     String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
                                     env.ARTIFACT_URL_LINUX_ARM64_DEB = artifactUrl
+                                    env.INDEX_FILE_PATH_ARM64_DEB = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
 
                                     echo "buildManifestUrl (linux, arm64, deb): ${buildManifestUrl}"
                                     echo "artifactUrl (linux, arm64, deb): ${artifactUrl}"
 
                                     String bundleManifestUrl = buildManifestObj.getBundleManifestUrl(JOB_NAME, BUILD_NUMBER)
+                                    triggerIntegrationTests(buildManifestUrl)
                                 }
                             }
                             post {
+                                success {
+                                    script {
+                                        if (params.UPDATE_LATEST_URL) {
+                                            uploadIndexFile(
+                                                indexFilePath: env.INDEX_FILE_PATH_ARM64_DEB
+                                            )
+                                        }
+                                    }
+                                }
+                                unstable {
+                                    script {
+                                        if (params.UPDATE_LATEST_URL) {
+                                            uploadIndexFile(
+                                                indexFilePath: env.INDEX_FILE_PATH_ARM64_DEB
+                                            )
+                                        }
+                                    }
+                                }
                                 always {
                                     script {
                                         lib.jenkins.Messages.new(this).add(
                                             "${STAGE_NAME}",
                                             lib.jenkins.Messages.new(this).get(["${STAGE_NAME}"])
                                         )
-
                                         postCleanup()
                                     }
                                 }
@@ -666,48 +794,51 @@ pipeline {
                                 platform: 'windows',
                                 architecture: 'x64',
                                 distribution: 'zip',
-                                continueOnError: params.CONTINUE_ON_ERROR
+                                continueOnError: params.CONTINUE_ON_ERROR,
+                                incremental: params.INCREMENTAL,
+                                previousBuildId: params.PREVIOUS_BUILD_ID
                             )
                             String buildManifestUrl = buildManifestObj.getUrl(JOB_NAME, BUILD_NUMBER)
                             String artifactUrl = buildManifestObj.getArtifactUrl(JOB_NAME, BUILD_NUMBER)
                             env.ARTIFACT_URL_LINUX_WINDOWS_X64_ZIP = artifactUrl
-                            env.INDEX_FILE_PATH = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
+                            env.INDEX_FILE_PATH_X64_ZIP = buildManifestObj.getIndexFileRoot("${JOB_NAME}")
 
                             echo "buildManifestUrl (windows, x64, zip): ${buildManifestUrl}"
                             echo "artifactUrl (windows, x64, zip): ${artifactUrl}"
+                            triggerIntegrationTests(buildManifestUrl)
                         }
                     }
                     post {
+                        success {
+                            script {
+                                if (params.UPDATE_LATEST_URL) {
+                                    uploadIndexFile(
+                                        indexFilePath: env.INDEX_FILE_PATH_X64_ZIP
+                                    )
+                                }
+                            }
+                        }
+                        unstable {
+                            script {
+                                if (params.UPDATE_LATEST_URL) {
+                                    uploadIndexFile(
+                                        indexFilePath: env.INDEX_FILE_PATH_X64_ZIP
+                                    )
+                                }
+                            }
+                        }
                         always {
                             script {
                                 lib.jenkins.Messages.new(this).add(
                                     "${STAGE_NAME}",
                                     lib.jenkins.Messages.new(this).get(["${STAGE_NAME}"])
                                 )
-
+                                if (params.CONTINUE_ON_ERROR) {
+                                    markStageUnstableIfPluginsFailedToBuild()
+                                }
                                 postCleanup()
                             }
                         }
-                    }
-                }
-            }
-        }
-        stage('update index file') {
-            agent {
-                docker {
-                    label AGENT_LINUX_X64
-                    image dockerAgent.image
-                    args dockerAgent.args
-                    registryUrl 'https://public.ecr.aws/'
-                    alwaysPull true
-                }
-            }
-            steps {
-                script {
-                    if (params.UPDATE_LATEST_URL) {
-                        uploadIndexFile(
-                            indexFilePath: env.INDEX_FILE_PATH
-                        )
                     }
                 }
             }
@@ -754,10 +885,6 @@ pipeline {
             node(AGENT_LINUX_X64) {
                 checkout scm
                 script {
-                    def findFailedPlugins = buildMessage(search: 'Failed plugins')
-                    if (findFailedPlugins != null) {
-                        currentBuild.result = 'UNSTABLE'
-                    }
                     closeBuildSuccessGithubIssue(
                         message: buildMessage(search: 'Successfully built'),
                         search: 'Successfully built',
@@ -823,4 +950,39 @@ pipeline {
             }
         }
     }
+}
+
+def markStageUnstableIfPluginsFailedToBuild() {
+    def stageLogs = getLogsForStage(stageName: "${STAGE_NAME}")
+    if (stageLogs.any { e -> e.contains('Failed plugins are') }) {
+        unstable('Some plugins failed to build. See the ./build.sh step for logs and more details')
+}
+    }
+
+def triggerIntegrationTests(String buildManifestUrl) {
+    Boolean skipIntegTests = (INTEG_TEST_JOB_NAME == '' || TEST_MANIFEST == '' || buildManifestUrl == '')
+    echo "${skipIntegTests ? 'Skipping integration tests as one of the values has empty string: INTEG_TEST_JOB_NAME, TEST_MANIFEST, buildManifestUrl' : 'Running integration tests'}"
+    if (!skipIntegTests) {
+        def integTestResults =
+                build job: INTEG_TEST_JOB_NAME,
+                propagate: false,
+                wait: false,
+                parameters: [
+                    string(name: 'TEST_MANIFEST', value: TEST_MANIFEST),
+                    string(name: 'BUILD_MANIFEST_URL', value: buildManifestUrl),
+                    booleanParam(name: 'UPDATE_GITHUB_ISSUES', value: true)
+                ]
+    }
+}
+
+def triggerRpmValidation(String bundleManifestUrl) {
+    echo "Triggering RPM validation for ${bundleManifestUrl}"
+    def rpmValidationResults =
+            build job: 'rpm-validation',
+            propagate: false,
+            wait: false,
+            parameters: [
+                string(name: 'BUNDLE_MANIFEST_URL', value: bundleManifestUrl),
+                string(name: 'AGENT_LABEL', value: AGENT_LINUX_X64)
+            ]
 }
