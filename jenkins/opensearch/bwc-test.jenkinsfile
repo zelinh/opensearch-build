@@ -7,9 +7,9 @@
  * compatible open source license.
  */
 
-lib = library(identifier: 'jenkins@1.0.4', retriever: modernSCM([
+lib = library(identifier: 'jenkins@bwc-test', retriever: modernSCM([
     $class: 'GitSCMSource',
-    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
+    remote: 'https://github.com/zelinh/opensearch-build-libraries.git',
 ]))
 
 pipeline {
@@ -61,8 +61,8 @@ pipeline {
                     Rebuilding of this job will result in considering upstream build as self($JOB_NAME) See https://issues.jenkins.io/browse/JENKINS-61590 for bug
                     Either trigger from expected upstream job or run a new build
                     */
-                    env.BUILD_JOB_NAME = currentBuild.upstreamBuilds ? 
-                        currentBuild.upstreamBuilds[0].fullProjectName : 
+                    env.BUILD_JOB_NAME = currentBuild.upstreamBuilds ?
+                        currentBuild.upstreamBuilds[0].fullProjectName :
                         env.DEFAULT_BUILD_JOB_NAME
                 }
             }
@@ -71,13 +71,13 @@ pipeline {
             agent {
                 docker {
                     label 'Jenkins-Agent-AL2023-X64-C54xlarge-Docker-Host'
-                    image 'opensearchstaging/ci-runner:centos7-x64-arm64-jdkmulti-node10.24.1-cypress6.9.1-20211028'
+                    image 'opensearchstaging/ci-runner:ci-runner-centos7-opensearch-build-v3'
                     registryUrl 'https://public.ecr.aws/'
                     alwaysPull true
                 }
             }
             steps {
-                script { 
+                script {
                     DOCKER_AGENT = detectTestDockerAgent()
                 }
             }
