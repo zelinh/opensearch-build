@@ -1,15 +1,17 @@
 ---
-name: manifests
+name: manifests-ci-check
 
 on:
   pull_request:
-  paths:
-    - 'manifests/**/*.yml'
-    - '!manifests/templates/**/'
-    - 'legacy-manifests/**/*.yml'
+    types: [labeled, synchronize]
+    paths:
+      - 'manifests/**/*.yml'
+      - '!manifests/templates/**/'
+      - 'legacy-manifests/**/*.yml'
 
 jobs:
   list-changed-manifests:
+    if: ${{ github.repository == 'opensearch-project/opensearch-build' && github.event.label.name == 'manifest-ci-check' }}
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -17,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Get changed manifest files
-        uses: tj-actions/changed-files@v39
+        uses: tj-actions/changed-files@v41
         id: list-changed-manifests
         with:
           files: manifests/**/opensearch*.yml
