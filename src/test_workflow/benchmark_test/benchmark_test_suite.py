@@ -5,11 +5,17 @@
 # this file be licensed under the Apache-2.0 license or a
 # compatible open source license.
 
+import glob
+import json
 import logging
 import os
+import shutil
 import subprocess
 from typing import Any
 
+import pandas as pd
+
+from system.temporary_directory import TemporaryDirectory
 from test_workflow.benchmark_test.benchmark_args import BenchmarkArgs
 
 
@@ -37,10 +43,10 @@ class BenchmarkTestSuite:
         self.password = password
 
         # Pass the cluster endpoints with -t for multi-cluster use cases(e.g. cross-cluster-replication)
-        self.command = 'docker run --rm'
+        self.command = f'docker run --name docker-container-{self.args.stack_suffix}'
         if self.args.benchmark_config:
             self.command += f" -v {args.benchmark_config}:/opensearch-benchmark/.benchmark/benchmark.ini"
-        self.command += f" opensearchproject/opensearch-benchmark:latest execute-test --workload={self.args.workload} " \
+        self.command += f" opensearchproject/opensearch-benchmark:1.6.0 execute-test --workload={self.args.workload} " \
                         f"--pipeline=benchmark-only --target-hosts={endpoint}"
 
         if self.args.workload_params:
@@ -67,10 +73,35 @@ class BenchmarkTestSuite:
             if self.args.telemetry_params:
                 self.command += f" --telemetry-params '{self.args.telemetry_params}'"
 
-    def execute(self) -> None:
         if self.security:
-            self.command += f' --client-options="timeout:300,use_ssl:true,verify_certs:false,basic_auth_user:\'admin\',basic_auth_password:\'{self.password}\'"'
+            self.command += f' --client-options="timeout:300,use_ssl:true,verify_certs:false,basic_auth_user:\'{self.args.username}\',basic_auth_password:\'{self.password}\'"'
         else:
             self.command += ' --client-options="timeout:300"'
-        logging.info(f"Executing {self.command}")
-        subprocess.check_call(f"{self.command}", cwd=os.getcwd(), shell=True)
+
+    def execute(self) -> None:
+        log_info = f"Executing {self.command.replace(self.endpoint, len(self.endpoint) * '*').replace(self.args.username, len(self.args.username) * '*')}"
+        logging.info(log_info.replace(self.password, len(self.password) * '*') if self.password else log_info)
+        try:
+            subprocess.check_call(f"{self.command}", cwd=os.getcwd(), shell=True)
+            if self.args.cluster_endpoint:
+                self.convert()
+        finally:
+            self.cleanup()
+
+    def convert(self) -> None:
+        with TemporaryDirectory() as work_dir:
+            subprocess.check_call(f"docker cp docker-container-{self.args.stack_suffix}:opensearch-benchmark/test_executions/. {str(work_dir.path)}", cwd=os.getcwd(), shell=True)
+            file_path = glob.glob(os.path.join(str(work_dir.path), "*", "test_execution.json"))
+            shutil.copy(file_path[0], os.path.join(os.getcwd(), f"test_execution_{self.args.stack_suffix}.json"))
+            with open(file_path[0]) as file:
+                data = json.load(file)
+                formatted_data = pd.json_normalize(data["results"]["op_metrics"])
+                formatted_data.to_csv(os.path.join(os.getcwd(), f"test_execution_{self.args.stack_suffix}.csv"), index=False)
+                df = pd.read_csv(os.path.join(os.getcwd(), f"test_execution_{self.args.stack_suffix}.csv"))
+                pd.set_option('display.width', int(2 * shutil.get_terminal_size().columns))
+                pd.set_option('display.max_rows', None)
+                pd.set_option('display.max_columns', None)
+                logging.info(f"\n{df}")
+
+    def cleanup(self) -> None:
+        subprocess.check_call(f"docker rm docker-container-{self.args.stack_suffix}", cwd=os.getcwd(), shell=True)

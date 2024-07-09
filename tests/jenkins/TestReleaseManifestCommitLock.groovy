@@ -100,9 +100,22 @@ class TestReleaseManifestCommitLock extends BuildPipelineTest {
         super.testPipeline('jenkins/release-manifest-commit-lock/release-manifest-commit-lock.jenkinsfile',
                 'tests/jenkins/jenkinsjob-regression-files/release-manifest-commit-lock/testMatchBuildManifest')
         assertThat(getShellCommands('curl'), hasItem("{script=curl -sSL https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.0.0/3813/linux/x64/tar/dist/opensearch/manifest.yml, returnStdout=true}"))
-        assertCallStack().contains("release-manifest-commit-lock.writeYaml({file=manifests/2.0.0/opensearch-2.0.0.yml, data={schema-version=1.1, build={name=OpenSearch, version=2.0.0, platform=linux, architecture=x64, distribution=tar, location=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.0.0/3813/linux/x64/tar/dist/opensearch/opensearch-2.0.0-linux-x64.tar.gz, id=3813}")
+        assertCallStack().contains("release-manifest-commit-lock.writeYaml({file=manifests/2.0.0/opensearch-dashboards-2.0.0.yml, data={schema-version=1.1, build={name=OpenSearch, version=2.0.0, platform=linux, architecture=x64, distribution=tar, location=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.0.0/3813/linux/x64/tar/dist/opensearch/opensearch-2.0.0-linux-x64.tar.gz, id=3813}, components=[{name=OpenSearch, repository=https://github.com/opensearch-project/OpenSearch.git, ref=bae3b4e4178c20ac24fece8e82099abe3b2630d0, commit_id=bae3b4e4178c20ac24fece8e82099abe3b2630d0, location=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.0.0/3813/linux/x64/tar/builds/opensearch/dist/opensearch-min-2.0.0-linux-x64.tar.gz}, {name=common-utils, repository=https://github.com/opensearch-project/common-utils.git, ref=2.0, commit_id=e59ea173af31fd468ce443fc4022649cad306e36}, {name=job-scheduler, repository=https://github.com/opensearch-project/job-scheduler.git, ref=2.0, commit_id=b5b21097894ecec7a78da622ee96763908b32898, location=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.0.0/3813/linux/x64/tar/builds/opensearch/plugins/opensearch-job-scheduler-2.0.0.0.zip}, {name=ml-commons, repository=https://github.com/opensearch-project/ml-commons.git, ref=2.0, commit_id=5c6e4bd4d996cf2d0a9726e1537ef98822d1795f, location=https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.0.0/3813/linux/x64/tar/builds/opensearch/plugins/opensearch-ml-2.0.0.0.zip}]}, overwrite=true})")
         assertCallStack().contains("release-manifest-commit-lock.writeYaml(")
 
+    }
+
+    @Test
+    public void test_excludeFTRepo() {
+        addParam('MANIFEST_LOCK_ACTION', 'UPDATE_TO_RECENT_COMMITS')
+        def buildManifest = "tests/jenkins/data/opensearch-dashboards-3.0.0.yml"
+        helper.registerAllowedMethod('readYaml', [Map.class], { args ->
+            return new Yaml().load((buildManifest as File).text)
+        }) 
+        super.testPipeline('jenkins/release-manifest-commit-lock/release-manifest-commit-lock.jenkinsfile',
+                'tests/jenkins/jenkinsjob-regression-files/release-manifest-commit-lock/testUpdateToRecentCommit_excludeFTRepo')
+        // The test asserts that FT repo uses the release branch
+        assertCallStack().contains("release-manifest-commit-lock.writeYaml({file=manifests/2.0.0/opensearch-dashboards-2.0.0.yml, data={ci={image={name=opensearchstaging/ci-runner:centos7-x64-arm64-jdkmulti-node10.24.1-cypress6.9.1-20211028}}, build={name=OpenSearch Dashboards, version=3.0.0}, components=[{name=OpenSearch-Dashboards, ref=tags/3.0.0, repository=https://github.com/opensearch-project/OpenSearch-Dashboards.git}, {name=functionalTestDashboards, repository=https://github.com/opensearch-project/opensearch-dashboards-functional-test.git, ref=3.0}, {name=observabilityDashboards, ref=tags/3.0.0, repository=https://github.com/opensearch-project/dashboards-observability.git}, {name=indexManagementDashboards, ref=tags/3.0.0, repository=https://github.com/opensearch-project/index-management-dashboards-plugin}, {name=ganttChartDashboards, ref=tags/3.0.0, repository=https://github.com/opensearch-project/dashboards-visualizations.git}, {name=reportsDashboards, ref=tags/3.0.0, repository=https://github.com/opensearch-project/dashboards-reports.git}, {name=queryWorkbenchDashboards, ref=tags/3.0.0, repository=https://github.com/opensearch-project/sql.git}, {name=anomalyDetectionDashboards, ref=tags/3.0.0, repository=https://github.com/opensearch-project/anomaly-detection-dashboards-plugin}], schema-version=1.0}, overwrite=true})")
     }
 
     def getShellCommands(searchtext) {

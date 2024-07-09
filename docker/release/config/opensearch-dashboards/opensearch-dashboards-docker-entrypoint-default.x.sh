@@ -61,6 +61,7 @@ opensearch_dashboards_vars=(
     opensearchDashboards.defaultAppId
     opensearchDashboards.index
     logging.dest
+    logging.ignoreEnospcError
     logging.json
     logging.quiet
     logging.rotate.enabled
@@ -168,6 +169,7 @@ opensearch_dashboards_vars=(
     ml_commons_dashboards.enabled
     assistant.chat.enabled
     observability.query_assist.enabled
+    usageCollection.uiMetric.enabled
 )
 
 function setupSecurityDashboardsPlugin {

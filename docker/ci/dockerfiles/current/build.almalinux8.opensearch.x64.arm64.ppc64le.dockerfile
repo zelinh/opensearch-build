@@ -86,13 +86,13 @@ RUN dnf install -y 'dnf-command(config-manager)' && \
     dnf config-manager --set-enabled powertools && \
     dnf install epel-release -y && dnf repolist && \
     dnf install openblas-static lapack gcc-gfortran -y && dnf clean all
-RUN pip3 install cmake==3.23.3
+RUN pip3 install cmake==3.26.4
 # Upgrade gcc
 # The setup part is partially based on Austin Dewey's article:
 # https://austindewey.com/2019/03/26/enabling-software-collections-binaries-on-a-docker-image/
-RUN dnf -y install gcc-toolset-9-gcc gcc-toolset-9-gcc-c++ && dnf clean all && \
-    echo "source /opt/rh/gcc-toolset-9/enable" > /etc/profile.d/gcc-toolset-9.sh
-COPY --chown=0:0 config/gcc-toolset-9-setup /usr/local/bin/gcc_setup
+RUN dnf -y install gcc-toolset-11-gcc gcc-toolset-11-gcc-c++ && dnf clean all && \
+    echo "source /opt/rh/gcc-toolset-11/enable" > /etc/profile.d/gcc-toolset-11.sh
+COPY --chown=0:0 config/gcc-toolset-11-setup /usr/local/bin/gcc_setup
 ENV BASH_ENV="/usr/local/bin/gcc_setup"
 ENV ENV="/usr/local/bin/gcc_setup"
 ENV PROMPT_COMMAND=". /usr/local/bin/gcc_setup"
@@ -102,6 +102,6 @@ USER $CONTAINER_USER
 WORKDIR $CONTAINER_USER_HOME
 
 # Install fpm for opensearch dashboards core
-RUN gem install dotenv -v 2.8.1 && gem install fpm -v 1.14.2
+RUN gem install dotenv -v 2.8.1 && gem install public_suffix -v 5.1.1 && gem install fpm -v 1.14.2
 ENV PATH=$CONTAINER_USER_HOME/.gem/gems/fpm-1.14.2/bin:$PATH
 RUN fpm -v
