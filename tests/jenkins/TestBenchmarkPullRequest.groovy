@@ -28,7 +28,7 @@ class TestBenchmarkPullRequest extends BuildPipelineTest {
 
         helper.registerSharedLibrary(
                 library().name('jenkins')
-                        .defaultVersion('6.6.0')
+                        .defaultVersion('6.8.2')
                         .allowOverride(true)
                         .implicit(true)
                         .targetPath('vars')
@@ -54,6 +54,7 @@ class TestBenchmarkPullRequest extends BuildPipelineTest {
         helper.registerAllowedMethod('parameterizedCron', [String], null)
         helper.registerAllowedMethod("cfnDescribe", [Map])
         helper.registerAllowedMethod("cfnDelete", [Map])
+        helper.registerAllowedMethod("throttleJobProperty", [Map])
 
         binding.setVariable('AGENT_LABEL', 'Jenkins-Agent-AL2-X64-M52xlarge-Docker-Host-Benchmark-Test')
         binding.setVariable('ARCHITECTURE', 'x64')
@@ -103,15 +104,22 @@ class TestBenchmarkPullRequest extends BuildPipelineTest {
         binding.setVariable('TELEMETRY_PARAMS', '')
         binding.setVariable('pull_request_number', '1234')
         binding.setVariable('pull_request', 1234)
+        binding.setVariable('baseline_cluster_config', 'test-cluster-config')
         binding.setVariable('repository','opensearch-project/OpenSearch')
 
         helper.registerAllowedMethod("GenericTrigger", [Map], { println 'GenericTrigger called with params: ' + it })
+        helper.registerAllowedMethod("sh", [Map.class], { map ->
+            return '{"hits":{"total":{"value":1},"hits":[{"_source":{"test-execution-id":"test-id"}}]}}'
+        })
     }
 
     @Test
     public void testBenchmarkPullRequestGenericCause_verifyPipeline() {
         binding.getVariable('currentBuild').rawBuild = [:]
         binding.getVariable('currentBuild').rawBuild.getCauses = { return "jenkins.branch.GenericCause@123abc" }
+        helper.registerAllowedMethod('getCompareBenchmarkIds', [Map.class], { params ->
+            return [baseline: "mockBaseline", contender: "mockContender"]
+        })
 
         super.testPipeline("jenkins/opensearch/benchmark-pull-request.jenkinsfile",
                 "tests/jenkins/jenkinsjob-regression-files/opensearch/benchmark-pull-request-generic.jenkinsfile")
@@ -138,7 +146,7 @@ class TestBenchmarkPullRequest extends BuildPipelineTest {
         }
         assertThat(testScriptCommands.size(), equalTo(1))
         assertThat(testScriptCommands, hasItems(
-                "set +x && ./test.sh benchmark-test  --distribution-url https://artifacts.com/artifact.tar.gz --distribution-version 3.0.0  --config /tmp/workspace/config.yml --workload nyc-taxis --benchmark-config /tmp/workspace/benchmark.ini --user-tag run-type:test,security-enabled:false --without-security   --single-node --min-distribution --use-50-percent-heap    --suffix 307      --data-instance-type r5-4xlarge  --test-procedure append-no-conflicts    --data-node-storage 100".toString()
+                "set +x && ./test.sh benchmark-test execute-test  --distribution-url https://artifacts.com/artifact.tar.gz --distribution-version 3.0.0  --config /tmp/workspace/config.yml --workload nyc-taxis --benchmark-config /tmp/workspace/benchmark.ini --user-tag run-type:test,security-enabled:false --without-security   --single-node --min-distribution --use-50-percent-heap    --suffix 307      --data-instance-type r5-4xlarge  --test-procedure append-no-conflicts    --data-node-storage 100".toString()
         ))
 
         def testGhCliCommand = getCommandExecutions('sh', 'gh').findAll {
@@ -146,6 +154,7 @@ class TestBenchmarkPullRequest extends BuildPipelineTest {
         }
         assertThat(testGhCliCommand.size(), equalTo(1))
         assertThat(testGhCliCommand, hasItem('gh pr comment 1234 --repo opensearch-project/OpenSearch --body-file final_result_307.md'))
+        assertCallStack().contains(" benchmark-pull-request.getCompareBenchmarkIds({baselineClusterConfig=test-cluster-config, distributionVersion=3.0.0-SNAPSHOT, workload=nyc-taxis, pullRequestNumber=1234})")
     }
 
     @Test
@@ -160,7 +169,7 @@ class TestBenchmarkPullRequest extends BuildPipelineTest {
 
         assertJobStatusFailure()
         assertCallStack()
-        assertCallStack().contains("gh pr comment 1234 --repo opensearch-project/OpenSearch --body The benchmark job test://artifact.url failed.")
+        assertCallStack().contains("gh pr comment 1234 --repo opensearch-project/OpenSearch --body \"The benchmark job test://artifact.url failed.\n Please see logs to debug.\"")
     }
 
     @Test

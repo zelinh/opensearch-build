@@ -44,8 +44,8 @@ class TestOpenSearchReleasePromotionTest extends BuildPipelineTest {
 
     @Test
     void shouldExecuteWithoutErrors() {
-        super.testPipeline('jenkins/promotion/release-promotion.jenkinsfile',
-                'tests/jenkins/jenkinsjob-regression-files/promotion/release-promotion.jenkinsfile')
+        super.testPipeline('jenkins/release-workflows/release-promotion.jenkinsfile',
+                'tests/jenkins/jenkinsjob-regression-files/release-workflows/release-promotion.jenkinsfile')
 
         def callStack = helper.getCallStack()
         // Parameters Check
@@ -189,7 +189,7 @@ class TestOpenSearchReleasePromotionTest extends BuildPipelineTest {
         assertCallStack().contains('release-promotion.string({name=PROJECTS, value=Both})')
         assertCallStack().contains('release-promotion.string({name=DOCKER_SOURCE, value=Both})')
         assertCallStack().contains('release-promotion.string({name=ARTIFACT_TYPE, value=production})')
-        assertCallStack().contains('release-promotion.string({name=OPTIONAL_ARGS, value=validate-digests-only})')
+        assertCallStack().contains('release-promotion.string({name=OPTIONAL_ARGS, value=validate-digest-only})')
         assertCallStack().contains('release-promotion.build({job=distribution-validation, wait=true, parameters=[null, null, null, null, null, null, null, null]})')
 
         // Maven Promotion Workflow
@@ -202,7 +202,7 @@ class TestOpenSearchReleasePromotionTest extends BuildPipelineTest {
 
     @Test
     void verifyCfnCommands() {
-        runScript('jenkins/promotion/release-promotion.jenkinsfile')
+        runScript('jenkins/release-workflows/release-promotion.jenkinsfile')
         def callStack = helper.getCallStack()
          assertCallStack().contains(
             'release-promotion.cfInvalidate({distribution=CLOUDFRONT_DISTRIBUTION_ID, paths=[/releases/bundle/opensearch/1.x/*, /releases/bundle/opensearch-dashboards/1.x/*], waitForCompletion=true})'

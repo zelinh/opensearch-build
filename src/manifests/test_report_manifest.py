@@ -8,15 +8,22 @@
 from typing import Optional
 
 from manifests.component_manifest import Component, ComponentManifest, Components
+from manifests.test_report.test_report_manifest_1_0 import TestReportManifest_1_0
 
 
 class TestReportManifest(ComponentManifest['TestReportManifest', 'TestComponents']):
     """
     TestReportManifest contains the aggregated test results for the components.
 
-    The format for schema version 1.0 is:
-        schema-version: '1.0'
+    The format for schema version 1.1 is:
+        schema-version: '1.1'
         name: name of the product e.g. OpenSearch
+        version: string
+        platform: linux, darwin or windows
+        architecture: x64 or arm64
+        distribution: tar, zip, deb and rpm
+        id: build id
+        rc: release candidate information
         test-run:
           Command: command to trigger the integ test
           TestType: type of test this manifest reports. e.g. integ-test
@@ -36,9 +43,20 @@ class TestReportManifest(ComponentManifest['TestReportManifest', 'TestComponents
                   - URL or local path to the OpenSearch cluster error logs
     """
 
+    VERSIONS = {
+        "1.0": TestReportManifest_1_0,
+        # "1.1": current
+    }
+
     SCHEMA = {
-        "schema-version": {"required": True, "type": "string", "allowed": ["1.0"]},
+        "schema-version": {"required": True, "type": "string", "allowed": ["1.1"]},
         "name": {"required": True, "type": "string", "allowed": ["OpenSearch", "OpenSearch Dashboards"]},
+        "version": {"required": True, "type": "string"},  # added in 1.1
+        "platform": {"required": True, "type": "string"},  # added in 1.1
+        "architecture": {"required": True, "type": "string"},  # added in 1.1
+        "distribution": {"required": True, "type": "string"},  # added in 1.1
+        "id": {"required": True, "type": "string"},  # added in 1.1
+        "rc": {"required": True, "type": "string"},  # added in 1.1
         "test-run": {
             "required": False,
             "type": "dict",
@@ -78,13 +96,25 @@ class TestReportManifest(ComponentManifest['TestReportManifest', 'TestComponents
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.name = str(data["name"])
+        self.version = str(data["version"])
+        self.platform = str(data["platform"])
+        self.architecture = str(data["architecture"])
+        self.distribution = str(data["distribution"])
+        self.build_id = str(data["id"])
+        self.release_candidate = str(data["rc"])
         self.test_run = self.TestRun(data.get("test-run", None))
         self.components = TestComponents(data.get("components", []))  # type: ignore[assignment]
 
     def __to_dict__(self) -> dict:
         return {
-            "schema-version": "1.0",
+            "schema-version": "1.1",
             "name": self.name,
+            "version": self.version,
+            "platform": self.platform,
+            "architecture": self.architecture,
+            "distribution": self.distribution,
+            "id": self.build_id,
+            "rc": self.release_candidate,
             "test-run": None if self.test_run is None else self.test_run.__to_dict__(),
             "components": self.components.__to_dict__()
         }
@@ -159,7 +189,7 @@ class TestComponent(Component):
                 }
 
 
-TestReportManifest.VERSIONS = {"1.0": TestReportManifest}
+TestReportManifest.VERSIONS = {"1.0": TestReportManifest_1_0, "1.1": TestReportManifest}
 
 TestComponent.__test__ = False  # type: ignore[attr-defined]
 TestReportManifest.__test__ = False  # type: ignore[attr-defined]

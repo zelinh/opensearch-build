@@ -1,0 +1,75 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ */
+
+lib = library(identifier: 'jenkins@1.0.4', retriever: modernSCM([
+    $class: 'GitSCMSource',
+    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
+]))
+
+pipeline {
+    options {
+            timeout(time: 2, unit: 'HOURS')
+    }
+    agent {
+        docker {
+            label 'Jenkins-Agent-AL2023-X64-C54xlarge-Docker-Host'
+            image 'opensearchstaging/ci-runner:ci-runner-centos7-opensearch-build-v3'
+            registryUrl 'https://public.ecr.aws/'
+            alwaysPull true
+        }
+    }
+    parameters {
+        string(
+            name: 'VERSION',
+            description: 'Version of the release.',
+            trim: true
+        )
+        choice(
+            choices: ['opensearch', 'opensearch-dashboards'],
+            name: 'PRODUCT',
+            description: 'Product for tag creation.'
+        )
+    }
+    environment {
+        DISTRIBUTION_MANIFEST = "$PRODUCT-$VERSION/manifest.yml"
+    }
+    stages {
+        stage('Create Release Tag') {
+            steps {
+                script {
+                    release_url = "https://artifacts.opensearch.org/releases/bundle/$PRODUCT/$VERSION/$PRODUCT-$VERSION-linux-x64.tar.gz"
+                    sh "curl -SLO $release_url && tar -xf $PRODUCT-$VERSION-linux-x64.tar.gz $PRODUCT-$VERSION/manifest.yml"
+                    echo "The release distribution manifest is downloaded to $DISTRIBUTION_MANIFEST"
+                    createReleaseTag(
+                        distManifest: "$DISTRIBUTION_MANIFEST",
+                        tagVersion: VERSION
+                    )
+
+                }
+            }
+        }
+        stage('Update Manifest') {
+            steps {
+                echo 'Triggering manifest lock workflow'
+                build job: 'release-manifest-commit-lock', wait: true, parameters: [
+                    string(name: 'RELEASE_VERSION', value: "${params.RELEASE_VERSION}"),
+                    string(name: 'MANIFEST_LOCK_ACTION', value: "UPDATE_TO_TAGS")
+                    ]
+                echo 'Pull Request to lock manifest created successfully!'
+            }
+        }
+    }
+    post() {
+        always {
+            script {
+                postCleanup()
+            }
+        }
+    }
+}
