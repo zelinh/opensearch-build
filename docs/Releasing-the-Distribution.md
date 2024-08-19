@@ -123,7 +123,7 @@ This section is not required for a patch release.
 
 ### Component Release Issues
 
-The component release issues are auto created by the workflows part of the build repo [OpenSearch components](https://github.com/opensearch-project/opensearch-build/blob/main/.github/workflows/os-release-issues.yml), [OpenSearch Dashboards components](https://github.com/opensearch-project/opensearch-build/blob/main/.github/workflows/osd-release-issues.yml). These workflows create the release issues based on the template [component_release_template.md](https://github.com/opensearch-project/opensearch-build/blob/main/.github/ISSUE_TEMPLATE/component_release_template.md) and links back the global release issue part of the build. Sample component release issues created for 2.10.0. Sample link `https://github.com/issues?q=is%3Aopen+is%3Aissue+user%3Aopensearch-project+%5BRELEASE%5D+Release+version+2.10.0+in%3Atitle+`.
+The component release issues are auto created by the workflows part of the build repo [OpenSearch components](https://github.com/opensearch-project/opensearch-build/blob/main/.github/workflows/os-release-issues.yml), [OpenSearch Dashboards components](https://github.com/opensearch-project/opensearch-build/blob/main/.github/workflows/osd-release-issues.yml). These workflows create the release issues based on the template [component_release_template.md](https://github.com/opensearch-project/opensearch-build/blob/main/.github/ISSUE_TEMPLATE/component_release_template.md) and links back the global release issue part of the build. Sample [component release issue](https://github.com/opensearch-project/job-scheduler/issues/642) created for 2.16.0 release. The release manager must verify that each component release issue has an assigned owner, as this is one of the entry criteria for the release.
 
 #### Issue Creation Process Overview
 
@@ -294,6 +294,7 @@ All the failed logs are in s3 accessed through the cloudfront. Sample [link](htt
 
 Stop builds for this version of OpenSearch and/or OpenSearch Dashboards in order to avoid accidental commits going in unknowingly. Restart only if necessary, else manually run the build workflow and declare new release candidate.
 
+#### Stop Periodic Auto Builds
 Once the RC is finalized, in order to exclude the release from running periodically, at this point it is necessary for the release manager to lock the input manifest and update the `check-for-build.jenkins` to remove it from the scheduled execution, sample [PR](https://github.com/opensearch-project/opensearch-build/pull/3523/files).
 
 
@@ -383,10 +384,6 @@ Replace `refs` in input manifest with tags. The `refs` can be identified from th
 ### OpenSearch Build Release notes
 
 Generate distribution release notes for opensearch-build repository, sample [1.3.10](https://github.com/opensearch-project/opensearch-build/releases/tag/1.3.10) release details.
-
-### Decrease the build frequency
-
-Lower the frequency of builds for the release version of OpenSearch and/or OpenSearch Dashboards, sample [PR](https://github.com/opensearch-project/opensearch-build/pull/3523).
 
 ### Retrospective Issue
 
