@@ -33,10 +33,13 @@ class TestReportManifest(ComponentManifest['TestReportManifest', 'TestComponents
         components:
           - name: sql
             command: command to trigger the integ test for only sql component
+            repository: the repository url of the component
             configs:
               - name: with-security
                 status: the status of the test run with this config. e.g. pass/fail
                 yml: URL or local path to the component yml file
+                test_stdout: URL or local path to the test stdout log
+                test_stderr: URL or local path to the test stderr log
                 cluster_stdout:
                   - URL or local path to the OpenSearch cluster logs
                 cluster_stderr:
@@ -75,6 +78,7 @@ class TestReportManifest(ComponentManifest['TestReportManifest', 'TestComponents
                 "schema": {
                     "name": {"required": True, "type": "string"},
                     "command": {"type": "string"},
+                    "repository": {"type": "string"},
                     "configs": {
                         "type": "list",
                         "schema": {
@@ -83,6 +87,8 @@ class TestReportManifest(ComponentManifest['TestReportManifest', 'TestComponents
                                 "name": {"type": "string"},
                                 "status": {"type": "string"},
                                 "yml": {"type": "string"},
+                                "test_stdout": {"type": "string"},
+                                "test_stderr": {"type": "string"},
                                 "cluster_stdout": {"type": "list"},
                                 "cluster_stderr": {"type": "list"}
                             }
@@ -153,12 +159,14 @@ class TestComponent(Component):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.command = data["command"]
+        self.repository = data["repository"]
         self.configs = self.TestComponentConfigs(data.get("configs", None))
 
     def __to_dict__(self) -> dict:
         return {
             "name": self.name,
             "command": self.command,
+            "repository": self.repository,
             "configs": self.configs.__to_list__()
         }
 
@@ -176,6 +184,8 @@ class TestComponent(Component):
                 self.name = data["name"]
                 self.status = data["status"]
                 self.yml = data["yml"]
+                self.test_stdout = data["test_stdout"]
+                self.test_stderr = data["test_stderr"]
                 self.cluster_stdout = data["cluster_stdout"]
                 self.cluster_stderr = data["cluster_stderr"]
 
@@ -184,6 +194,8 @@ class TestComponent(Component):
                     "name": self.name,
                     "status": self.status,
                     "yml": self.yml,
+                    "test_stdout": self.test_stdout,
+                    "test_stderr": self.test_stderr,
                     "cluster_stdout": self.cluster_stdout,
                     "cluster_stderr": self.cluster_stderr
                 }

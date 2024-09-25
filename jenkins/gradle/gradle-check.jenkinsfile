@@ -7,7 +7,7 @@
  * compatible open source license.
  */
 
-lib = library(identifier: 'jenkins@6.6.0', retriever: modernSCM([
+lib = library(identifier: 'jenkins@6.9.1', retriever: modernSCM([
     $class: 'GitSCMSource',
     remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
 ]))
@@ -21,7 +21,7 @@ pipeline {
             categories: [],
             limitOneJobWithMatchingParams: false,
             maxConcurrentPerNode: 0,
-            maxConcurrentTotal: 20,
+            maxConcurrentTotal: 30,
             paramsToUseForLimit: '',
             throttleEnabled: true,
             throttleOption: 'project',
@@ -121,6 +121,8 @@ pipeline {
                                 currentBuild.description = """runner: ${agent_name}<br><a href="${pr_url}">PR #${pr_number}</a>: ${pr_title} with bwc.checkout.align=true"""
                                 bwc_checkout_align = "true"
                             }
+
+                            abortStaleJenkinsJobs(jobName: 'gradle-check', lookupTime: 3)
 
                             runGradleCheck(
                                 gitRepoUrl: "${pr_from_clone_url}",
