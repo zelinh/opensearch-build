@@ -1,0 +1,38 @@
+---
+schema-version: '1.0'
+info:
+  title: OpenSearch Core smoke tests
+  version: default
+name: opensearch
+path:
+  /:
+    get:
+      description: Returns basic information about the cluster.
+      parameters: []
+      responses: '200'
+  /_cat/indices:
+    get:
+      description: Lists information related to indices.
+      parameters: []
+      responses: '200'
+  /_cat/plugins:
+    get:
+      description: Lists information related to plugins.
+      parameters: []
+      responses: '200'
+  /_bulk:
+    post:
+      description: Allows to perform multiple index/update/delete operations in a single request.
+      parameters:
+        - "-H 'Content-Type: application/json'"
+        - "--data-binary ${BASE_PATH}/bulk.json"
+      response: '200'
+#curl -XPOST https://localhost:9200/_bulk  -u admin:myStrongPassword123 --insecure -H 'Content-Type: application/json' --data-binary @bulk.json
+  /students/_search:
+    get:
+      description: Run basic search on the ingested data.
+      response: '200'
+  /_count:
+    get:
+      description: Returns number of documents matching a query.
+      responses: '200'

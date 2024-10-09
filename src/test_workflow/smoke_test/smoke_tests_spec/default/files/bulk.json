@@ -1,0 +1,6 @@
+{ "delete": { "_index": "students", "_id": "2" } }
+{ "delete": { "_index": "students", "_id": "3" } }
+{ "create": { "_index": "students", "_id": "2" } }
+{ "name": "Jonathan Powers", "gpa": 3.85, "grad_year": 2025 }
+{ "index": { "_index": "students", "_id": "3" } }
+{ "name": "Jane Doe", "gpa": 3.52, "grad_year": 2024 }
