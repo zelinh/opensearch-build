@@ -7,23 +7,32 @@
  * compatible open source license.
  */
 
-lib = library(identifier: 'jenkins@7.0.0', retriever: modernSCM([
+lib = library(identifier: 'jenkins@7.1.0', retriever: modernSCM([
     $class: 'GitSCMSource',
     remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
 ]))
 
 
 pipeline {
-    agent { label 'Jenkins-Agent-AL2023-X64-M54xlarge-Docker-Host' }
+    agent {
+        docker {
+            label 'Jenkins-Agent-AL2023-X64-M54xlarge-Docker-Host'
+            image 'opensearchstaging/ci-runner:ci-runner-al2-opensearch-build-v1'
+            registryUrl 'https://public.ecr.aws/'
+            alwaysPull true
+        }
+    }
     options {
         timeout(time: 1, unit: 'HOURS')
-        buildDiscarder(logRotator(daysToKeepStr: '90'))
+        buildDiscarder(logRotator(daysToKeepStr: '30'))
     }
     triggers {
         parameterizedCron('''
             H */6 * * * %INPUT_MANIFEST=2.17.2/opensearch-2.17.2.yml
             H */6 * * * %INPUT_MANIFEST=2.18.0/opensearch-2.18.0.yml
             H */6 * * * %INPUT_MANIFEST=3.0.0/opensearch-3.0.0.yml
+            H */6 * * * %INPUT_MANIFEST=2.18.0/opensearch-dashboards-2.18.0.yml
+            H */6 * * * %INPUT_MANIFEST=3.0.0/opensearch-dashboards-3.0.0.yml
         ''')
     }
     parameters {
@@ -37,6 +46,10 @@ pipeline {
         stage('Update integ tests failure issues') {
             steps {
                 script {
+                    if (params.INPUT_MANIFEST == '' || !fileExists("manifests/${params.INPUT_MANIFEST}")) {
+                        currentBuild.result = 'ABORTED'
+                        error("Failed to start the workflow. Input manifest was not provided or not found in manifests/${params.INPUT_MANIFEST}.")
+                    }
                     updateIntegTestFailureIssues(
                         inputManifestPath: "manifests/${INPUT_MANIFEST}"
                     )
