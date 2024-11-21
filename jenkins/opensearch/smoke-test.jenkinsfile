@@ -128,146 +128,52 @@ pipeline {
                             componentList -= component_check
                         }
                         if ((distribution.equals('rpm') || distribution.equals('deb')) && component_check.equals('cross-cluster-replication')) {
-                            echo "Skipping integTest for ${distribution} distribution for cross-cluster-replication"
+                            echo "Skipping tests for ${distribution} distribution for cross-cluster-replication"
                             componentList -= component_check
                         }
                     }
                     echo "Testing components: ${componentList}"
                     currentBuild.description = "$TEST_MANIFEST, $version, $architecture, $platform, $buildId, $distribution, $componentList"
 
-//                     if (env.platform != 'windows') {
-//                         echo "Downloading from ${artifactPath} and stashing both artifacts and repository"
-//                         downloadFromS3(
-//                             assumedRoleName: 'opensearch-bundle',
-//                             roleAccountNumberCred: 'jenkins-aws-account-public',
-//                             downloadPath: "${artifactPath}/",
-//                             bucketName: "${ARTIFACT_BUCKET_NAME}",
-//                             localPath: "${WORKSPACE}/artifacts",
-//                             force: true
-//                           )
-//                         sh("rm -rf $WORKSPACE/$distribution && mv -v $WORKSPACE/artifacts/${artifactPath} $WORKSPACE")
-//                     }
-//                     else {
-//                         echo 'Skipping artifacts downloads since platform is Windows and only stashing the repository'
-//                     }
-
                     // Stash the current working directory files, aka opensearch-build repo
                     // Unstash later in each triggered stage to run integTest
                     stash includes: '**', name: "smoketest-opensearch-$BUILD_NUMBER"
 
-                    componentTests = [:]
-
-                    for (component in componentList) {
-                        // Must use local variable due to groovy for loop and closure scope
-                        // Or the stage will be fixed to the last item in return when new stages are triggered here
-                        // https://web.archive.org/web/20181121065904/http://blog.freeside.co/2013/03/29/groovy-gotcha-for-loops-and-closure-scope/
-                        def local_component = component.trim()
-                        def local_component_index = componentList.indexOf(local_component)
-                        def wait_seconds = local_component_index * 20
-
-                        echo "Add Component: ${local_component}"
-                        componentTests["Testing ${local_component}"] = {
-                            // Using scripted pipelines to trigger dynamic parallel stages
-                            timeout(time: 2, unit: 'HOURS') {
-                                node(AGENT_LABEL) {
-                                    docker.withRegistry('https://public.ecr.aws/') {
-                                        docker.image(docker_images["$distribution"]).inside(docker_args["$distribution"]) {
-                                            try {
-                                                stage("${local_component}") {
-                                                    // Jenkins tend to not clean up workspace at times even though ws clean is called
-                                                    // Docker is mounting the agent directory so it can communicate with the agent
-                                                    // this sometimes causes the workspace to retain last run test-results and ends with build failures
-                                                    // https://github.com/opensearch-project/opensearch-build/blob/6ed1ce3c583233eae4fe1027969d778cfc7660f7/src/test_workflow/test_recorder/test_recorder.py#L99
-                                                    sh("echo ${local_component} with index ${local_component_index} will sleep ${wait_seconds} seconds to reduce load && sleep ${wait_seconds}")
-                                                    unstash "smoketest-opensearch-$BUILD_NUMBER"
-//                                                     if (env.platform == 'windows') {
-//                                                         echo "Unstashing the repository and downloading the artifacts from S3: ${artifactPath}"
-//                                                         downloadFromS3(
-//                                                             assumedRoleName: 'opensearch-bundle',
-//                                                             roleAccountNumberCred: 'jenkins-aws-account-public',
-//                                                             downloadPath: "${artifactPath}/",
-//                                                             bucketName: "${ARTIFACT_BUCKET_NAME}",
-//                                                             localPath: "${WORKSPACE}/artifacts",
-//                                                             force: true
-//                                                           )
-//                                                         sh("rm -rf $WORKSPACE/$distribution && mv -v $WORKSPACE/artifacts/${artifactPath} $WORKSPACE")
-//                                                     }
-//                                                     else {
-//                                                         echo 'Unstashing both artifacts and repository'
-//                                                     }
-
-                                                    sh('rm -rf test-results')
-                                                    runSmokeTestScript(
-                                                        jobName: "$BUILD_JOB_NAME",
-                                                        componentName: "${local_component}",
-                                                        buildManifest: "$BUILD_MANIFEST",
-                                                        testManifest: "manifests/${TEST_MANIFEST}",
-                                                        localPath: "${WORKSPACE}/${distribution}",
-                                                        switchUserNonRoot: "${switch_user_non_root}"
-                                                    )
-                                                }
-                                            } catch (e) {
-                                                throw new Exception("Error running Smoke test for component ${local_component}", e)
-                                            } finally {
-                                                echo "Completed running smoke test for component ${local_component}"
-                                                uploadTestResults(
-                                                    buildManifestFileName: BUILD_MANIFEST,
-                                                    jobName: JOB_NAME
-                                                )
-                                                postCleanup()
-                                            }
+                    timeout(time: 2, unit: 'HOURS') {
+                        node(AGENT_LABEL) {
+                            docker.withRegistry('https://public.ecr.aws/') {
+                                docker.image(docker_images["$distribution"]).inside(docker_args["$distribution"]) {
+                                    try {
+                                        stage("Smoke_tests") {
+                                            // Jenkins tend to not clean up workspace at times even though ws clean is called
+                                            // Docker is mounting the agent directory so it can communicate with the agent
+                                            // this sometimes causes the workspace to retain last run test-results and ends with build failures
+                                            // https://github.com/opensearch-project/opensearch-build/blob/6ed1ce3c583233eae4fe1027969d778cfc7660f7/src/test_workflow/test_recorder/test_recorder.py#L99
+                                            unstash "smoketest-opensearch-$BUILD_NUMBER"
+                                            sh('rm -rf test-results')
+                                            runSmokeTestScript(
+                                                jobName: "$BUILD_JOB_NAME",
+                                                componentName: "${COMPONENT_NAME}",
+                                                buildManifest: "$BUILD_MANIFEST",
+                                                testManifest: "manifests/${TEST_MANIFEST}",
+                                                localPath: "${WORKSPACE}/${distribution}",
+                                                switchUserNonRoot: "${switch_user_non_root}"
+                                            )
                                         }
+                                    } catch (e) {
+                                        throw new Exception("Error running Smoke test", e)
+                                    } finally {
+                                        echo "Completed running smoke tests."
+                                        postCleanup()
                                     }
                                 }
                             }
                         }
                     }
-                    parallel componentTests
                 }
             }
             post {
                 always {
-//                     script {
-//                         retry(5) {
-//                             node(AGENT_LABEL) {
-//                                 docker.withRegistry('https://public.ecr.aws/') {
-//                                     docker.image(docker_images["$distribution"]).inside(docker_args["$distribution"]) {
-//                                         checkout scm
-//                                         sleep 10
-//                                         downloadBuildManifest(
-//                                             url: BUILD_MANIFEST_URL,
-//                                             path: BUILD_MANIFEST
-//                                         )
-//                                         createUploadTestReportManifest(
-//                                             testManifest: "manifests/${TEST_MANIFEST}",
-//                                             buildManifest: BUILD_MANIFEST,
-//                                             testRunID: "${env.BUILD_NUMBER}",
-//                                             testType: 'integ-test',
-//                                             rcNumber: params.RC_NUMBER,
-//                                             componentName: "${COMPONENT_NAME}",
-//                                         )
-//                                         echo("Download report manifest from https://ci.opensearch.org/ci/dbc/integ-test/${env.version}/${env.buildId}/${env.platform}/${env.architecture}/${env.distribution}/test-results/${env.BUILD_NUMBER}/integ-test/test-report.yml")
-//                                         archiveArtifacts artifacts: 'test-report.yml'
-//                                     }
-//                                 }
-//                             }
-//                         }
-//                         retry(5) {
-//                             node(agent_nodes['linux_x64']) {
-//                                 sleep 10
-//                                 def rc = (params.RC_NUMBER.toInteger() > 0)
-//                                 sh "mkdir -p test-results-os-${env.BUILD_NUMBER}"
-//                                 sh "curl -sSL https://ci.opensearch.org/ci/dbc/integ-test/${env.version}/${env.buildId}/${env.platform}/${env.architecture}/${env.distribution}/test-results/${env.BUILD_NUMBER}/integ-test/test-report.yml --output test-results-os-${env.BUILD_NUMBER}/test-report.yml"
-//                                 publishIntegTestResults(
-//                                     distributionBuildUrl: "https://build.ci.opensearch.org/blue/organizations/jenkins/${env.BUILD_JOB_NAME}/detail/${env.BUILD_JOB_NAME}/${env.buildId}/pipeline",
-//                                     jobName: env.JOB_NAME,
-//                                     testReportManifestYml: "test-results-os-${env.BUILD_NUMBER}/test-report.yml"
-//                                 )
-//                                 postCleanup()
-//                             }
-//                         }
-//
-//                     }
                     postCleanup()
                 }
             }
@@ -277,14 +183,6 @@ pipeline {
         always {
             node(AGENT_LABEL) {
                 script {
-//                     def triggerIntegTestNotification =
-//                             build job: 'integ-test-notification',
-//                             propagate: false,
-//                             wait: false,
-//                             parameters: [
-//                                 string(name: 'INPUT_MANIFEST', value: "${env.version}/opensearch-${env.version}.yml"),
-//                                 string(name: 'DISTRIBUTION_NUMBER', value: "${env.buildId}")
-//                             ]
                     postCleanup()
                 }
             }
