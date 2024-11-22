@@ -158,7 +158,7 @@ pipeline {
                                                 testManifest: "manifests/${TEST_MANIFEST}",
                                                 localPath: "${WORKSPACE}/${distribution}",
                                                 switchUserNonRoot: "${switch_user_non_root}",
-                                                buildId: "${WORKSPACE}/${buildId}"
+                                                buildID: "${WORKSPACE}/${buildId}"
                                             )
                                         }
                                     } catch (e) {
