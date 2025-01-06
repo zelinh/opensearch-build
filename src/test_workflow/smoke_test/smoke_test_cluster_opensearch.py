@@ -47,6 +47,12 @@ class SmokeTestClusterOpenSearch():
         self.dist = self.bundle_manifest.build.distribution
         self.distribution = Distributions.get_distribution(self.product, self.dist, self.version, work_dir)
 
+<<<<<<< HEAD
+=======
+    def cluster_version(self) -> str:
+        return self.version
+
+>>>>>>> upstream/main
     def download_or_copy_bundle(self, work_dir: str) -> str:
         extension = "tar.gz" if self.dist == "tar" else self.dist
         artifact_name = f"{self.product}-{self.version}-{self.platform}-{self.arch}.{extension}"
@@ -65,7 +71,11 @@ class SmokeTestClusterOpenSearch():
             # Only copy if it's a file
             if os.path.isfile(src_path):
                 shutil.copy2(src_path, dest_path)
+<<<<<<< HEAD
                 print(f"Copied {src_path} to {dest_path}")
+=======
+                logging.info(f"Copied {src_path} to {dest_path}")
+>>>>>>> upstream/main
         return artifact_name
 
     # Reason we don't re-use test-suite from integ-test is that it's too specific and not generic and lightweight.
@@ -87,11 +97,19 @@ class SmokeTestClusterOpenSearch():
         logging.info(f"Pinging {url}")
         try:
             request = requests.get(url, verify=False, auth=("admin", "myStrongPassword123!"))
+<<<<<<< HEAD
             logging.info(f"Request is {request.text}")
             return 200 <= request.status_code < 300
         except requests.RequestException as e:
             logging.info(f"Request is {request.text}")
             print(f"Request failed: {e}")
+=======
+            logging.info(f"Cluster response is {request.text}")
+            return 200 <= request.status_code < 300
+        except requests.RequestException as e:
+            logging.info(f"Request is {request.text}")
+            logging.info(f"Cluster check fails: {e}")
+>>>>>>> upstream/main
             return False
 
     def __uninstall__(self) -> None:

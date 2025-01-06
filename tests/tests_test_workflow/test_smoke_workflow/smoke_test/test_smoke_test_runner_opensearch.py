@@ -43,6 +43,10 @@ class TestSmokeTestRunnerOpenSearch(unittest.TestCase):
         mock_extract_spec.return_value = {"/": {"GET": {}}, "/_cat/plugins": {"GET": {}}}
 
         runner = SmokeTestRunnerOpenSearch(self.args, self.test_manifest)
+<<<<<<< HEAD
+=======
+        runner.version = "2.19.0"
+>>>>>>> upstream/main
 
         # Mock a successful API response
         response = Response()
@@ -53,7 +57,11 @@ class TestSmokeTestRunnerOpenSearch(unittest.TestCase):
 
         results = runner.start_test(work_dir=Path("/temp/path"))
         self.assertTrue(results)
+<<<<<<< HEAD
         mock_extract_spec.assert_called_with("opensearch")
+=======
+        mock_extract_spec.assert_called_with("opensearch", "2.19.0")
+>>>>>>> upstream/main
         self.test_manifest.components.select.assert_called()
         mock_get.assert_has_calls(
             [call('https://localhost:9200/', verify=False, auth=('admin', 'myStrongPassword123!'),
