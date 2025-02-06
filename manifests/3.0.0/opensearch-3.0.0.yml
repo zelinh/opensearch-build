@@ -10,12 +10,21 @@ ci:
 components:
   - name: OpenSearch
     repository: https://github.com/opensearch-project/OpenSearch.git
-    ref: main
+    ref: '3.0.0-before-alpha1'
     checks:
       - gradle:publish
       - gradle:properties:version
   - name: common-utils
     repository: https://github.com/opensearch-project/common-utils.git
+    ref: main
+    platforms:
+      - linux
+      - windows
+    checks:
+      - gradle:publish
+      - gradle:properties:version
+  - name: opensearch-remote-metadata-sdk
+    repository: https://github.com/opensearch-project/opensearch-remote-metadata-sdk.git
     ref: main
     platforms:
       - linux
@@ -221,6 +230,7 @@ components:
       - windows
     depends_on:
       - common-utils
+      - opensearch-remote-metadata-sdk
   - name: opensearch-system-templates
     repository: https://github.com/opensearch-project/opensearch-system-templates.git
     ref: main
@@ -240,6 +250,12 @@ components:
       - ml-commons
   - name: user-behavior-insights
     repository: https://github.com/opensearch-project/user-behavior-insights.git
+    ref: main
+    platforms:
+      - linux
+      - windows
+  - name: query-insights
+    repository: https://github.com/opensearch-project/query-insights.git
     ref: main
     platforms:
       - linux

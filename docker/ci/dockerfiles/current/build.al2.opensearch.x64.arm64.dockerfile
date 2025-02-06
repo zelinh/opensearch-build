@@ -67,7 +67,7 @@ RUN curl -sSL https://rvm.io/mpapis.asc | gpg2 --import - && \
 SHELL ["/bin/bash", "-lc"]
 CMD ["/bin/bash", "-l"]
 
-# Install ruby / rpm / fpm related dependencies
+# Install ruby / rpm / fpm / openssl / gcc / binutils related dependencies
 RUN . /etc/profile.d/rvm.sh && rvm install 2.6.0 && rvm --default use 2.6.0 && yum install -y rpm-build createrepo && yum clean all
 
 ENV RUBY_HOME=/usr/local/rvm/rubies/ruby-2.6.0/bin
@@ -82,14 +82,14 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/lib
 RUN yum install -y curl libcurl-devel libfaketime perl-core pcre-devel && yum remove -y openssl-devel && yum clean all && \
     mkdir -p /tmp/openssl && cd /tmp/openssl && \
     curl -sSL -o- https://www.openssl.org/source/openssl-1.1.1g.tar.gz | tar -xz --strip-components 1 && \
-    ./config --prefix=/usr --openssldir=/etc/ssl --libdir=lib shared zlib-dynamic && make && make install && \
+    ./config --prefix=/usr --openssldir=/etc/ssl --libdir=lib shared zlib-dynamic && make -j$(nproc) && make install && \
     echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/lib" > /etc/profile.d/openssl.sh && openssl version
 
 # Install Python binary
 RUN curl https://www.python.org/ftp/python/3.9.7/Python-3.9.7.tgz | tar xzvf - && \
     cd Python-3.9.7 && \
     env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64:/usr/lib ./configure --enable-optimizations --with-openssl=/usr --prefix=/usr/local && \
-    make altinstall && cd ../ && rm -rf Python-3.9.7.tgz Python-3.9.7 && \
+    make -j$(nproc) altinstall && cd ../ && rm -rf Python-3.9.7.tgz Python-3.9.7 && \
     cp -v /etc/ssl/certs/ca-bundle.crt /etc/ssl/cert.pem
 
 # Setup Python links
@@ -99,28 +99,60 @@ RUN ln -sfn /usr/local/bin/python3.9 /usr/bin/python3 && \
     ln -sfn /usr/local/bin/pip3.9 /usr/bin/pip3 && \
     pip3 install pip==23.1.2 && pip3 install pipenv==2023.6.12 awscli==1.32.17
 
-# Upgrade gcc
-RUN yum install -y gcc10* && \
-    mv -v /usr/bin/gcc /usr/bin/gcc7-gcc && \
-    mv -v /usr/bin/g++ /usr/bin/gcc7-g++ && \
-    mv -v /usr/bin/gfortran /usr/bin/gcc7-gfortran && \
-    update-alternatives --install /usr/bin/gcc gcc $(which gcc10-gcc) 1 && \
-    update-alternatives --install /usr/bin/g++ g++ $(which gcc10-g++) 1 && \
-    update-alternatives --install /usr/bin/gfortran gfortran $(which gcc10-gfortran) 1
+# Upgrade gcc, while keep libstdc++.so to older 6.0.24 version for backward compatibility
+# Only x64 requires gcc 12+ for k-NN avx512_spr fp16 feature
+# https://github.com/opensearch-project/opensearch-build/issues/5226
+# Due to cross-compilation being too slow on arm64, it will stay on gcc 10 for the time being
+RUN if [ `uname -m` = "x86_64" ]; then \
+        curl -SL https://ci.opensearch.org/ci/dbc/tools/gcc/gcc-12.4.0.tar.gz -o gcc12.tgz && \
+        tar -xzf gcc12.tgz && cd gcc-12.4.0 && \
+        sed -i 's@base_url=.*@base_url=https://ci.opensearch.org/ci/dbc/tools/gcc/@g' ./contrib/download_prerequisites && \
+        ./contrib/download_prerequisites && \
+        mkdir build && cd build && \
+        ../configure --enable-languages=all --prefix=/usr --disable-multilib --disable-bootstrap && \
+        make -j$(nproc) && make install && gcc --version && g++ --version && gfortran --version && \
+        cd  ../../ && rm -rf gcc12.tgz gcc-12.4.0 && cd /lib64/ && \
+        ln -sfn libstdc++.so.6 libstdc++.so && \
+        ln -sfn libstdc++.so.6.0.24 libstdc++.so.6 && \
+        rm -v libstdc++.so.6.0.30* ; \
+    else \
+        yum install -y gcc10* && \
+        mv -v /usr/bin/gcc /usr/bin/gcc7-gcc && \
+        mv -v /usr/bin/g++ /usr/bin/gcc7-g++ && \
+        mv -v /usr/bin/gfortran /usr/bin/gcc7-gfortran && \
+        update-alternatives --install /usr/bin/gcc gcc $(which gcc10-gcc) 1 && \
+        update-alternatives --install /usr/bin/g++ g++ $(which gcc10-g++) 1 && \
+        update-alternatives --install /usr/bin/gfortran gfortran $(which gcc10-gfortran) 1; \
+    fi
+
+# Upgrade binutils
+# This is only required if gcc upgrade to 12 or above
+RUN if [ `uname -m` = "x86_64" ]; then \
+        yum install -y texinfo && \
+        curl -SLO https://ci.opensearch.org/ci/dbc/tools/gcc/binutils-2.42.90.tar.xz && \
+        tar -xf binutils-2.42.90.tar.xz && cd binutils-2.42.90 && \
+        mkdir build && cd build && \
+        ../configure --prefix=/usr && \
+        make -j$(nproc) && make install && ld --version && \
+        cd ../../ && rm -rf binutils-2.42.90.tar.xz binutils-2.42.90 && \
+        yum remove -y texinfo; \
+    fi
+
 ENV FC=gfortran
 ENV CXX=g++
 
 # Add k-NN Library dependencies
-RUN yum repolist && yum install lapack -y
-RUN git clone -b v0.3.27 --single-branch https://github.com/xianyi/OpenBLAS.git && \
+RUN yum repolist && yum install lapack -y && yum clean all && rm -rf /var/cache/yum/*
+RUN git clone -b v0.3.27 --single-branch https://github.com/OpenMathLib/OpenBLAS.git && \
     cd OpenBLAS && \
     if [ "$(uname -m)" = "x86_64" ]; then \
         echo "Machine is x86_64. Adding DYNAMIC_ARCH=1 to openblas make command."; \
-        make USE_OPENMP=1 FC=gfortran DYNAMIC_ARCH=1; \
+        make -j$(nproc) USE_OPENMP=1 FC=gfortran DYNAMIC_ARCH=1; \
     else \
-        make USE_OPENMP=1 FC=gfortran; \
+        make -j$(nproc) USE_OPENMP=1 FC=gfortran; \
     fi && \
-    make PREFIX=/usr/local install
+    make PREFIX=/usr/local install && \
+    cd ../ && rm -rf OpenBLAS
 ENV LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 RUN pip3 install cmake==3.26.4
 
@@ -131,19 +163,22 @@ RUN pip3 install cmake==3.26.4
 # GitHub enforce nodejs 20 official build in runner 2.317.0 of their actions and CentOS7/AL2 would fail due to having older glibc versions
 # Until https://github.com/actions/runner/pull/3128 is merged or AL2 is deprecated (2025/06) this is a quick fix with unofficial builds support glibc 2.17
 # With changes done similar to this PR (https://github.com/opensearch-project/job-scheduler/pull/702) alongside the image here
-# Only linux x64 is supported in unofficial build until https://github.com/nodejs/unofficial-builds/pull/91 is merged
+# Only linux x64 glibc217 is supported in unofficial build until https://github.com/nodejs/unofficial-builds/pull/91 is merged for pre-compiled arm64 binaries
+# The linux arm64 glibc226 tarball here is directly compiled from the source code on AL2 host for the time being
 RUN if [ `uname -m` = "x86_64" ]; then \
-        curl -SL https://unofficial-builds.nodejs.org/download/release/v20.10.0/node-v20.10.0-linux-x64-glibc-217.tar.xz -o /node20.tar.xz; \
-        mkdir /node_al2; \
-        tar -xf /node20.tar.xz --strip-components 1 -C /node_al2; \
-        rm -v /node20.tar.xz; \
-    fi
+        curl -SL https://ci.opensearch.org/ci/dbc/tools/node/node-v20.18.0-linux-x64-glibc-217.tar.xz -o /node20.tar.xz; \
+    else \
+        curl -SL https://ci.opensearch.org/ci/dbc/tools/node/node-v20.18.0-linux-arm64-glibc-226-libstdcpp-6.0.24.tar.xz -o /node20.tar.xz; \
+    fi; \
+    mkdir /node_al2 && \
+    tar -xf /node20.tar.xz --strip-components 1 -C /node_al2 && \
+    rm -v /node20.tar.xz
 
 # Change User
 USER $CONTAINER_USER
 WORKDIR $CONTAINER_USER_HOME
 
 # Install fpm for opensearch dashboards core
-RUN gem install dotenv -v 2.8.1 && gem install public_suffix -v 5.1.1 && gem install fpm -v 1.14.2
+RUN gem install dotenv -v 2.8.1 && gem install public_suffix -v 5.1.1 && gem install rchardet -v 1.8.0 && gem install fpm -v 1.14.2
 ENV PATH=$CONTAINER_USER_HOME/.gem/gems/fpm-1.14.2/bin:$PATH
 RUN fpm -v
