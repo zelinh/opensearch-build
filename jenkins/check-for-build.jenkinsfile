@@ -23,9 +23,11 @@ pipeline {
     }
     triggers {
         parameterizedCron '''
-            H 1 * * * %INPUT_MANIFEST=2.20.0/opensearch-2.20.0.yml;TARGET_JOB_NAME=distribution-build-opensearch;BUILD_PLATFORM=linux windows;BUILD_DISTRIBUTION=tar rpm deb zip;TEST_MANIFEST=2.20.0/opensearch-2.20.0-test.yml;TEST_PLATFORM=linux;TEST_DISTRIBUTION=tar
-            H 4 * * * %INPUT_MANIFEST=3.0.0-alpha1/opensearch-3.0.0-alpha1.yml;TARGET_JOB_NAME=distribution-build-opensearch;BUILD_PLATFORM=linux windows;BUILD_DISTRIBUTION=tar rpm deb zip
-            H 4 * * * %INPUT_MANIFEST=3.0.0-alpha1/opensearch-dashboards-3.0.0-alpha1.yml;TARGET_JOB_NAME=distribution-build-opensearch-dashboards;BUILD_PLATFORM=linux windows;BUILD_DISTRIBUTION=tar rpm deb zip
+            H 1 * * * %INPUT_MANIFEST=2.19.2/opensearch-2.19.2.yml;TARGET_JOB_NAME=distribution-build-opensearch;BUILD_PLATFORM=linux windows;BUILD_DISTRIBUTION=tar rpm deb zip
+            H 1 * * * %INPUT_MANIFEST=2.20.0/opensearch-dashboards-2.20.0.yml;TARGET_JOB_NAME=distribution-build-opensearch-dashboards;BUILD_PLATFORM=linux windows;BUILD_DISTRIBUTION=tar rpm deb zip;
+            H 1 * * * %INPUT_MANIFEST=2.20.0/opensearch-2.20.0.yml;TARGET_JOB_NAME=distribution-build-opensearch;BUILD_PLATFORM=linux windows;BUILD_DISTRIBUTION=tar rpm deb zip
+            H 6 * * * %INPUT_MANIFEST=3.0.0-beta1/opensearch-3.0.0-beta1.yml;TARGET_JOB_NAME=distribution-build-opensearch;BUILD_PLATFORM=linux windows;BUILD_DISTRIBUTION=tar rpm deb zip;UPDATE_GITHUB_ISSUE=false
+            H 6 * * * %INPUT_MANIFEST=3.0.0-beta1/opensearch-dashboards-3.0.0-beta1.yml;TARGET_JOB_NAME=distribution-build-opensearch-dashboards;BUILD_PLATFORM=linux windows;BUILD_DISTRIBUTION=tar rpm deb zip;UPDATE_GITHUB_ISSUE=false
         '''
     }
     parameters {
@@ -63,6 +65,11 @@ pipeline {
             name: 'TEST_DISTRIBUTION',
             description: 'Distribution to test',
             trim: true
+        )
+        booleanParam(
+            name: 'UPDATE_GITHUB_ISSUE',
+            description: 'To create/close/update a github issue for all component or not.',
+            defaultValue: true
         )
     }
     stages {
@@ -111,7 +118,8 @@ pipeline {
                             string(name: 'BUILD_PLATFORM', value: "${BUILD_PLATFORM}"),
                             string(name: 'BUILD_DISTRIBUTION', value: "${BUILD_DISTRIBUTION}"),
                             string(name: 'TEST_PLATFORM', value: "${TEST_PLATFORM}"),
-                            string(name: 'TEST_DISTRIBUTION', value: "${TEST_DISTRIBUTION}")
+                            string(name: 'TEST_DISTRIBUTION', value: "${TEST_DISTRIBUTION}"),
+                            booleanParam(name: 'UPDATE_GITHUB_ISSUE', value: "${UPDATE_GITHUB_ISSUE}")
                             ], wait: true
 
                             echo "Build succeeded, uploading build SHA for that job"

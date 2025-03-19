@@ -46,6 +46,9 @@ git config --system pack.window 0
 git config --system pack.threads 1
 git config --system core.compression 0
 git config --system protocol.version 1
+git config --system http.schannelCheckRevoke false
+git config --system http.sslBackend openssl
+git config --system http.sslVerify true
 git config --system --list
 # Rename system32 find.exe in case it gets conflicted with POSIX find
 bash.exe -c "mv -v 'C:\\Windows\\System32\\find.exe' 'C:\\Windows\\System32\\find_windows.exe'"
@@ -102,8 +105,8 @@ Foreach ($jdkVersion in $jdkVersionList)
     [System.Environment]::SetEnvironmentVariable($jdkArray[1], "$JAVA_HOME_TEMP", [System.EnvironmentVariableTarget]::User)
     java -version
 }
-# Switch to temurin11-jdk as it is the widest supported version to build OpenSearch
-scoop reset temurin11-jdk
+# Switch to temurin21-jdk as 3.0.0 is baselined to 21
+scoop reset temurin21-jdk
 $JAVA_HOME_TEMP = [System.Environment]::GetEnvironmentVariable("JAVA_HOME", [System.EnvironmentVariableTarget]::User).replace("\", "/")
 $JAVA_HOME_TEMP
 [System.Environment]::SetEnvironmentVariable('JAVA_HOME', "$JAVA_HOME_TEMP", [System.EnvironmentVariableTarget]::User)
