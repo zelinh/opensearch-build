@@ -83,6 +83,11 @@ components:
       test-configs:
         - with-security
         - without-security
+      additional-cluster-configs:
+        node.attr.knn_cb_tier: integ
+        path.repo:
+          - /tmp
+          - 'C:\'
     smoke-test:
       test-spec: k-NN.yml
   - name: ml-commons
@@ -97,6 +102,8 @@ components:
       test-configs:
         - with-security
         - without-security
+    smoke-test:
+      test-spec: opensearch-learning-to-rank-base.yml
   - name: neural-search
     integ-test:
       test-configs:

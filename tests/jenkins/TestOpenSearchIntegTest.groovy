@@ -25,7 +25,7 @@ class TestOpenSearchIntegTest extends BuildPipelineTest {
 
         helper.registerSharedLibrary(
             library().name('jenkins')
-                .defaultVersion('8.3.3')
+                .defaultVersion('9.0.1')
                 .allowOverride(true)
                 .implicit(true)
                 .targetPath('vars')
